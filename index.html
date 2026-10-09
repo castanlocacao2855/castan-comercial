@@ -569,7 +569,7 @@
 
   <script>
     const SUPABASE_URL = 'https://uwueavzdkjsqvlyyafcz.supabase.co';
-    const SUPABASE_KEY = 'sb_publishable_M1RXel-LjzUVsZDCW-IkMw_aSm_WvUP';
+    const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InV3dWVhdnpka2pzcXZseXlhZmN6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzEwNTc4MTgsImV4cCI6MjA4NjYzMzgxOH0.M1RXel-LjzUVsZDCW-IkMw_aSm_WvUP';
     const _supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
     if (typeof ChartDataLabels !== 'undefined') {
@@ -688,7 +688,8 @@
 
     async function carregarDadosDoSupabase() {
       try {
-        const { data: cData } = await _supabase.from('colaboradores').select('*');
+        const { data: cData, error: cErr } = await _supabase.from('colaboradores').select('*');
+        if (cErr) console.error('Erro colaboradores:', cErr);
         if (cData && cData.length > 0) {
           colaboradores = cData;
         } else {
@@ -814,9 +815,7 @@
         if (valAtual && s.querySelector(`option[value="${valAtual}"]`)) s.value = valAtual;
       });
 
-      const optionsTodos = ativos.length 
-        ? '<option value="Castan">Castan</option>' + ativos.map(c => `<option value="${c.nome}">${c.nome} (${c.funcao})</option>`).join('')
-        : `<option value="Castan">Castan</option>`;
+      const optionsTodos = '<option value="Castan">Castan</option>' + (ativos.length ? ativos.map(c => `<option value="${c.nome}">${c.nome} (${c.funcao})</option>`).join('') : '');
 
       document.querySelectorAll('.select-colabs-todos').forEach(s => {
         const valAtual = s.value;
@@ -850,10 +849,18 @@
         ativo: parseInt(document.getElementById('atend-ativo').value) || 0
       };
 
-      await _supabase.from('atendimentos').upsert(item);
+      const { error } = await _supabase.from('atendimentos').upsert(item);
+      if (error) {
+        alert('Erro ao salvar no Supabase: ' + error.message);
+        return;
+      }
+
       editingAtendimentoId = null;
       document.getElementById('btn-salvar-atendimento').innerText = 'Salvar Registro';
+      document.getElementById('formAtendimento').reset();
+      carregarSemanaAtual('atend');
       await carregarDadosDoSupabase();
+      alert('Atendimento salvo com sucesso!');
     }
 
     function editarAtendimento(id) {
@@ -983,6 +990,7 @@
       document.getElementById('fech-mes').value = `${hoje.getFullYear()}-${String(hoje.getMonth() + 1).padStart(2, '0')}`;
       
       await carregarDadosDoSupabase();
+      alert('Contrato adicionado à esteira com sucesso!');
     }
 
     function editarFechamento(id) {
@@ -1391,4 +1399,20 @@
     function exportarExcel() {
       const wb = XLSX.utils.book_new();
       XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet([['Início', 'Fim', 'Colaborador', 'Agendadas', 'Concluídas']]), 'Atendimentos');
-      XLSX.
+      XLSX.writeFile(wb, `Castan_Relatorio.xlsx`);
+    }
+
+    window.onload = function() {
+      carregarSemanaAtual('dash');
+      carregarSemanaAtual('atend');
+      carregarSemanaAtual('cap');
+      const hoje = new Date();
+      const mesAtualStr = `${hoje.getFullYear()}-${String(hoje.getMonth() + 1).padStart(2, '0')}`;
+      if(document.getElementById('fech-mes')) document.getElementById('fech-mes').value = mesAtualStr;
+      if(document.getElementById('fech-mes-filtro')) document.getElementById('fech-mes-filtro').value = mesAtualStr;
+      if(document.getElementById('mes-referencia')) document.getElementById('mes-referencia').value = mesAtualStr;
+      carregarDadosDoSupabase();
+    };
+  </script>
+</body>
+</html>
