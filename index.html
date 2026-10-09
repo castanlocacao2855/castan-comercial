@@ -258,7 +258,7 @@
             </div>
             <div>
               <label class="block text-[11px] font-semibold text-gray-600 mb-1">Agente (Mostrador)</label>
-              <select id="fech-agente" required class="w-full border rounded-lg px-3 py-2 text-xs sm:text-sm select-colabs-agente"></select>
+              <select id="fech-agente" class="w-full border rounded-lg px-3 py-2 text-xs sm:text-sm select-colabs-agente"></select>
             </div>
             <div>
               <label class="block text-[11px] font-semibold text-gray-600 mb-1">REF (Número)</label>
@@ -277,11 +277,11 @@
             </div>
             <div>
               <label class="block text-[11px] font-semibold text-gray-600 mb-1">Captador</label>
-              <input type="text" id="fech-captador" placeholder="Nome Captador" required class="w-full border rounded-lg px-3 py-2 text-xs sm:text-sm">
+              <input type="text" id="fech-captador" placeholder="Nome Captador" class="w-full border rounded-lg px-3 py-2 text-xs sm:text-sm">
             </div>
             <div>
               <label class="block text-[11px] font-semibold text-gray-600 mb-1">Data Solicitada</label>
-              <input type="date" id="fech-data" required class="w-full border rounded-lg px-3 py-2 text-xs sm:text-sm">
+              <input type="date" id="fech-data" class="w-full border rounded-lg px-3 py-2 text-xs sm:text-sm">
             </div>
             <div>
               <label class="block text-[11px] font-semibold text-gray-600 mb-1">Tipo</label>
@@ -315,7 +315,7 @@
             </div>
             <div>
               <label class="block text-[11px] font-semibold text-gray-600 mb-1">Fechado Por</label>
-              <select id="fech-por" required class="w-full border rounded-lg px-3 py-2 text-xs sm:text-sm select-colabs-todos"></select>
+              <select id="fech-por" class="w-full border rounded-lg px-3 py-2 text-xs sm:text-sm select-colabs-todos"></select>
             </div>
             <div>
               <label class="block text-[11px] font-semibold text-gray-600 mb-1">Assinatura</label>
@@ -815,8 +815,8 @@
       });
 
       const optionsTodos = ativos.length 
-        ? ativos.map(c => `<option value="${c.nome}">${c.nome} (${c.funcao})</option>`).join('')
-        : `<option value="">Nenhum colaborador ativo</option>`;
+        ? '<option value="Castan">Castan</option>' + ativos.map(c => `<option value="${c.nome}">${c.nome} (${c.funcao})</option>`).join('')
+        : `<option value="Castan">Castan</option>`;
 
       document.querySelectorAll('.select-colabs-todos').forEach(s => {
         const valAtual = s.value;
@@ -915,15 +915,6 @@
       const countRows = atendimentos.length;
       const totConv = totAg > 0 ? ((totConc / totAg) * 100).toFixed(1) : 0;
       const totLaisConsolidado = calcularTotalLaisGrupo(atendimentos);
-      const semanasUnicasSet = new Set(atendimentos.map(a => `${a.inicio}_${a.fim}`));
-      const numSemanas = semanasUnicasSet.size;
-
-      const mediaAg = countRows > 0 ? (totAg / countRows).toFixed(1) : '0';
-      const mediaConc = countRows > 0 ? (totConc / countRows).toFixed(1) : '0';
-      const mediaCanc = countRows > 0 ? (totCanc / countRows).toFixed(1) : '0';
-      const mediaNovos = countRows > 0 ? (totNovos / countRows).toFixed(1) : '0';
-      const mediaLaisSemanal = numSemanas > 0 ? (totLaisConsolidado / numSemanas).toFixed(1) : '0';
-      const mediaAtivo = countRows > 0 ? (totAtivo / countRows).toFixed(1) : '0';
 
       document.getElementById('totalAtendimento').innerHTML = `
         <tr class="bg-slate-100">
@@ -965,23 +956,32 @@
         id: editingFechamentoId || Date.now(),
         mes: mesVal,
         atendente: document.getElementById('fech-atendente').value,
-        agente: document.getElementById('fech-agente').value,
+        agente: document.getElementById('fech-agente').value || 'Sem visita',
         ref: refNum.startsWith('LOC') ? refNum : `LOC${refNum}`,
         endereco: document.getElementById('fech-endereco').value,
         valor: converterParaNumero(document.getElementById('fech-valor').value),
-        captador: document.getElementById('fech-captador').value,
-        data: document.getElementById('fech-data').value,
+        captador: document.getElementById('fech-captador').value || 'Castan',
+        data: document.getElementById('fech-data').value || new Date().toISOString().split('T')[0],
         tipo: document.getElementById('fech-tipo').value,
-        chave: document.getElementById('fech-chave').value,
+        chave: document.getElementById('fech-chave').value || null,
         garantia: document.getElementById('fech-garantia').value,
         status: document.getElementById('fech-status').value,
-        fechadoPor: document.getElementById('fech-por').value,
-        assinado: document.getElementById('fech-assinado').value,
-        obs: document.getElementById('fech-obs').value
+        fechadoPor: document.getElementById('fech-por').value || 'Castan',
+        assinado: document.getElementById('fech-assinado').value || null,
+        obs: document.getElementById('fech-obs').value || ''
       };
 
-      await _supabase.from('fechamentos').upsert(item);
+      const { error } = await _supabase.from('fechamentos').upsert(item);
+      if (error) {
+        alert('Erro ao salvar no Supabase: ' + error.message);
+        return;
+      }
+
       editingFechamentoId = null;
+      document.getElementById('formFechamento').reset();
+      const hoje = new Date();
+      document.getElementById('fech-mes').value = `${hoje.getFullYear()}-${String(hoje.getMonth() + 1).padStart(2, '0')}`;
+      
       await carregarDadosDoSupabase();
     }
 
@@ -995,12 +995,12 @@
       document.getElementById('btn-mes-texto').innerText = `Mês: ${formatarMesAnoBR(item.mes)}`;
 
       document.getElementById('fech-atendente').value = item.atendente;
-      document.getElementById('fech-agente').value = item.agente;
+      document.getElementById('fech-agente').value = item.agente || '';
       document.getElementById('fech-ref').value = item.ref.replace('LOC', '');
       document.getElementById('fech-endereco').value = item.endereco;
       document.getElementById('fech-valor').value = item.valor;
       document.getElementById('fech-captador').value = item.captador || '';
-      document.getElementById('fech-data').value = item.data;
+      document.getElementById('fech-data').value = item.data || '';
       document.getElementById('fech-tipo').value = item.tipo;
       document.getElementById('fech-chave').value = item.chave || '';
       document.getElementById('fech-garantia').value = item.garantia;
@@ -1391,20 +1391,4 @@
     function exportarExcel() {
       const wb = XLSX.utils.book_new();
       XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet([['Início', 'Fim', 'Colaborador', 'Agendadas', 'Concluídas']]), 'Atendimentos');
-      XLSX.writeFile(wb, `Castan_Relatorio.xlsx`);
-    }
-
-    window.onload = function() {
-      carregarSemanaAtual('dash');
-      carregarSemanaAtual('atend');
-      carregarSemanaAtual('cap');
-      const hoje = new Date();
-      const mesAtualStr = `${hoje.getFullYear()}-${String(hoje.getMonth() + 1).padStart(2, '0')}`;
-      if(document.getElementById('fech-mes')) document.getElementById('fech-mes').value = mesAtualStr;
-      if(document.getElementById('fech-mes-filtro')) document.getElementById('fech-mes-filtro').value = mesAtualStr;
-      if(document.getElementById('mes-referencia')) document.getElementById('mes-referencia').value = mesAtualStr;
-      carregarDadosDoSupabase();
-    };
-  </script>
-</body>
-</html>
+      XLSX.
