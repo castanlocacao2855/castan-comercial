@@ -2,7 +2,7 @@
 <html lang="pt-BR">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>Castan Imóveis - Gestão Comercial</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -11,158 +11,162 @@
   <!-- LIB DO SUPABASE -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    /* Estilo para rolagem suave do menu em celulares */
+    .no-scrollbar::-webkit-scrollbar { display: none; }
+    .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+  </style>
 </head>
-<body class="bg-gray-100 min-h-screen text-gray-800 font-sans">
+<body class="bg-gray-100 min-h-screen text-gray-800 font-sans antialiased">
 
   <!-- NAVEGAÇÃO PRINCIPAL -->
   <header class="bg-slate-900 text-white shadow-lg sticky top-0 z-50">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-      <div class="flex items-center justify-between h-16">
-        <div class="flex items-center gap-3">
-          <div class="bg-blue-600 p-2 rounded-lg"><i class="fa-solid fa-chart-line text-xl"></i></div>
-          <span class="font-bold text-xl tracking-wide">Castan <span class="text-blue-400">Comercial</span></span>
+    <div class="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8">
+      <div class="flex flex-col sm:flex-row items-center justify-between py-2.5 sm:py-0 sm:h-16 gap-2">
+        <div class="flex items-center gap-2.5 w-full sm:w-auto justify-between sm:justify-start">
+          <div class="flex items-center gap-2">
+            <div class="bg-blue-600 p-1.5 sm:p-2 rounded-lg"><i class="fa-solid fa-chart-line text-lg sm:text-xl"></i></div>
+            <span class="font-bold text-lg sm:text-xl tracking-wide">Castan <span class="text-blue-400">Comercial</span></span>
+          </div>
+          <span class="text-[10px] bg-slate-800 text-emerald-400 font-semibold px-2 py-0.5 rounded-full border border-emerald-500/30 sm:hidden">
+            <i class="fa-solid fa-cloud text-[9px]"></i> On-line
+          </span>
         </div>
-        <nav class="flex space-x-1 sm:space-x-2">
-          <button onclick="switchTab('dashboard')" id="btn-dashboard" class="tab-btn px-3 py-2 rounded-lg text-xs sm:text-sm font-medium transition-all bg-blue-600 text-white flex items-center gap-1.5">
+        <nav class="flex w-full sm:w-auto overflow-x-auto no-scrollbar space-x-1.5 pb-1 sm:pb-0">
+          <button onclick="switchTab('dashboard')" id="btn-dashboard" class="tab-btn whitespace-nowrap px-3 py-1.5 sm:py-2 rounded-lg text-xs sm:text-sm font-medium transition-all bg-blue-600 text-white flex items-center gap-1.5 shrink-0">
             <i class="fa-solid fa-chart-pie"></i> Dashboard
           </button>
-          <button onclick="switchTab('lancamentos')" id="btn-lancamentos" class="tab-btn px-3 py-2 rounded-lg text-xs sm:text-sm font-medium transition-all text-gray-300 hover:bg-slate-800 flex items-center gap-1.5">
+          <button onclick="switchTab('lancamentos')" id="btn-lancamentos" class="tab-btn whitespace-nowrap px-3 py-1.5 sm:py-2 rounded-lg text-xs sm:text-sm font-medium transition-all text-gray-300 hover:bg-slate-800 flex items-center gap-1.5 shrink-0">
             <i class="fa-solid fa-pen-to-square"></i> Lançamentos
           </button>
-          <button onclick="switchTab('colaboradores')" id="btn-colaboradores" class="tab-btn px-3 py-2 rounded-lg text-xs sm:text-sm font-medium transition-all text-gray-300 hover:bg-slate-800 flex items-center gap-1.5">
-            <i class="fa-solid fa-users"></i> Colaboradores
+          <button onclick="switchTab('colaboradores')" id="btn-colaboradores" class="tab-btn whitespace-nowrap px-3 py-1.5 sm:py-2 rounded-lg text-xs sm:text-sm font-medium transition-all text-gray-300 hover:bg-slate-800 flex items-center gap-1.5 shrink-0">
+            <i class="fa-solid fa-users"></i> Equipe
           </button>
-          <button onclick="switchTab('resumo-mes')" id="btn-resumo-mes" class="tab-btn px-3 py-2 rounded-lg text-xs sm:text-sm font-medium transition-all text-emerald-400 hover:bg-slate-800 flex items-center gap-1.5 border border-emerald-500/30">
-            <i class="fa-solid fa-calendar-check"></i> Resumo do Mês
+          <button onclick="switchTab('resumo-mes')" id="btn-resumo-mes" class="tab-btn whitespace-nowrap px-3 py-1.5 sm:py-2 rounded-lg text-xs sm:text-sm font-medium transition-all text-emerald-400 hover:bg-slate-800 flex items-center gap-1.5 border border-emerald-500/30 shrink-0">
+            <i class="fa-solid fa-calendar-check"></i> Resumo Mês
           </button>
         </nav>
       </div>
     </div>
   </header>
 
-  <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+  <main class="max-w-7xl mx-auto px-2.5 sm:px-6 lg:px-8 py-4 sm:py-6 space-y-4 sm:space-y-6">
 
     <!-- ABA 1: DASHBOARD -->
-    <section id="tab-dashboard" class="tab-content block space-y-6">
-      <div class="bg-white p-4 rounded-xl shadow-sm border border-gray-200 flex flex-wrap items-center justify-between gap-4">
+    <section id="tab-dashboard" class="tab-content block space-y-4 sm:space-y-6">
+      <div class="bg-white p-3.5 sm:p-4 rounded-xl shadow-sm border border-gray-200 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
         <div>
-          <h2 class="text-lg font-bold text-gray-800 flex items-center gap-2">
+          <h2 class="text-base sm:text-lg font-bold text-gray-800 flex items-center gap-2">
             <i class="fa-solid fa-filter text-blue-600"></i> Análise de Desempenho Semanal
           </h2>
-          <p class="text-xs text-gray-500">Selecione o intervalo da semana para atualizar os gráficos</p>
+          <p class="text-[11px] sm:text-xs text-gray-500">Selecione o intervalo da semana para atualizar os gráficos</p>
         </div>
-        <div class="flex items-center gap-3 flex-wrap">
-          <div>
-            <label class="block text-[10px] font-bold text-gray-500 uppercase mb-0.5">Início da Semana</label>
-            <input type="date" id="dash-inicio" onchange="renderDashboard()" class="border rounded-lg px-3 py-1.5 text-xs font-semibold bg-gray-50 focus:bg-white">
+        <div class="flex items-center gap-2 flex-wrap">
+          <div class="flex-1 sm:flex-none min-w-[130px]">
+            <label class="block text-[10px] font-bold text-gray-500 uppercase mb-0.5">Início</label>
+            <input type="date" id="dash-inicio" onchange="renderDashboard()" class="w-full border rounded-lg px-2.5 py-1.5 text-xs font-semibold bg-gray-50">
           </div>
-          <div>
-            <label class="block text-[10px] font-bold text-gray-500 uppercase mb-0.5">Fim da Semana</label>
-            <input type="date" id="dash-fim" onchange="renderDashboard()" class="border rounded-lg px-3 py-1.5 text-xs font-semibold bg-gray-50 focus:bg-white">
+          <div class="flex-1 sm:flex-none min-w-[130px]">
+            <label class="block text-[10px] font-bold text-gray-500 uppercase mb-0.5">Fim</label>
+            <input type="date" id="dash-fim" onchange="renderDashboard()" class="w-full border rounded-lg px-2.5 py-1.5 text-xs font-semibold bg-gray-50">
           </div>
-          <button onclick="carregarSemanaAtual('dash')" class="mt-4 px-3 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold rounded-lg border">
+          <button onclick="carregarSemanaAtual('dash')" class="w-full sm:w-auto mt-2 sm:mt-4 px-3 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold rounded-lg border">
             Semana Atual
           </button>
         </div>
       </div>
 
-      <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
-        <div class="bg-white p-4 rounded-xl shadow-sm border border-gray-200">
+      <div class="grid grid-cols-2 md:grid-cols-4 gap-2.5 sm:gap-4">
+        <div class="bg-white p-3 sm:p-4 rounded-xl shadow-sm border border-gray-200">
           <p class="text-[10px] font-bold uppercase text-gray-400">Visitas Concluídas</p>
-          <h3 id="dash-visitas-concluidas" class="text-2xl font-black text-emerald-600 mt-1">0</h3>
+          <h3 id="dash-visitas-concluidas" class="text-xl sm:text-2xl font-black text-emerald-600 mt-1">0</h3>
         </div>
-        <div class="bg-white p-4 rounded-xl shadow-sm border border-gray-200">
+        <div class="bg-white p-3 sm:p-4 rounded-xl shadow-sm border border-gray-200">
           <p class="text-[10px] font-bold uppercase text-gray-400">Contratos Fechados</p>
-          <h3 id="dash-contratos-fechados" class="text-2xl font-black text-blue-600 mt-1">0</h3>
+          <h3 id="dash-contratos-fechados" class="text-xl sm:text-2xl font-black text-blue-600 mt-1">0</h3>
         </div>
-        <div class="bg-white p-4 rounded-xl shadow-sm border border-gray-200">
+        <div class="bg-white p-3 sm:p-4 rounded-xl shadow-sm border border-gray-200">
           <p class="text-[10px] font-bold uppercase text-gray-400">Valor Total Fechado</p>
-          <h3 id="dash-valor-fechado" class="text-xl font-black text-slate-800 mt-1">R$ 0,00</h3>
+          <h3 id="dash-valor-fechado" class="text-base sm:text-xl font-black text-slate-800 mt-1">R$ 0,00</h3>
         </div>
-        <div class="bg-white p-4 rounded-xl shadow-sm border border-gray-200">
+        <div class="bg-white p-3 sm:p-4 rounded-xl shadow-sm border border-gray-200">
           <p class="text-[10px] font-bold uppercase text-gray-400">Imóveis Captados</p>
-          <h3 id="dash-captados" class="text-2xl font-black text-amber-500 mt-1">0</h3>
+          <h3 id="dash-captados" class="text-xl sm:text-2xl font-black text-amber-500 mt-1">0</h3>
         </div>
       </div>
 
-      <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+      <div class="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6">
 
-        <div class="lg:col-span-3 bg-white p-5 rounded-xl shadow-sm border border-gray-200">
-          <div class="flex justify-between items-center mb-3">
+        <div class="lg:col-span-3 bg-white p-3.5 sm:p-5 rounded-xl shadow-sm border border-gray-200">
+          <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 mb-3">
             <div>
-              <h3 class="text-sm font-bold text-gray-800 flex items-center gap-2">
-                <i class="fa-solid fa-chart-column text-emerald-600"></i> Valor Fechado e % da Meta por Atendente Comercial
+              <h3 class="text-xs sm:text-sm font-bold text-gray-800 flex items-center gap-2">
+                <i class="fa-solid fa-chart-column text-emerald-600"></i> Valor Fechado e % da Meta por Atendente
               </h3>
-              <p class="text-[11px] text-gray-500">Barras coloridas por atendente (Valor R$) + Linha Laranja (% da Meta de R$ 57k exibida no topo)</p>
+              <p class="text-[10px] sm:text-[11px] text-gray-500">Valor R$ por atendente + Linha de Meta (57k)</p>
             </div>
-            <button onclick="baixarGrafico('chartValoresAtendentes', 'Valores_E_Meta_Atendentes')" class="text-xs bg-slate-100 hover:bg-slate-200 text-slate-700 px-2.5 py-1 rounded border font-semibold flex items-center gap-1">
+            <button onclick="baixarGrafico('chartValoresAtendentes', 'Valores_E_Meta_Atendentes')" class="text-xs bg-slate-100 hover:bg-slate-200 text-slate-700 px-2.5 py-1 rounded border font-semibold flex items-center gap-1 self-end sm:self-auto">
               <i class="fa-solid fa-download"></i> Baixar Gráfico
             </button>
           </div>
-          <div class="relative h-80 w-full">
+          <div class="relative h-64 sm:h-80 w-full">
             <canvas id="chartValoresAtendentes"></canvas>
           </div>
         </div>
 
-        <div class="lg:col-span-2 bg-white p-5 rounded-xl shadow-sm border border-gray-200">
-          <div class="flex justify-between items-center mb-3">
-            <h3 class="text-sm font-bold text-gray-700">Visitas Agendadas x Concluídas x Canceladas x % Conversão</h3>
-            <div class="flex items-center gap-2">
-              <span id="label-periodo-dash" class="text-xs font-bold bg-blue-100 text-blue-800 px-2.5 py-0.5 rounded-full"></span>
+        <div class="lg:col-span-2 bg-white p-3.5 sm:p-5 rounded-xl shadow-sm border border-gray-200">
+          <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 mb-3">
+            <h3 class="text-xs sm:text-sm font-bold text-gray-700">Visitas Agendadas x Concluídas x Canceladas x % Conversão</h3>
+            <div class="flex items-center gap-2 self-end sm:self-auto">
+              <span id="label-periodo-dash" class="text-[10px] sm:text-xs font-bold bg-blue-100 text-blue-800 px-2 py-0.5 rounded-full"></span>
               <button onclick="baixarGrafico('chartComboVisitas', 'Visitas_Conversao')" class="text-xs bg-slate-100 hover:bg-slate-200 text-slate-700 px-2.5 py-1 rounded border font-semibold flex items-center gap-1">
-                <i class="fa-solid fa-download"></i> Baixar Gráfico
+                <i class="fa-solid fa-download"></i> Baixar
               </button>
             </div>
           </div>
-          <div class="relative h-80 w-full">
+          <div class="relative h-64 sm:h-80 w-full">
             <canvas id="chartComboVisitas"></canvas>
           </div>
         </div>
 
-        <div class="bg-white p-5 rounded-xl shadow-sm border border-gray-200">
+        <div class="bg-white p-3.5 sm:p-5 rounded-xl shadow-sm border border-gray-200">
           <div class="flex justify-between items-center mb-3">
-            <h3 class="text-sm font-bold text-gray-700">Status da Esteira (Contratos)</h3>
+            <h3 class="text-xs sm:text-sm font-bold text-gray-700">Status da Esteira</h3>
             <button onclick="baixarGrafico('chartStatusEsteira', 'Status_Esteira')" class="text-xs bg-slate-100 hover:bg-slate-200 text-slate-700 px-2 py-1 rounded border font-semibold flex items-center gap-1">
-              <i class="fa-solid fa-download"></i> Baixar Gráfico
+              <i class="fa-solid fa-download"></i> Baixar
             </button>
           </div>
-          <div class="relative h-72 w-full">
+          <div class="relative h-56 sm:h-72 w-full">
             <canvas id="chartStatusEsteira"></canvas>
           </div>
         </div>
 
-        <div class="bg-white p-5 rounded-xl shadow-sm border border-gray-200">
+        <div class="bg-white p-3.5 sm:p-5 rounded-xl shadow-sm border border-gray-200">
           <div class="flex justify-between items-center mb-3">
-            <h3 class="text-sm font-bold text-gray-700">Captação vs Rescisão</h3>
-            <button onclick="baixarGrafico('chartCaptacaoRescisao', 'Captacao_Rescisao')" class="text-xs bg-slate-100 hover:bg-slate-200 text-slate-700 px-2 py-1 rounded border font-semibold flex items-center gap-1">
-              <i class="fa-solid fa-download"></i> Baixar Gráfico
-            </button>
+            <h3 class="text-xs sm:text-sm font-bold text-gray-700">Captação vs Rescisão</h3>
+            <button onclick="baixarGrafico('chartCaptacaoRescisao', 'Captacao_Rescisao')" class="text-xs bg-slate-100 text-slate-700 px-2 py-1 rounded border font-semibold">Baixar</button>
           </div>
-          <div class="relative h-60 w-full">
+          <div class="relative h-52 sm:h-60 w-full">
             <canvas id="chartCaptacaoRescisao"></canvas>
           </div>
         </div>
 
-        <div class="bg-white p-5 rounded-xl shadow-sm border border-gray-200">
+        <div class="bg-white p-3.5 sm:p-5 rounded-xl shadow-sm border border-gray-200">
           <div class="flex justify-between items-center mb-3">
-            <h3 class="text-sm font-bold text-gray-700">Novos Negócios vs Concluídas</h3>
-            <button onclick="baixarGrafico('chartNovosVsConcluidas', 'Novos_Vs_Concluidas')" class="text-xs bg-slate-100 hover:bg-slate-200 text-slate-700 px-2 py-1 rounded border font-semibold flex items-center gap-1">
-              <i class="fa-solid fa-download"></i> Baixar Gráfico
-            </button>
+            <h3 class="text-xs sm:text-sm font-bold text-gray-700">Novos Negócios vs Concluídas</h3>
+            <button onclick="baixarGrafico('chartNovosVsConcluidas', 'Novos_Vs_Concluidas')" class="text-xs bg-slate-100 text-slate-700 px-2 py-1 rounded border font-semibold">Baixar</button>
           </div>
-          <div class="relative h-60 w-full">
+          <div class="relative h-52 sm:h-60 w-full">
             <canvas id="chartNovosVsConcluidas"></canvas>
           </div>
         </div>
 
-        <div class="bg-white p-5 rounded-xl shadow-sm border border-gray-200">
+        <div class="bg-white p-3.5 sm:p-5 rounded-xl shadow-sm border border-gray-200">
           <div class="flex justify-between items-center mb-3">
-            <h3 class="text-sm font-bold text-gray-700">Visitas Concluídas vs Solicitação Lais (Grupo)</h3>
-            <button onclick="baixarGrafico('chartConcluidasLais', 'Concluidas_Vs_Lais')" class="text-xs bg-slate-100 hover:bg-slate-200 text-slate-700 px-2 py-1 rounded border font-semibold flex items-center gap-1">
-              <i class="fa-solid fa-download"></i> Baixar Gráfico
-            </button>
+            <h3 class="text-xs sm:text-sm font-bold text-gray-700">Concluídas vs Solicitação Lais</h3>
+            <button onclick="baixarGrafico('chartConcluidasLais', 'Concluidas_Vs_Lais')" class="text-xs bg-slate-100 text-slate-700 px-2 py-1 rounded border font-semibold">Baixar</button>
           </div>
-          <div class="relative h-60 w-full">
+          <div class="relative h-52 sm:h-60 w-full">
             <canvas id="chartConcluidasLais"></canvas>
           </div>
         </div>
@@ -170,66 +174,66 @@
     </section>
 
     <!-- ABA 2: LANÇAMENTOS -->
-    <section id="tab-lancamentos" class="tab-content hidden space-y-6">
-      <div class="flex border-b border-gray-200 bg-white rounded-t-xl px-4 pt-3 gap-2">
-        <button onclick="switchSubTab('atendimento')" id="subbtn-atendimento" class="sub-tab-btn border-b-2 border-blue-600 text-blue-600 font-bold px-4 py-2 text-sm flex items-center gap-2">
-          <i class="fa-solid fa-headset"></i> 1. Atendimento Comercial
+    <section id="tab-lancamentos" class="tab-content hidden space-y-4 sm:space-y-6">
+      <div class="flex border-b border-gray-200 bg-white rounded-t-xl px-2 sm:px-4 pt-2 gap-1 overflow-x-auto no-scrollbar">
+        <button onclick="switchSubTab('atendimento')" id="subbtn-atendimento" class="sub-tab-btn whitespace-nowrap border-b-2 border-blue-600 text-blue-600 font-bold px-3 py-2 text-xs sm:text-sm flex items-center gap-1.5">
+          <i class="fa-solid fa-headset"></i> Atendimento
         </button>
-        <button onclick="switchSubTab('esteira')" id="subbtn-esteira" class="sub-tab-btn border-b-2 border-transparent text-gray-500 hover:text-gray-700 font-medium px-4 py-2 text-sm flex items-center gap-2">
-          <i class="fa-solid fa-file-contract"></i> 2. Esteira de Fechamento
+        <button onclick="switchSubTab('esteira')" id="subbtn-esteira" class="sub-tab-btn whitespace-nowrap border-b-2 border-transparent text-gray-500 font-medium px-3 py-2 text-xs sm:text-sm flex items-center gap-1.5">
+          <i class="fa-solid fa-file-contract"></i> Esteira Fechamento
         </button>
-        <button onclick="switchSubTab('captacao')" id="subbtn-captacao" class="sub-tab-btn border-b-2 border-transparent text-gray-500 hover:text-gray-700 font-medium px-4 py-2 text-sm flex items-center gap-2">
-          <i class="fa-solid fa-house-user"></i> 3. Captação
+        <button onclick="switchSubTab('captacao')" id="subbtn-captacao" class="sub-tab-btn whitespace-nowrap border-b-2 border-transparent text-gray-500 font-medium px-3 py-2 text-xs sm:text-sm flex items-center gap-1.5">
+          <i class="fa-solid fa-house-user"></i> Captação
         </button>
       </div>
 
       <!-- FRENTE 1: ATENDIMENTO COMERCIAL -->
-      <div id="subtab-atendimento" class="subtab-content block space-y-6">
-        <div class="bg-white p-6 rounded-b-xl shadow-sm border border-gray-200">
-          <h3 class="text-base font-bold text-gray-800 mb-4">Lançamento de Atendimento Semanal</h3>
-          <form id="formAtendimento" onsubmit="salvarAtendimento(event)" class="grid grid-cols-1 md:grid-cols-4 gap-4">
+      <div id="subtab-atendimento" class="subtab-content block space-y-4 sm:space-y-6">
+        <div class="bg-white p-4 sm:p-6 rounded-b-xl shadow-sm border border-gray-200">
+          <h3 class="text-sm sm:text-base font-bold text-gray-800 mb-3 sm:mb-4">Lançamento de Atendimento Semanal</h3>
+          <form id="formAtendimento" onsubmit="salvarAtendimento(event)" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-3 sm:gap-4">
             <div>
-              <label class="block text-xs font-semibold text-gray-600 mb-1">Início da Semana</label>
-              <input type="date" id="atend-inicio" required class="w-full border rounded-lg px-3 py-2 text-sm">
+              <label class="block text-[11px] font-semibold text-gray-600 mb-1">Início da Semana</label>
+              <input type="date" id="atend-inicio" required class="w-full border rounded-lg px-3 py-2 text-xs sm:text-sm">
             </div>
             <div>
-              <label class="block text-xs font-semibold text-gray-600 mb-1">Fim da Semana</label>
-              <input type="date" id="atend-fim" required class="w-full border rounded-lg px-3 py-2 text-sm">
+              <label class="block text-[11px] font-semibold text-gray-600 mb-1">Fim da Semana</label>
+              <input type="date" id="atend-fim" required class="w-full border rounded-lg px-3 py-2 text-xs sm:text-sm">
             </div>
             <div>
-              <label class="block text-xs font-semibold text-gray-600 mb-1">Colaborador</label>
-              <select id="atend-colaborador" required class="w-full border rounded-lg px-3 py-2 text-sm select-colabs-comercial"></select>
+              <label class="block text-[11px] font-semibold text-gray-600 mb-1">Colaborador</label>
+              <select id="atend-colaborador" required class="w-full border rounded-lg px-3 py-2 text-xs sm:text-sm select-colabs-comercial"></select>
             </div>
             <div>
-              <label class="block text-xs font-semibold text-gray-600 mb-1">Visitas Agendadas</label>
-              <input type="number" min="0" id="atend-agendadas" value="0" required oninput="calcularAtendimentoAuto()" class="w-full border rounded-lg px-3 py-2 text-sm">
+              <label class="block text-[11px] font-semibold text-gray-600 mb-1">Visitas Agendadas</label>
+              <input type="number" min="0" id="atend-agendadas" value="0" required oninput="calcularAtendimentoAuto()" class="w-full border rounded-lg px-3 py-2 text-xs sm:text-sm">
             </div>
             <div>
-              <label class="block text-xs font-semibold text-gray-600 mb-1">Visitas Concluídas</label>
-              <input type="number" min="0" id="atend-concluidas" value="0" required oninput="calcularAtendimentoAuto()" class="w-full border rounded-lg px-3 py-2 text-sm">
+              <label class="block text-[11px] font-semibold text-gray-600 mb-1">Visitas Concluídas</label>
+              <input type="number" min="0" id="atend-concluidas" value="0" required oninput="calcularAtendimentoAuto()" class="w-full border rounded-lg px-3 py-2 text-xs sm:text-sm">
             </div>
             <div>
-              <label class="block text-xs font-semibold text-gray-600 mb-1">Visitas Canceladas (Auto)</label>
-              <input type="number" id="atend-canceladas" readonly value="0" class="w-full border bg-gray-100 rounded-lg px-3 py-2 text-sm font-bold text-red-600">
+              <label class="block text-[11px] font-semibold text-gray-600 mb-1">Visitas Canceladas (Auto)</label>
+              <input type="number" id="atend-canceladas" readonly value="0" class="w-full border bg-gray-100 rounded-lg px-3 py-2 text-xs sm:text-sm font-bold text-red-600">
             </div>
             <div>
-              <label class="block text-xs font-semibold text-gray-600 mb-1">Conversão (Auto %)</label>
-              <input type="text" id="atend-conversao" readonly value="0%" class="w-full border bg-gray-100 rounded-lg px-3 py-2 text-sm font-bold text-blue-600">
+              <label class="block text-[11px] font-semibold text-gray-600 mb-1">Conversão (Auto %)</label>
+              <input type="text" id="atend-conversao" readonly value="0%" class="w-full border bg-gray-100 rounded-lg px-3 py-2 text-xs sm:text-sm font-bold text-blue-600">
             </div>
             <div>
-              <label class="block text-xs font-semibold text-gray-600 mb-1">Novos Negócios</label>
-              <input type="number" min="0" id="atend-novos" value="0" required class="w-full border rounded-lg px-3 py-2 text-sm">
+              <label class="block text-[11px] font-semibold text-gray-600 mb-1">Novos Negócios</label>
+              <input type="number" min="0" id="atend-novos" value="0" required class="w-full border rounded-lg px-3 py-2 text-xs sm:text-sm">
             </div>
             <div>
-              <label class="block text-xs font-semibold text-gray-600 mb-1">Solicitação Lais (Grupo / Semanal)</label>
-              <input type="number" min="0" id="atend-lais" value="0" required class="w-full border rounded-lg px-3 py-2 text-sm border-purple-300 font-semibold bg-purple-50/50">
+              <label class="block text-[11px] font-semibold text-gray-600 mb-1">Solicitação Lais (Grupo)</label>
+              <input type="number" min="0" id="atend-lais" value="0" required class="w-full border rounded-lg px-3 py-2 text-xs sm:text-sm border-purple-300 font-semibold bg-purple-50/50">
             </div>
             <div>
-              <label class="block text-xs font-semibold text-gray-600 mb-1">Cliente Ativo</label>
-              <input type="number" min="0" id="atend-ativo" value="0" required class="w-full border rounded-lg px-3 py-2 text-sm">
+              <label class="block text-[11px] font-semibold text-gray-600 mb-1">Cliente Ativo</label>
+              <input type="number" min="0" id="atend-ativo" value="0" required class="w-full border rounded-lg px-3 py-2 text-xs sm:text-sm">
             </div>
-            <div class="md:col-span-2 flex items-end justify-end">
-              <button type="submit" id="btn-salvar-atendimento" class="bg-blue-600 text-white px-8 py-2.5 rounded-lg text-sm font-bold hover:bg-blue-700 shadow">
+            <div class="sm:col-span-2 md:col-span-2 flex items-end justify-end">
+              <button type="submit" id="btn-salvar-atendimento" class="w-full sm:w-auto bg-blue-600 text-white px-8 py-2.5 rounded-lg text-xs sm:text-sm font-bold hover:bg-blue-700 shadow">
                 Salvar Registro
               </button>
             </div>
@@ -237,23 +241,23 @@
         </div>
 
         <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
-          <div class="p-4 border-b bg-gray-50 flex justify-between items-center">
-            <h3 class="font-bold text-gray-700">Registros de Atendimento Comercial</h3>
+          <div class="p-3.5 border-b bg-gray-50">
+            <h3 class="font-bold text-xs sm:text-sm text-gray-700">Registros de Atendimento Comercial</h3>
           </div>
           <div class="overflow-x-auto">
-            <table class="w-full text-left border-collapse text-xs">
+            <table class="w-full text-left border-collapse text-xs whitespace-nowrap">
               <thead class="bg-gray-100 text-gray-600 uppercase">
                 <tr>
-                  <th class="p-3">Período</th>
-                  <th class="p-3">Colaborador</th>
-                  <th class="p-3 text-center">Agendadas</th>
-                  <th class="p-3 text-center">Concluídas</th>
-                  <th class="p-3 text-center">Canceladas</th>
-                  <th class="p-3 text-center">Conversão</th>
-                  <th class="p-3 text-center">Novos Neg.</th>
-                  <th class="p-3 text-center">Solicitação Lais</th>
-                  <th class="p-3 text-center">Cliente Ativo</th>
-                  <th class="p-3 text-right">Ação</th>
+                  <th class="p-2.5">Período</th>
+                  <th class="p-2.5">Colaborador</th>
+                  <th class="p-2.5 text-center">Agendadas</th>
+                  <th class="p-2.5 text-center">Concluídas</th>
+                  <th class="p-2.5 text-center">Canceladas</th>
+                  <th class="p-2.5 text-center">Conversão</th>
+                  <th class="p-2.5 text-center">Novos</th>
+                  <th class="p-2.5 text-center">Lais</th>
+                  <th class="p-2.5 text-center">Ativo</th>
+                  <th class="p-2.5 text-right">Ação</th>
                 </tr>
               </thead>
               <tbody id="tabelaAtendimento" class="divide-y divide-gray-200"></tbody>
@@ -264,60 +268,60 @@
       </div>
 
       <!-- FRENTE 2: ESTEIRA DE FECHAMENTO -->
-      <div id="subtab-esteira" class="subtab-content hidden space-y-6">
-        <div class="bg-white p-6 rounded-b-xl shadow-sm border border-gray-200">
-          <h3 class="text-base font-bold text-gray-800 mb-4">Novo Contrato na Esteira</h3>
-          <form id="formFechamento" onsubmit="salvarFechamento(event)" class="grid grid-cols-1 md:grid-cols-4 gap-4">
+      <div id="subtab-esteira" class="subtab-content hidden space-y-4 sm:space-y-6">
+        <div class="bg-white p-4 sm:p-6 rounded-b-xl shadow-sm border border-gray-200">
+          <h3 class="text-sm sm:text-base font-bold text-gray-800 mb-3 sm:mb-4">Novo Contrato na Esteira</h3>
+          <form id="formFechamento" onsubmit="salvarFechamento(event)" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-3 sm:gap-4">
             <div>
-              <label class="block text-xs font-semibold text-gray-600 mb-1">Mês de Referência</label>
-              <input type="month" id="fech-mes" required onchange="sincronizarFiltroMesFechamento()" class="w-full border rounded-lg px-3 py-2 text-sm font-bold bg-blue-50/50 border-blue-200">
+              <label class="block text-[11px] font-semibold text-gray-600 mb-1">Mês Referência</label>
+              <input type="month" id="fech-mes" required onchange="sincronizarFiltroMesFechamento()" class="w-full border rounded-lg px-3 py-2 text-xs sm:text-sm font-bold bg-blue-50/50 border-blue-200">
             </div>
             <div>
-              <label class="block text-xs font-semibold text-gray-600 mb-1">Atendente Comercial</label>
-              <select id="fech-atendente" required class="w-full border rounded-lg px-3 py-2 text-sm select-colabs-comercial"></select>
+              <label class="block text-[11px] font-semibold text-gray-600 mb-1">Atendente Comercial</label>
+              <select id="fech-atendente" required class="w-full border rounded-lg px-3 py-2 text-xs sm:text-sm select-colabs-comercial"></select>
             </div>
             <div>
-              <label class="block text-xs font-semibold text-gray-600 mb-1">Agente (Mostrador)</label>
-              <select id="fech-agente" required class="w-full border rounded-lg px-3 py-2 text-sm select-colabs-agente"></select>
+              <label class="block text-[11px] font-semibold text-gray-600 mb-1">Agente (Mostrador)</label>
+              <select id="fech-agente" required class="w-full border rounded-lg px-3 py-2 text-xs sm:text-sm select-colabs-agente"></select>
             </div>
             <div>
-              <label class="block text-xs font-semibold text-gray-600 mb-1">REF (Número)</label>
+              <label class="block text-[11px] font-semibold text-gray-600 mb-1">REF (Número)</label>
               <div class="flex items-center">
-                <span class="bg-gray-100 border border-r-0 rounded-l-lg px-2.5 py-2 text-sm font-bold text-gray-500">LOC</span>
-                <input type="text" id="fech-ref" placeholder="1308" required class="w-full border rounded-r-lg px-3 py-2 text-sm">
+                <span class="bg-gray-100 border border-r-0 rounded-l-lg px-2.5 py-2 text-xs sm:text-sm font-bold text-gray-500">LOC</span>
+                <input type="text" id="fech-ref" placeholder="1308" required class="w-full border rounded-r-lg px-3 py-2 text-xs sm:text-sm">
               </div>
             </div>
             <div>
-              <label class="block text-xs font-semibold text-gray-600 mb-1">Endereço</label>
-              <input type="text" id="fech-endereco" placeholder="Ex: R Oscar Horta" required class="w-full border rounded-lg px-3 py-2 text-sm">
+              <label class="block text-[11px] font-semibold text-gray-600 mb-1">Endereço</label>
+              <input type="text" id="fech-endereco" placeholder="Ex: R Oscar Horta" required class="w-full border rounded-lg px-3 py-2 text-xs sm:text-sm">
             </div>
             <div>
-              <label class="block text-xs font-semibold text-gray-600 mb-1">Valor (R$)</label>
-              <input type="number" step="0.01" id="fech-valor" required class="w-full border rounded-lg px-3 py-2 text-sm">
+              <label class="block text-[11px] font-semibold text-gray-600 mb-1">Valor (R$)</label>
+              <input type="number" step="0.01" id="fech-valor" required class="w-full border rounded-lg px-3 py-2 text-xs sm:text-sm">
             </div>
             <div>
-              <label class="block text-xs font-semibold text-gray-600 mb-1">Captador (Livre)</label>
-              <input type="text" id="fech-captador" placeholder="Nome do Captador" required class="w-full border rounded-lg px-3 py-2 text-sm">
+              <label class="block text-[11px] font-semibold text-gray-600 mb-1">Captador</label>
+              <input type="text" id="fech-captador" placeholder="Nome Captador" required class="w-full border rounded-lg px-3 py-2 text-xs sm:text-sm">
             </div>
             <div>
-              <label class="block text-xs font-semibold text-gray-600 mb-1">Data Solicitada</label>
-              <input type="date" id="fech-data" required class="w-full border rounded-lg px-3 py-2 text-sm">
+              <label class="block text-[11px] font-semibold text-gray-600 mb-1">Data Solicitada</label>
+              <input type="date" id="fech-data" required class="w-full border rounded-lg px-3 py-2 text-xs sm:text-sm">
             </div>
             <div>
-              <label class="block text-xs font-semibold text-gray-600 mb-1">Tipo</label>
-              <select id="fech-tipo" class="w-full border rounded-lg px-3 py-2 text-sm">
+              <label class="block text-[11px] font-semibold text-gray-600 mb-1">Tipo</label>
+              <select id="fech-tipo" class="w-full border rounded-lg px-3 py-2 text-xs sm:text-sm">
                 <option value="Apartamento">Apartamento</option>
                 <option value="Casa">Casa</option>
                 <option value="Comercial">Comercial</option>
               </select>
             </div>
             <div>
-              <label class="block text-xs font-semibold text-gray-600 mb-1">Chave (Data)</label>
-              <input type="date" id="fech-chave" class="w-full border rounded-lg px-3 py-2 text-sm">
+              <label class="block text-[11px] font-semibold text-gray-600 mb-1">Chave (Data)</label>
+              <input type="date" id="fech-chave" class="w-full border rounded-lg px-3 py-2 text-xs sm:text-sm">
             </div>
             <div>
-              <label class="block text-xs font-semibold text-gray-600 mb-1">Garantia</label>
-              <select id="fech-garantia" class="w-full border rounded-lg px-3 py-2 text-sm">
+              <label class="block text-[11px] font-semibold text-gray-600 mb-1">Garantia</label>
+              <select id="fech-garantia" class="w-full border rounded-lg px-3 py-2 text-xs sm:text-sm">
                 <option value="LOFT">LOFT</option>
                 <option value="Credaluga">Credaluga</option>
                 <option value="GRAZON">GRAZON</option>
@@ -326,61 +330,59 @@
               </select>
             </div>
             <div>
-              <label class="block text-xs font-semibold text-gray-600 mb-1">Status Inicial</label>
-              <select id="fech-status" class="w-full border rounded-lg px-3 py-2 text-sm font-bold bg-yellow-50 text-yellow-800">
-                <option value="PENDENTE">PENDENTE (Check-list)</option>
+              <label class="block text-[11px] font-semibold text-gray-600 mb-1">Status Inicial</label>
+              <select id="fech-status" class="w-full border rounded-lg px-3 py-2 text-xs sm:text-sm font-bold bg-yellow-50 text-yellow-800">
+                <option value="PENDENTE">PENDENTE</option>
                 <option value="FECHADO">FECHADO</option>
-                <option value="DESISTENTE">DESISTENTE / CAÍDO</option>
+                <option value="DESISTENTE">DESISTENTE</option>
               </select>
             </div>
             <div>
-              <label class="block text-xs font-semibold text-gray-600 mb-1">Fechado Por</label>
-              <select id="fech-por" required class="w-full border rounded-lg px-3 py-2 text-sm select-colabs-todos"></select>
+              <label class="block text-[11px] font-semibold text-gray-600 mb-1">Fechado Por</label>
+              <select id="fech-por" required class="w-full border rounded-lg px-3 py-2 text-xs sm:text-sm select-colabs-todos"></select>
             </div>
             <div>
-              <label class="block text-xs font-semibold text-gray-600 mb-1">Data de Assinatura</label>
-              <input type="date" id="fech-assinado" class="w-full border rounded-lg px-3 py-2 text-sm">
+              <label class="block text-[11px] font-semibold text-gray-600 mb-1">Assinatura</label>
+              <input type="date" id="fech-assinado" class="w-full border rounded-lg px-3 py-2 text-xs sm:text-sm">
             </div>
-            <div class="md:col-span-2">
-              <label class="block text-xs font-semibold text-gray-600 mb-1">Observação (OBS)</label>
-              <input type="text" id="fech-obs" placeholder="Ex: aguardando fiador" class="w-full border rounded-lg px-3 py-2 text-sm">
+            <div class="sm:col-span-2">
+              <label class="block text-[11px] font-semibold text-gray-600 mb-1">Observação (OBS)</label>
+              <input type="text" id="fech-obs" placeholder="Ex: aguardando fiador" class="w-full border rounded-lg px-3 py-2 text-xs sm:text-sm">
             </div>
-            <div class="md:col-span-4 flex justify-end">
-              <button type="submit" class="bg-emerald-600 text-white px-8 py-2.5 rounded-lg text-sm font-bold hover:bg-emerald-700 shadow">
+            <div class="sm:col-span-2 md:col-span-4 flex justify-end">
+              <button type="submit" class="w-full sm:w-auto bg-emerald-600 text-white px-8 py-2.5 rounded-lg text-xs sm:text-sm font-bold hover:bg-emerald-700 shadow">
                 Adicionar à Esteira
               </button>
             </div>
           </form>
         </div>
 
-        <div class="grid grid-cols-1 lg:grid-cols-4 gap-6">
+        <div class="grid grid-cols-1 lg:grid-cols-4 gap-4 sm:gap-6">
           <div class="lg:col-span-3 bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
-            <div class="p-4 border-b bg-gray-50 flex justify-between items-center">
-              <h3 class="font-bold text-gray-700">Esteira de Locações Registrada</h3>
-              
+            <div class="p-3.5 border-b bg-gray-50 flex justify-between items-center">
+              <h3 class="font-bold text-xs sm:text-sm text-gray-700">Esteira Registrada</h3>
               <div class="relative inline-block">
-                <label class="cursor-pointer bg-blue-50 text-blue-700 hover:bg-blue-100 border border-blue-200 px-3 py-1.5 rounded-lg text-xs font-bold flex items-center gap-2 shadow-sm transition-all">
+                <label class="cursor-pointer bg-blue-50 text-blue-700 hover:bg-blue-100 border border-blue-200 px-2.5 py-1 rounded-lg text-xs font-bold flex items-center gap-1.5 shadow-sm">
                   <i class="fa-solid fa-calendar-days text-blue-600"></i>
                   <span id="btn-mes-texto">Mês: --/----</span>
-                  <i class="fa-solid fa-chevron-down text-[10px]"></i>
                   <input type="month" id="fech-mes-filtro" onchange="alterarMesFiltroEsteira()" class="absolute opacity-0 inset-0 w-full h-full cursor-pointer">
                 </label>
               </div>
             </div>
 
             <div class="overflow-x-auto">
-              <table class="w-full text-left border-collapse text-xs">
+              <table class="w-full text-left border-collapse text-xs whitespace-nowrap">
                 <thead class="bg-gray-100 text-gray-600 uppercase">
                   <tr>
-                    <th class="p-2">Atendente</th>
-                    <th class="p-2">Captador</th>
-                    <th class="p-2">REF</th>
-                    <th class="p-2">Endereço</th>
-                    <th class="p-2">Valor</th>
-                    <th class="p-2">Garantia</th>
-                    <th class="p-2">Status</th>
-                    <th class="p-2">Assinado</th>
-                    <th class="p-2 text-right">Ação</th>
+                    <th class="p-2.5">Atendente</th>
+                    <th class="p-2.5">Captador</th>
+                    <th class="p-2.5">REF</th>
+                    <th class="p-2.5">Endereço</th>
+                    <th class="p-2.5">Valor</th>
+                    <th class="p-2.5">Garantia</th>
+                    <th class="p-2.5">Status</th>
+                    <th class="p-2.5">Assinado</th>
+                    <th class="p-2.5 text-right">Ação</th>
                   </tr>
                 </thead>
                 <tbody id="tabelaFechamento" class="divide-y divide-gray-200"></tbody>
@@ -388,37 +390,34 @@
             </div>
           </div>
 
-          <div class="bg-white p-5 rounded-xl shadow-sm border border-gray-200 space-y-4">
-            <h3 class="font-bold text-base border-b pb-2 text-red-600 tracking-wide uppercase">Resumo Esteira</h3>
-            <div class="space-y-2 text-sm">
+          <div class="bg-white p-4 sm:p-5 rounded-xl shadow-sm border border-gray-200 space-y-3 sm:space-y-4">
+            <h3 class="font-bold text-sm sm:text-base border-b pb-2 text-red-600 uppercase">Resumo Esteira</h3>
+            <div class="space-y-2 text-xs">
               <div class="flex justify-between items-center">
                 <span>Total Fechado:</span>
-                <b id="resumo-total-fechado" class="text-emerald-600 font-extrabold text-base">R$ 0,00</b>
+                <b id="resumo-total-fechado" class="text-emerald-600 font-extrabold text-sm sm:text-base">R$ 0,00</b>
               </div>
 
               <div class="flex justify-between items-center bg-blue-50 px-2.5 py-1.5 rounded-lg border border-blue-200">
-                <span class="text-xs font-bold text-blue-900">Conquistado da Meta:</span>
-                <span id="resumo-porcentagem-meta" class="text-sm font-black text-blue-700 bg-blue-200/60 px-2 py-0.5 rounded">0%</span>
+                <span class="text-[11px] font-bold text-blue-900">Meta Conquistada:</span>
+                <span id="resumo-porcentagem-meta" class="text-xs font-black text-blue-700 bg-blue-200/60 px-2 py-0.5 rounded">0%</span>
               </div>
 
-              <div class="flex justify-between"><span>Nº de Locações:</span><b id="resumo-num-locacoes">0</b></div>
-
+              <div class="flex justify-between"><span>Locações:</span><b id="resumo-num-locacoes">0</b></div>
               <div id="resumo-locacoes-atendentes" class="bg-slate-50 p-2.5 rounded-lg border border-slate-200 text-xs space-y-1 my-2"></div>
-
               <div class="flex justify-between"><span>Ticket Médio:</span><b id="resumo-ticket" class="text-blue-600">R$ 0,00</b></div>
               <hr>
-              <div class="flex justify-between text-xs text-red-500"><span>Desistentes / Caídos:</span><b id="resumo-desistentes">0</b></div>
-              <div class="flex justify-between text-xs text-red-500"><span>Valor Perdido:</span><b id="resumo-valor-perdido">R$ 0,00</b></div>
+              <div class="flex justify-between text-xs text-red-500"><span>Desistentes:</span><b id="resumo-desistentes">0</b></div>
+              <div class="flex justify-between text-xs text-red-500"><span>Perdido:</span><b id="resumo-valor-perdido">R$ 0,00</b></div>
             </div>
 
-            <div class="bg-slate-50 p-3 rounded-lg border border-slate-200 mt-3 space-y-2">
+            <div class="bg-slate-50 p-3 rounded-lg border border-slate-200 space-y-2">
               <div class="flex items-center justify-between">
-                <span class="text-xs font-bold text-slate-700 uppercase flex items-center gap-1">
+                <span class="text-[11px] font-bold text-slate-700 uppercase flex items-center gap-1">
                   <i class="fa-solid fa-bullseye text-red-600"></i> Meta do Mês
                 </span>
-                <span class="text-[10px] font-bold bg-amber-100 text-amber-800 px-1.5 py-0.5 rounded">R$ 57k ou 26 Loc.</span>
+                <span class="text-[9px] font-bold bg-amber-100 text-amber-800 px-1.5 py-0.5 rounded">R$ 57k ou 26 Loc.</span>
               </div>
-              
               <div id="box-meta-detalhes" class="space-y-1.5 text-xs"></div>
             </div>
           </div>
@@ -426,68 +425,68 @@
       </div>
 
       <!-- FRENTE 3: CAPTAÇÃO -->
-      <div id="subtab-captacao" class="subtab-content hidden space-y-6">
-        <div class="bg-white p-6 rounded-b-xl shadow-sm border border-gray-200">
-          <h3 class="text-base font-bold text-gray-800 mb-4">Lançamento de Captação</h3>
-          <form onsubmit="salvarCaptacao(event)" class="grid grid-cols-1 md:grid-cols-4 gap-4">
+      <div id="subtab-captacao" class="subtab-content hidden space-y-4 sm:space-y-6">
+        <div class="bg-white p-4 sm:p-6 rounded-b-xl shadow-sm border border-gray-200">
+          <h3 class="text-sm sm:text-base font-bold text-gray-800 mb-3 sm:mb-4">Lançamento de Captação</h3>
+          <form onsubmit="salvarCaptacao(event)" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-3 sm:gap-4">
             <div>
-              <label class="block text-xs font-semibold text-gray-600 mb-1">Início da Semana</label>
-              <input type="date" id="cap-inicio" required class="w-full border rounded-lg px-3 py-2 text-sm">
+              <label class="block text-[11px] font-semibold text-gray-600 mb-1">Início da Semana</label>
+              <input type="date" id="cap-inicio" required class="w-full border rounded-lg px-3 py-2 text-xs sm:text-sm">
             </div>
             <div>
-              <label class="block text-xs font-semibold text-gray-600 mb-1">Fim da Semana</label>
-              <input type="date" id="cap-fim" required class="w-full border rounded-lg px-3 py-2 text-sm">
+              <label class="block text-[11px] font-semibold text-gray-600 mb-1">Fim da Semana</label>
+              <input type="date" id="cap-fim" required class="w-full border rounded-lg px-3 py-2 text-xs sm:text-sm">
             </div>
             <div>
-              <label class="block text-xs font-semibold text-gray-600 mb-1">Captador</label>
-              <select id="cap-captador" required class="w-full border rounded-lg px-3 py-2 text-sm select-colabs-todos"></select>
+              <label class="block text-[11px] font-semibold text-gray-600 mb-1">Captador</label>
+              <select id="cap-captador" required class="w-full border rounded-lg px-3 py-2 text-xs sm:text-sm select-colabs-todos"></select>
             </div>
             <div>
-              <label class="block text-xs font-semibold text-gray-600 mb-1">Tipo de Captador</label>
-              <select id="cap-tipo" onchange="toggleTipoCaptador()" class="w-full border rounded-lg px-3 py-2 text-sm">
+              <label class="block text-[11px] font-semibold text-gray-600 mb-1">Tipo Captador</label>
+              <select id="cap-tipo" onchange="toggleTipoCaptador()" class="w-full border rounded-lg px-3 py-2 text-xs sm:text-sm">
                 <option value="RECEPTIVO">RECEPTIVO</option>
                 <option value="ATIVO">ATIVO</option>
               </select>
             </div>
             <div>
-              <label class="block text-xs font-semibold text-gray-600 mb-1">Qtd. Captado</label>
-              <input type="number" min="1" id="cap-qtd" value="1" required oninput="calcularCaptacaoAuto()" class="w-full border rounded-lg px-3 py-2 text-sm">
+              <label class="block text-[11px] font-semibold text-gray-600 mb-1">Qtd. Captado</label>
+              <input type="number" min="1" id="cap-qtd" value="1" required oninput="calcularCaptacaoAuto()" class="w-full border rounded-lg px-3 py-2 text-xs sm:text-sm">
             </div>
 
             <div id="box-receptivo" class="block">
-              <label class="block text-xs font-semibold text-gray-600 mb-1">Qtd. Rescisão</label>
-              <input type="number" min="0" id="cap-rescisao" value="0" oninput="calcularCaptacaoAuto()" class="w-full border rounded-lg px-3 py-2 text-sm">
+              <label class="block text-[11px] font-semibold text-gray-600 mb-1">Qtd. Rescisão</label>
+              <input type="number" min="0" id="cap-rescisao" value="0" oninput="calcularCaptacaoAuto()" class="w-full border rounded-lg px-3 py-2 text-xs sm:text-sm">
             </div>
 
             <div id="box-ativo" class="hidden">
-              <label class="block text-xs font-semibold text-gray-600 mb-1">Alugados Terceiros</label>
-              <input type="number" min="0" id="cap-terceiros" value="0" oninput="calcularCaptacaoAuto()" class="w-full border rounded-lg px-3 py-2 text-sm">
+              <label class="block text-[11px] font-semibold text-gray-600 mb-1">Alugados Terceiros</label>
+              <input type="number" min="0" id="cap-terceiros" value="0" oninput="calcularCaptacaoAuto()" class="w-full border rounded-lg px-3 py-2 text-xs sm:text-sm">
             </div>
 
             <div>
-              <label class="block text-xs font-semibold text-gray-600 mb-1">Conversão Calculada (Auto %)</label>
-              <input type="text" id="cap-conversao" readonly value="0%" class="w-full border bg-gray-100 rounded-lg px-3 py-2 text-sm font-bold text-emerald-600">
+              <label class="block text-[11px] font-semibold text-gray-600 mb-1">Conversão Auto %</label>
+              <input type="text" id="cap-conversao" readonly value="0%" class="w-full border bg-gray-100 rounded-lg px-3 py-2 text-xs sm:text-sm font-bold text-emerald-600">
             </div>
 
-            <div class="md:col-span-3 flex items-end justify-end">
-              <button type="submit" class="bg-amber-600 text-white px-6 py-2 rounded-lg text-sm font-bold hover:bg-amber-700 shadow">Salvar Captação</button>
+            <div class="sm:col-span-2 md:col-span-3 flex items-end justify-end">
+              <button type="submit" class="w-full sm:w-auto bg-amber-600 text-white px-6 py-2.5 rounded-lg text-xs sm:text-sm font-bold hover:bg-amber-700 shadow">Salvar Captação</button>
             </div>
           </form>
         </div>
 
         <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
-          <div class="p-4 border-b bg-gray-50"><h3 class="font-bold text-gray-700">Histórico de Captações</h3></div>
+          <div class="p-3.5 border-b bg-gray-50"><h3 class="font-bold text-xs sm:text-sm text-gray-700">Histórico de Captações</h3></div>
           <div class="overflow-x-auto">
-            <table class="w-full text-left border-collapse text-xs">
+            <table class="w-full text-left border-collapse text-xs whitespace-nowrap">
               <thead class="bg-gray-100 text-gray-600 uppercase">
                 <tr>
-                  <th class="p-3">Período</th>
-                  <th class="p-3">Captador</th>
-                  <th class="p-3">Tipo</th>
-                  <th class="p-3">Qtd. Captado</th>
-                  <th class="p-3">Específico (Rescisão / Terceiros)</th>
-                  <th class="p-3">Conversão</th>
-                  <th class="p-3 text-right">Ação</th>
+                  <th class="p-2.5">Período</th>
+                  <th class="p-2.5">Captador</th>
+                  <th class="p-2.5">Tipo</th>
+                  <th class="p-2.5">Qtd. Captado</th>
+                  <th class="p-2.5">Específico</th>
+                  <th class="p-2.5">Conversão</th>
+                  <th class="p-2.5 text-right">Ação</th>
                 </tr>
               </thead>
               <tbody id="tabelaCaptacao" class="divide-y divide-gray-200"></tbody>
@@ -498,17 +497,17 @@
     </section>
 
     <!-- ABA 3: COLABORADORES -->
-    <section id="tab-colaboradores" class="tab-content hidden space-y-6">
-      <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-200">
-        <h2 class="text-lg font-bold mb-4 text-gray-700">Cadastrar Colaborador</h2>
-        <form onsubmit="salvarColaborador(event)" class="grid grid-cols-1 md:grid-cols-4 gap-4">
+    <section id="tab-colaboradores" class="tab-content hidden space-y-4 sm:space-y-6">
+      <div class="bg-white p-4 sm:p-6 rounded-xl shadow-sm border border-gray-200">
+        <h2 class="text-base sm:text-lg font-bold mb-3 sm:mb-4 text-gray-700">Cadastrar Colaborador</h2>
+        <form onsubmit="salvarColaborador(event)" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-3 sm:gap-4">
           <div>
-            <label class="block text-xs font-semibold text-gray-600 mb-1">Nome</label>
-            <input type="text" id="colab-nome" required placeholder="Ex: Lucas Silva" class="w-full border rounded-lg px-3 py-2 text-sm">
+            <label class="block text-[11px] font-semibold text-gray-600 mb-1">Nome</label>
+            <input type="text" id="colab-nome" required placeholder="Ex: Lucas Silva" class="w-full border rounded-lg px-3 py-2 text-xs sm:text-sm">
           </div>
           <div>
-            <label class="block text-xs font-semibold text-gray-600 mb-1">O que faz (Função)</label>
-            <select id="colab-funcao" class="w-full border rounded-lg px-3 py-2 text-sm">
+            <label class="block text-[11px] font-semibold text-gray-600 mb-1">Função</label>
+            <select id="colab-funcao" class="w-full border rounded-lg px-3 py-2 text-xs sm:text-sm">
               <option value="Atendimento Comercial">Atendimento Comercial</option>
               <option value="Captador">Captador</option>
               <option value="Agente (Mostrador)">Agente (Mostrador)</option>
@@ -516,86 +515,87 @@
             </select>
           </div>
           <div>
-            <label class="block text-xs font-semibold text-gray-600 mb-1">Status</label>
-            <select id="colab-status" class="w-full border rounded-lg px-3 py-2 text-sm">
+            <label class="block text-[11px] font-semibold text-gray-600 mb-1">Status</label>
+            <select id="colab-status" class="w-full border rounded-lg px-3 py-2 text-xs sm:text-sm">
               <option value="Ativo">Ativo</option>
               <option value="Inativo">Inativo</option>
             </select>
           </div>
           <div class="flex items-end">
-            <button type="submit" class="w-full bg-emerald-600 text-white py-2 rounded-lg text-sm font-bold hover:bg-emerald-700 shadow">Adicionar Membro</button>
+            <button type="submit" class="w-full bg-emerald-600 text-white py-2 rounded-lg text-xs sm:text-sm font-bold hover:bg-emerald-700 shadow">Adicionar Membro</button>
           </div>
         </form>
       </div>
 
       <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
-        <div class="p-4 border-b bg-gray-50"><h3 class="font-bold text-gray-700">Equipe Cadastrada</h3></div>
-        <table class="w-full text-left border-collapse text-xs">
-          <thead class="bg-gray-100 text-gray-600 uppercase">
-            <tr>
-              <th class="p-3">Nome</th>
-              <th class="p-3">Função</th>
-              <th class="p-3">Status</th>
-              <th class="p-3 text-right">Ação</th>
-            </tr>
-          </thead>
-          <tbody id="tabelaColaboradores" class="divide-y divide-gray-200"></tbody>
-        </table>
+        <div class="p-3.5 border-b bg-gray-50"><h3 class="font-bold text-xs sm:text-sm text-gray-700">Equipe Cadastrada</h3></div>
+        <div class="overflow-x-auto">
+          <table class="w-full text-left border-collapse text-xs whitespace-nowrap">
+            <thead class="bg-gray-100 text-gray-600 uppercase">
+              <tr>
+                <th class="p-2.5">Nome</th>
+                <th class="p-2.5">Função</th>
+                <th class="p-2.5">Status</th>
+                <th class="p-2.5 text-right">Ação</th>
+              </tr>
+            </thead>
+            <tbody id="tabelaColaboradores" class="divide-y divide-gray-200"></tbody>
+          </table>
+        </div>
       </div>
     </section>
 
-    <!-- ABA 4: RESUMO DO MÊS & EXPORTAÇÃO EXCEL -->
-    <section id="tab-resumo-mes" class="tab-content hidden space-y-6">
-      <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-200 flex flex-wrap items-center justify-between gap-4">
+    <!-- ABA 4: RESUMO DO MÊS -->
+    <section id="tab-resumo-mes" class="tab-content hidden space-y-4 sm:space-y-6">
+      <div class="bg-white p-4 sm:p-6 rounded-xl shadow-sm border border-gray-200 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
         <div>
-          <h2 class="text-xl font-bold text-slate-800 flex items-center gap-2">
-            <i class="fa-solid fa-calendar-days text-emerald-600"></i> Consolidação Mensal de Resultados
+          <h2 class="text-base sm:text-xl font-bold text-slate-800 flex items-center gap-2">
+            <i class="fa-solid fa-calendar-days text-emerald-600"></i> Consolidação Mensal
           </h2>
-          <p class="text-xs text-gray-500">Acumulado de todas as semanas lançadas no mês selecionado</p>
+          <p class="text-[11px] sm:text-xs text-gray-500">Resultados acumulados do mês selecionado</p>
         </div>
-        <div class="flex items-center gap-4 flex-wrap">
-          <div>
-            <label class="block text-xs font-bold text-gray-600 mb-1">Mês de Referência</label>
-            <input type="month" id="mes-referencia" onchange="renderResumoMes()" class="border rounded-lg px-3 py-2 text-sm font-bold bg-gray-50">
+        <div class="flex items-center gap-2 flex-wrap w-full sm:w-auto">
+          <div class="flex-1 sm:flex-none">
+            <input type="month" id="mes-referencia" onchange="renderResumoMes()" class="w-full border rounded-lg px-3 py-2 text-xs sm:text-sm font-bold bg-gray-50">
           </div>
-          <button onclick="exportarExcel()" class="bg-emerald-600 hover:bg-emerald-700 text-white px-5 py-2.5 rounded-lg text-sm font-bold shadow flex items-center gap-2">
-            <i class="fa-solid fa-file-excel text-base"></i> Exportar para Excel (.xlsx)
+          <button onclick="exportarExcel()" class="w-full sm:w-auto bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2 rounded-lg text-xs sm:text-sm font-bold shadow flex items-center justify-center gap-1.5">
+            <i class="fa-solid fa-file-excel"></i> Exportar Excel
           </button>
         </div>
       </div>
 
-      <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
-        <div class="bg-white p-5 rounded-xl shadow-sm border border-gray-200 border-l-4 border-l-blue-600">
-          <p class="text-xs font-bold uppercase text-gray-400">Total Agendadas (Mês)</p>
-          <h3 id="mes-tot-agendadas" class="text-2xl font-black text-blue-600 mt-1">0</h3>
+      <div class="grid grid-cols-2 md:grid-cols-4 gap-2.5 sm:gap-4">
+        <div class="bg-white p-3.5 sm:p-5 rounded-xl shadow-sm border border-gray-200 border-l-4 border-l-blue-600">
+          <p class="text-[10px] font-bold uppercase text-gray-400">Agendadas (Mês)</p>
+          <h3 id="mes-tot-agendadas" class="text-xl sm:text-2xl font-black text-blue-600 mt-1">0</h3>
         </div>
-        <div class="bg-white p-5 rounded-xl shadow-sm border border-gray-200 border-l-4 border-l-emerald-500">
-          <p class="text-xs font-bold uppercase text-gray-400">Total Concluídas (Mês)</p>
-          <h3 id="mes-tot-concluidas" class="text-2xl font-black text-emerald-600 mt-1">0</h3>
+        <div class="bg-white p-3.5 sm:p-5 rounded-xl shadow-sm border border-gray-200 border-l-4 border-l-emerald-500">
+          <p class="text-[10px] font-bold uppercase text-gray-400">Concluídas (Mês)</p>
+          <h3 id="mes-tot-concluidas" class="text-xl sm:text-2xl font-black text-emerald-600 mt-1">0</h3>
         </div>
-        <div class="bg-white p-5 rounded-xl shadow-sm border border-gray-200 border-l-4 border-l-purple-600">
-          <p class="text-xs font-bold uppercase text-gray-400">Total Fechado (R$ Mês)</p>
-          <h3 id="mes-tot-valor" class="text-xl font-black text-slate-800 mt-1">R$ 0,00</h3>
+        <div class="bg-white p-3.5 sm:p-5 rounded-xl shadow-sm border border-gray-200 border-l-4 border-l-purple-600">
+          <p class="text-[10px] font-bold uppercase text-gray-400">Total Fechado</p>
+          <h3 id="mes-tot-valor" class="text-base sm:text-xl font-black text-slate-800 mt-1">R$ 0,00</h3>
         </div>
-        <div class="bg-white p-5 rounded-xl shadow-sm border border-gray-200 border-l-4 border-l-amber-500">
-          <p class="text-xs font-bold uppercase text-gray-400">Total Imóveis Captados</p>
-          <h3 id="mes-tot-captados" class="text-2xl font-black text-amber-500 mt-1">0</h3>
+        <div class="bg-white p-3.5 sm:p-5 rounded-xl shadow-sm border border-gray-200 border-l-4 border-l-amber-500">
+          <p class="text-[10px] font-bold uppercase text-gray-400">Captados (Mês)</p>
+          <h3 id="mes-tot-captados" class="text-xl sm:text-2xl font-black text-amber-500 mt-1">0</h3>
         </div>
       </div>
 
       <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
-        <div class="p-4 border-b bg-gray-50"><h3 class="font-bold text-gray-700 text-sm">Resumo Acumulado do Atendimento Comercial no Mês</h3></div>
+        <div class="p-3.5 border-b bg-gray-50"><h3 class="font-bold text-xs sm:text-sm text-gray-700">Resumo Acumulado das Atendentes</h3></div>
         <div class="overflow-x-auto">
-          <table class="w-full text-left border-collapse text-xs">
+          <table class="w-full text-left border-collapse text-xs whitespace-nowrap">
             <thead class="bg-gray-100 text-gray-600 uppercase font-bold">
               <tr>
-                <th class="p-3">Atendente Comercial</th>
-                <th class="p-3 text-center">Agendadas</th>
-                <th class="p-3 text-center">Concluídas</th>
-                <th class="p-3 text-center">Canceladas</th>
-                <th class="p-3 text-center">% Média Conversão</th>
-                <th class="p-3 text-center">Novos Negócios</th>
-                <th class="p-3 text-center">Clientes Ativos</th>
+                <th class="p-2.5">Atendente</th>
+                <th class="p-2.5 text-center">Agendadas</th>
+                <th class="p-2.5 text-center">Concluídas</th>
+                <th class="p-2.5 text-center">Canceladas</th>
+                <th class="p-2.5 text-center">% Conversão</th>
+                <th class="p-2.5 text-center">Novos</th>
+                <th class="p-2.5 text-center">Ativos</th>
               </tr>
             </thead>
             <tbody id="tabelaMesCorretoras" class="divide-y divide-gray-200 font-medium"></tbody>
@@ -604,24 +604,24 @@
         </div>
       </div>
 
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <div class="bg-white p-5 rounded-xl shadow-sm border border-gray-200">
-          <h3 class="font-bold text-gray-700 text-sm mb-3 uppercase border-b pb-2">Esteira do Mês</h3>
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
+        <div class="bg-white p-4 sm:p-5 rounded-xl shadow-sm border border-gray-200">
+          <h3 class="font-bold text-gray-700 text-xs sm:text-sm mb-3 uppercase border-b pb-2">Esteira do Mês</h3>
           <div class="space-y-2 text-xs">
-            <div class="flex justify-between"><span>Contratos Fechados:</span><b id="mes-esteira-fechados" class="text-emerald-600 font-bold">0</b></div>
-            <div class="flex justify-between"><span>Contratos Pendentes:</span><b id="mes-esteira-pendentes" class="text-yellow-600 font-bold">0</b></div>
-            <div class="flex justify-between"><span>Desistentes / Caídos:</span><b id="mes-esteira-caidos" class="text-red-600 font-bold">0</b></div>
+            <div class="flex justify-between"><span>Fechados:</span><b id="mes-esteira-fechados" class="text-emerald-600 font-bold">0</b></div>
+            <div class="flex justify-between"><span>Pendentes:</span><b id="mes-esteira-pendentes" class="text-yellow-600 font-bold">0</b></div>
+            <div class="flex justify-between"><span>Desistentes:</span><b id="mes-esteira-caidos" class="text-red-600 font-bold">0</b></div>
             <div class="flex justify-between"><span>Valor Perdido:</span><b id="mes-esteira-valor-perdido" class="text-red-600 font-bold">R$ 0,00</b></div>
           </div>
         </div>
 
-        <div class="bg-white p-5 rounded-xl shadow-sm border border-gray-200">
-          <h3 class="font-bold text-gray-700 text-sm mb-3 uppercase border-b pb-2">Captação do Mês</h3>
+        <div class="bg-white p-4 sm:p-5 rounded-xl shadow-sm border border-gray-200">
+          <h3 class="font-bold text-gray-700 text-xs sm:text-sm mb-3 uppercase border-b pb-2">Captação do Mês</h3>
           <div class="space-y-2 text-xs">
             <div class="flex justify-between"><span>Total Receptivo:</span><b id="mes-cap-receptivo" class="text-blue-600 font-bold">0</b></div>
-            <div class="flex justify-between"><span>Rescisões (Receptivo):</span><b id="mes-cap-rescisao" class="text-slate-800 font-bold">0</b></div>
+            <div class="flex justify-between"><span>Rescisões:</span><b id="mes-cap-rescisao" class="text-slate-800 font-bold">0</b></div>
             <div class="flex justify-between"><span>Total Ativo:</span><b id="mes-cap-ativo" class="text-purple-600 font-bold">0</b></div>
-            <div class="flex justify-between"><span>Alugados Terceiros (Ativo):</span><b id="mes-cap-terceiros" class="text-slate-800 font-bold">0</b></div>
+            <div class="flex justify-between"><span>Alugados Terceiros:</span><b id="mes-cap-terceiros" class="text-slate-800 font-bold">0</b></div>
           </div>
         </div>
       </div>
@@ -630,7 +630,7 @@
   </main>
 
   <script>
-    // INICIALIZAÇÃO DO SUPABASE
+    // CONEXÃO COM O SUPABASE
     const SUPABASE_URL = 'https://uwueavzdkjsqvlyyafcz.supabase.co';
     const SUPABASE_KEY = 'sb_publishable_M1RXel-LjzUVsZDCW-IkMw_aSm_WvUP';
     const _supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
@@ -735,7 +735,7 @@
       document.body.removeChild(link);
     }
 
-    // VARIÁVEIS DE ESTADO
+    // ESTADO E VARIÁVEIS
     let colaboradores = [];
     let atendimentos = [];
     let fechamentos = [];
@@ -755,6 +755,44 @@
       { id: 6, nome: 'Paula', funcao: 'FECHAMENTO', status: 'Ativo' }
     ];
 
+    // SINCRONIZADOR AUTOMÁTICO DO COMPUTADOR PARA O SUPABASE
+    async function migrarDadosLocaisDoPCSeExistem() {
+      try {
+        const localAtend = JSON.parse(localStorage.getItem('atendimentos') || '[]');
+        const localFech = JSON.parse(localStorage.getItem('fechamentos') || '[]');
+        const localCap = JSON.parse(localStorage.getItem('captacoes') || '[]');
+
+        let precisouMigrar = false;
+
+        if (atendimentos.length === 0 && localAtend.length > 0) {
+          await _supabase.from('atendimentos').upsert(localAtend);
+          precisouMigrar = true;
+        }
+        if (fechamentos.length === 0 && localFech.length > 0) {
+          await _supabase.from('fechamentos').upsert(localFech);
+          precisouMigrar = true;
+        }
+        if (captacoes.length === 0 && localCap.length > 0) {
+          await _supabase.from('captacoes').upsert(localCap);
+          precisouMigrar = true;
+        }
+
+        if (precisouMigrar) {
+          console.log('Dados do computador enviados com sucesso para o Supabase!');
+          const { data: aData } = await _supabase.from('atendimentos').select('*');
+          atendimentos = aData || [];
+
+          const { data: fData } = await _supabase.from('fechamentos').select('*');
+          fechamentos = fData || [];
+
+          const { data: capData } = await _supabase.from('captacoes').select('*');
+          captacoes = capData || [];
+        }
+      } catch (e) {
+        console.error('Erro na sincronização inicial:', e);
+      }
+    }
+
     async function carregarDadosDoSupabase() {
       try {
         const { data: cData } = await _supabase.from('colaboradores').select('*');
@@ -773,6 +811,9 @@
 
         const { data: capData } = await _supabase.from('captacoes').select('*');
         captacoes = capData || [];
+
+        // Executa a migração automática dos dados antigos salvos no PC
+        await migrarDadosLocaisDoPCSeExistem();
 
         atualizarE-RenderizarTudo();
       } catch (err) {
@@ -968,16 +1009,16 @@
 
         return `
           <tr class="hover:bg-gray-50">
-            <td class="p-3 font-medium text-gray-700">${formatarDataBR(a.inicio)} - ${formatarDataBR(a.fim)}</td>
-            <td class="p-3 ${obterCorColaborador(a.colaborador)}">${a.colaborador}</td>
-            <td class="p-3 text-center">${a.agendadas}</td>
-            <td class="p-3 text-center text-emerald-600 font-bold">${a.concluidas}</td>
-            <td class="p-3 text-center text-red-600">${a.canceladas}</td>
-            <td class="p-3 text-center font-bold text-blue-600">${conv}%</td>
-            <td class="p-3 text-center">${a.novos}</td>
-            <td class="p-3 text-center font-semibold text-purple-700">${a.lais || 0} <span class="text-[9px] text-gray-400 font-normal">(grupo)</span></td>
-            <td class="p-3 text-center">${a.ativo}</td>
-            <td class="p-3 text-right space-x-2">
+            <td class="p-2.5 font-medium text-gray-700">${formatarDataBR(a.inicio)} - ${formatarDataBR(a.fim)}</td>
+            <td class="p-2.5 ${obterCorColaborador(a.colaborador)}">${a.colaborador}</td>
+            <td class="p-2.5 text-center">${a.agendadas}</td>
+            <td class="p-2.5 text-center text-emerald-600 font-bold">${a.concluidas}</td>
+            <td class="p-2.5 text-center text-red-600">${a.canceladas}</td>
+            <td class="p-2.5 text-center font-bold text-blue-600">${conv}%</td>
+            <td class="p-2.5 text-center">${a.novos}</td>
+            <td class="p-2.5 text-center font-semibold text-purple-700">${a.lais || 0}</td>
+            <td class="p-2.5 text-center">${a.ativo}</td>
+            <td class="p-2.5 text-right space-x-2">
               <button onclick="editarAtendimento(${a.id})" class="text-xs text-blue-600 font-bold hover:underline">Editar</button>
               <button onclick="removerAtendimento(${a.id})" class="text-xs text-red-600 hover:underline">Excluir</button>
             </td>
@@ -1001,25 +1042,25 @@
 
       document.getElementById('totalAtendimento').innerHTML = `
         <tr class="bg-slate-100">
-          <td class="p-3 font-black" colspan="2">TOTAL REGISTRADO</td>
-          <td class="p-3 text-center font-black">${totAg}</td>
-          <td class="p-3 text-center text-emerald-700 font-black">${totConc}</td>
-          <td class="p-3 text-center text-red-700 font-black">${totCanc}</td>
-          <td class="p-3 text-center text-blue-700 font-black">${totConv}%</td>
-          <td class="p-3 text-center font-black">${totNovos}</td>
-          <td class="p-3 text-center text-purple-800 font-black bg-purple-50/80">${totLaisConsolidado} <span class="text-[9px] font-normal block text-purple-600">(Total Grupo)</span></td>
-          <td class="p-3 text-center font-black">${totAtivo}</td>
+          <td class="p-2.5 font-black" colspan="2">TOTAL REGISTRADO</td>
+          <td class="p-2.5 text-center font-black">${totAg}</td>
+          <td class="p-2.5 text-center text-emerald-700 font-black">${totConc}</td>
+          <td class="p-2.5 text-center text-red-700 font-black">${totCanc}</td>
+          <td class="p-2.5 text-center text-blue-700 font-black">${totConv}%</td>
+          <td class="p-2.5 text-center font-black">${totNovos}</td>
+          <td class="p-2.5 text-center text-purple-800 font-black bg-purple-50/80">${totLaisConsolidado}</td>
+          <td class="p-2.5 text-center font-black">${totAtivo}</td>
           <td></td>
         </tr>
         <tr class="bg-blue-50/60 text-blue-900 border-t border-blue-200">
-          <td class="p-3 font-bold" colspan="2">MÉDIA DAS ATENDENTES / SEMANAL</td>
-          <td class="p-3 text-center font-bold">${mediaAg}</td>
-          <td class="p-3 text-center font-bold text-emerald-700">${mediaConc}</td>
-          <td class="p-3 text-center font-bold text-red-700">${mediaCanc}</td>
-          <td class="p-3 text-center font-bold text-blue-700">${totConv}%</td>
-          <td class="p-3 text-center font-bold">${mediaNovos}</td>
-          <td class="p-3 text-center font-bold text-purple-800">${mediaLaisSemanal} <span class="text-[9px] font-normal block text-purple-600">(Média/Seman.)</span></td>
-          <td class="p-3 text-center font-bold">${mediaAtivo}</td>
+          <td class="p-2.5 font-bold" colspan="2">MÉDIA SEMANAL</td>
+          <td class="p-2.5 text-center font-bold">${mediaAg}</td>
+          <td class="p-2.5 text-center font-bold text-emerald-700">${mediaConc}</td>
+          <td class="p-2.5 text-center font-bold text-red-700">${mediaCanc}</td>
+          <td class="p-2.5 text-center font-bold text-blue-700">${totConv}%</td>
+          <td class="p-2.5 text-center font-bold">${mediaNovos}</td>
+          <td class="p-2.5 text-center font-bold text-purple-800">${mediaLaisSemanal}</td>
+          <td class="p-2.5 text-center font-bold">${mediaAtivo}</td>
           <td></td>
         </tr>
       `;
@@ -1163,21 +1204,21 @@
 
         return `
           <tr class="hover:bg-gray-50">
-            <td class="p-2 ${obterCorColaborador(f.atendente)}">${f.atendente}</td>
-            <td class="p-2 font-medium">${f.captador || '-'}</td>
-            <td class="p-2 font-mono font-bold text-blue-600">${f.ref}</td>
-            <td class="p-2">${f.endereco}</td>
-            <td class="p-2 font-bold">R$ ${valNum.toLocaleString('pt-BR', {minimumFractionDigits: 2, maximumFractionDigits: 2})}</td>
-            <td class="p-2">${f.garantia}</td>
-            <td class="p-2">
+            <td class="p-2.5 ${obterCorColaborador(f.atendente)}">${f.atendente}</td>
+            <td class="p-2.5 font-medium">${f.captador || '-'}</td>
+            <td class="p-2.5 font-mono font-bold text-blue-600">${f.ref}</td>
+            <td class="p-2.5">${f.endereco}</td>
+            <td class="p-2.5 font-bold">R$ ${valNum.toLocaleString('pt-BR', {minimumFractionDigits: 2, maximumFractionDigits: 2})}</td>
+            <td class="p-2.5">${f.garantia}</td>
+            <td class="p-2.5">
               <select onchange="alterarStatusFechamentoDirect(${f.id}, this.value)" class="text-[11px] font-bold rounded px-1.5 py-0.5 border outline-none ${f.status === 'FECHADO' ? 'bg-green-100 text-green-800 border-green-300' : f.status === 'PENDENTE' ? 'bg-yellow-100 text-yellow-800 border-yellow-300' : 'bg-red-100 text-red-800 border-red-300'}">
                 <option value="PENDENTE" ${f.status === 'PENDENTE' ? 'selected' : ''}>PENDENTE</option>
                 <option value="FECHADO" ${f.status === 'FECHADO' ? 'selected' : ''}>FECHADO</option>
                 <option value="DESISTENTE" ${f.status === 'DESISTENTE' ? 'selected' : ''}>DESISTENTE</option>
               </select>
             </td>
-            <td class="p-2 text-gray-600 font-medium">${formatarDataBR(f.assinado)}</td>
-            <td class="p-2 text-right space-x-1.5">
+            <td class="p-2.5 text-gray-600 font-medium">${formatarDataBR(f.assinado)}</td>
+            <td class="p-2.5 text-right space-x-1.5">
               <button onclick="editarFechamento(${f.id})" class="text-blue-600 font-bold hover:underline">Editar</button>
               <button onclick="removerFechamento(${f.id})" class="text-red-600 hover:underline">Excluir</button>
             </td>
@@ -1202,10 +1243,10 @@
         htmlAtendentes += `
           <div class="flex justify-between items-center py-1 border-b border-slate-100 last:border-0">
             <span class="${corClass} font-semibold">• ${nome}</span>
-            <div class="text-right flex items-center gap-1.5">
-              <span class="text-slate-800 font-bold bg-slate-200/60 px-1.5 py-0.5 rounded text-[11px]">${item.qtd} loc.</span>
+            <div class="text-right flex items-center gap-1">
+              <span class="text-slate-800 font-bold bg-slate-200/60 px-1.5 py-0.5 rounded text-[10px]">${item.qtd} loc.</span>
               <span class="text-emerald-700 font-bold text-xs">R$ ${valFormatado}</span>
-              <span class="text-blue-600 font-extrabold text-[11px]">(${percIndividualMeta}%)</span>
+              <span class="text-blue-600 font-extrabold text-[10px]">(${percIndividualMeta}%)</span>
             </div>
           </div>
         `;
@@ -1226,9 +1267,9 @@
       document.getElementById('box-meta-detalhes').innerHTML = `
         <div class="space-y-1">
           <div class="flex justify-between items-center">
-            <span class="text-gray-600">Falta p/ Meta (R$):</span>
+            <span class="text-gray-600">Falta (R$):</span>
             <b class="${faltaValor === 0 ? 'text-emerald-600 font-bold' : 'text-red-600 font-bold'}">
-              ${faltaValor === 0 ? 'Meta Batida! 🎉' : `R$ ${faltaValor.toLocaleString('pt-BR', {minimumFractionDigits: 2, maximumFractionDigits: 2})}`}
+              ${faltaValor === 0 ? 'Batida! 🎉' : `R$ ${faltaValor.toLocaleString('pt-BR', {minimumFractionDigits: 2, maximumFractionDigits: 2})}`}
             </b>
           </div>
           <div class="w-full bg-gray-200 rounded-full h-1.5 overflow-hidden">
@@ -1238,9 +1279,9 @@
 
         <div class="space-y-1 pt-1">
           <div class="flex justify-between items-center">
-            <span class="text-gray-600">Falta p/ Meta (Qtd):</span>
+            <span class="text-gray-600">Falta (Qtd):</span>
             <b class="${faltaQtd === 0 ? 'text-emerald-600 font-bold' : 'text-blue-600 font-bold'}">
-              ${faltaQtd === 0 ? 'Meta Batida! 🎉' : `${faltaQtd} locações`}
+              ${faltaQtd === 0 ? 'Batida! 🎉' : `${faltaQtd} locações`}
             </b>
           </div>
           <div class="w-full bg-gray-200 rounded-full h-1.5 overflow-hidden">
@@ -1305,13 +1346,13 @@
       const tbody = document.getElementById('tabelaCaptacao');
       tbody.innerHTML = captacoes.map(c => `
         <tr class="hover:bg-gray-50">
-          <td class="p-3 text-gray-700">${c.inicio ? `${formatarDataBR(c.inicio)} -${formatarDataBR(c.fim)}` : 'N/A'}</td>
-          <td class="p-3 ${obterCorColaborador(c.captador)}">${c.captador}</td>
-          <td class="p-3"><span class="px-2 py-0.5 rounded text-[10px] font-bold ${c.tipo === 'RECEPTIVO' ? 'bg-blue-100 text-blue-700' : 'bg-purple-100 text-purple-700'}">${c.tipo}</span></td>
-          <td class="p-3">${c.qtd}</td>
-          <td class="p-3">${c.tipo === 'RECEPTIVO' ? `Rescisão: ${c.especifico}` : `Terceiros: ${c.especifico}`}</td>
-          <td class="p-3 font-bold text-emerald-600">${c.conversao}</td>
-          <td class="p-3 text-right"><button onclick="removerCaptacao(${c.id})" class="text-red-600 hover:underline">Excluir</button></td>
+          <td class="p-2.5 text-gray-700">${c.inicio ? `${formatarDataBR(c.inicio)} -${formatarDataBR(c.fim)}` : 'N/A'}</td>
+          <td class="p-2.5 ${obterCorColaborador(c.captador)}">${c.captador}</td>
+          <td class="p-2.5"><span class="px-2 py-0.5 rounded text-[10px] font-bold ${c.tipo === 'RECEPTIVO' ? 'bg-blue-100 text-blue-700' : 'bg-purple-100 text-purple-700'}">${c.tipo}</span></td>
+          <td class="p-2.5">${c.qtd}</td>
+          <td class="p-2.5">${c.tipo === 'RECEPTIVO' ? `Rescisão: ${c.especifico}` : `Terceiros: ${c.especifico}`}</td>
+          <td class="p-2.5 font-bold text-emerald-600">${c.conversao}</td>
+          <td class="p-2.5 text-right"><button onclick="removerCaptacao(${c.id})" class="text-red-600 hover:underline">Excluir</button></td>
         </tr>
       `).join('');
     }
@@ -1477,7 +1518,7 @@
                     anchor: 'end',
                     align: 'top',
                     offset: 18,
-                    font: { weight: 'extrabold', size: 11 },
+                    font: { weight: 'extrabold', size: 10 },
                     color: '#ea580c',
                     formatter: (value, ctx) => {
                       const perc = atMetaPercData[ctx.dataIndex];
@@ -1488,7 +1529,7 @@
                     anchor: 'end',
                     align: 'top',
                     offset: 2,
-                    font: { weight: 'bold', size: 10 },
+                    font: { weight: 'bold', size: 9 },
                     color: '#1e293b',
                     formatter: (value) => value > 0 ? `R$ ${value.toLocaleString('pt-BR', {minimumFractionDigits: 0, maximumFractionDigits: 0})}` : ''
                   }
@@ -1496,15 +1537,15 @@
               }
             },
             {
-              label: '% da Meta Entregue (de 57k)',
+              label: '% da Meta',
               data: atMetaPercData,
               type: 'line',
               borderColor: '#f97316',
               backgroundColor: '#f97316',
               pointBackgroundColor: '#ea580c',
-              pointRadius: 5,
+              pointRadius: 4,
               yAxisID: 'y1',
-              borderWidth: 3,
+              borderWidth: 2,
               datalabels: { display: false }
             }
           ]
@@ -1512,10 +1553,10 @@
         options: {
           responsive: true,
           maintainAspectRatio: false,
-          plugins: { legend: { display: true, position: 'top' } },
+          plugins: { legend: { display: true, position: 'top', labels: { boxWidth: 12, font: { size: 10 } } } },
           scales: {
-            y: { beginAtZero: true, grace: '20%', title: { display: true, text: 'Valor Fechado (R$)' } },
-            y1: { beginAtZero: true, max: 115, position: 'right', title: { display: true, text: '% da Meta (57k)' }, grid: { drawOnChartArea: false } }
+            y: { beginAtZero: true, grace: '20%', title: { display: false } },
+            y1: { beginAtZero: true, max: 115, position: 'right', grid: { drawOnChartArea: false } }
           }
         }
       });
@@ -1525,27 +1566,28 @@
         data: {
           labels: chartLabels,
           datasets: [
-            { label: 'Agendadas', data: chartAg, backgroundColor: '#38bdf8', maxBarThickness: 30 },
-            { label: 'Concluídas', data: chartConc, backgroundColor: '#84cc16', maxBarThickness: 30 },
-            { label: 'Canceladas', data: chartCanc, backgroundColor: '#ef4444', maxBarThickness: 30 },
-            { label: '% Convertidas', data: chartConv, type: 'line', borderColor: '#854d0e', backgroundColor: '#854d0e', yAxisID: 'y1', borderWidth: 3 }
+            { label: 'Agendadas', data: chartAg, backgroundColor: '#38bdf8', maxBarThickness: 26 },
+            { label: 'Concluídas', data: chartConc, backgroundColor: '#84cc16', maxBarThickness: 26 },
+            { label: 'Canceladas', data: chartCanc, backgroundColor: '#ef4444', maxBarThickness: 26 },
+            { label: '% Conv.', data: chartConv, type: 'line', borderColor: '#854d0e', backgroundColor: '#854d0e', yAxisID: 'y1', borderWidth: 2 }
           ]
         },
         options: {
           responsive: true,
           maintainAspectRatio: false,
           plugins: {
+            legend: { position: 'top', labels: { boxWidth: 10, font: { size: 10 } } },
             datalabels: {
               anchor: 'end',
               align: 'top',
               formatter: (value, ctx) => ctx.dataset.type === 'line' ? `${value}%` : (value > 0 ? value : ''),
-              font: { weight: 'bold', size: 10 },
+              font: { weight: 'bold', size: 9 },
               color: '#334155'
             }
           },
           scales: {
-            y: { beginAtZero: true, title: { display: true, text: 'Visitas' } },
-            y1: { beginAtZero: true, max: 100, position: 'right', title: { display: true, text: '%' }, grid: { drawOnChartArea: false } }
+            y: { beginAtZero: true },
+            y1: { beginAtZero: true, max: 100, position: 'right', grid: { drawOnChartArea: false } }
           }
         }
       });
@@ -1557,16 +1599,17 @@
       chartStatusEsteira = new Chart(document.getElementById('chartStatusEsteira').getContext('2d'), {
         type: 'pie',
         data: {
-          labels: ['Check-list (Pendente)', 'Caiu', 'Concluídos'],
+          labels: ['Pendente', 'Caiu', 'Concluídos'],
           datasets: [{ data: [countChecklist, countCaiu, countConcluidos], backgroundColor: ['#ea580c', '#f97316', '#0284c7'] }]
         },
         options: {
           responsive: true,
           maintainAspectRatio: false,
           plugins: {
+            legend: { position: 'bottom', labels: { boxWidth: 10, font: { size: 10 } } },
             datalabels: {
               color: '#ffffff',
-              font: { weight: 'bold', size: 11 },
+              font: { weight: 'bold', size: 10 },
               formatter: (value, ctx) => value > 0 ? `${ctx.chart.data.labels[ctx.dataIndex]}: ${value}` : ''
             }
           }
@@ -1586,9 +1629,10 @@
           responsive: true,
           maintainAspectRatio: false,
           plugins: {
+            legend: { position: 'bottom', labels: { boxWidth: 10, font: { size: 10 } } },
             datalabels: {
               color: '#ffffff',
-              font: { weight: 'bold', size: 11 },
+              font: { weight: 'bold', size: 10 },
               formatter: (value, ctx) => value > 0 ? `${ctx.chart.data.labels[ctx.dataIndex]}: ${value}` : ''
             }
           }
@@ -1605,9 +1649,10 @@
           responsive: true,
           maintainAspectRatio: false,
           plugins: {
+            legend: { position: 'bottom', labels: { boxWidth: 10, font: { size: 10 } } },
             datalabels: {
               color: '#ffffff',
-              font: { weight: 'bold', size: 11 },
+              font: { weight: 'bold', size: 10 },
               formatter: (value, ctx) => value > 0 ? `${ctx.chart.data.labels[ctx.dataIndex]}: ${value}` : ''
             }
           }
@@ -1617,16 +1662,17 @@
       chartConcluidasLais = new Chart(document.getElementById('chartConcluidasLais').getContext('2d'), {
         type: 'pie',
         data: {
-          labels: ['Concluídas', 'Solicitação Lais (Grupo)'],
+          labels: ['Concluídas', 'Lais'],
           datasets: [{ data: [sumConc, totLaisDashboard], backgroundColor: ['#0284c7', '#a855f7'] }]
         },
         options: {
           responsive: true,
           maintainAspectRatio: false,
           plugins: {
+            legend: { position: 'bottom', labels: { boxWidth: 10, font: { size: 10 } } },
             datalabels: {
               color: '#ffffff',
-              font: { weight: 'bold', size: 11 },
+              font: { weight: 'bold', size: 10 },
               formatter: (value, ctx) => value > 0 ? `${ctx.chart.data.labels[ctx.dataIndex]}: ${value}` : ''
             }
           }
@@ -1675,13 +1721,13 @@
 
         tbodyHTML += `
           <tr class="hover:bg-gray-50">
-            <td class="p-3 ${obterCorColaborador(c.nome)}">${c.nome}</td>
-            <td class="p-3 text-center">${ag}</td>
-            <td class="p-3 text-center text-emerald-600 font-bold">${conc}</td>
-            <td class="p-3 text-center text-red-600">${canc}</td>
-            <td class="p-3 text-center text-blue-600 font-bold">${conv}%</td>
-            <td class="p-3 text-center">${novos}</td>
-            <td class="p-3 text-center">${ativo}</td>
+            <td class="p-2.5 ${obterCorColaborador(c.nome)}">${c.nome}</td>
+            <td class="p-2.5 text-center">${ag}</td>
+            <td class="p-2.5 text-center text-emerald-600 font-bold">${conc}</td>
+            <td class="p-2.5 text-center text-red-600">${canc}</td>
+            <td class="p-2.5 text-center text-blue-600 font-bold">${conv}%</td>
+            <td class="p-2.5 text-center">${novos}</td>
+            <td class="p-2.5 text-center">${ativo}</td>
           </tr>
         `;
       });
@@ -1690,13 +1736,13 @@
       document.getElementById('tabelaMesCorretoras').innerHTML = tbodyHTML || '<tr><td colspan="7" class="p-4 text-center text-gray-400">Nenhum registro para este mês.</td></tr>';
       document.getElementById('totalMesCorretoras').innerHTML = `
         <tr>
-          <td class="p-3 font-black">Total do Mês</td>
-          <td class="p-3 text-center font-black">${sumAg}</td>
-          <td class="p-3 text-center text-emerald-700 font-black">${sumConc}</td>
-          <td class="p-3 text-center text-red-700 font-black">${sumCanc}</td>
-          <td class="p-3 text-center text-blue-700 font-black">${totalConv}%</td>
-          <td class="p-3 text-center font-black">${sumNovos}</td>
-          <td class="p-3 text-center font-black">${sumAtivo}</td>
+          <td class="p-2.5 font-black">Total do Mês</td>
+          <td class="p-2.5 text-center font-black">${sumAg}</td>
+          <td class="p-2.5 text-center text-emerald-700 font-black">${sumConc}</td>
+          <td class="p-2.5 text-center text-red-700 font-black">${sumCanc}</td>
+          <td class="p-2.5 text-center text-blue-700 font-black">${totalConv}%</td>
+          <td class="p-2.5 text-center font-black">${sumNovos}</td>
+          <td class="p-2.5 text-center font-black">${sumAtivo}</td>
         </tr>
       `;
 
@@ -1750,10 +1796,10 @@
       const tbody = document.getElementById('tabelaColaboradores');
       tbody.innerHTML = colaboradores.map(c => `
         <tr class="hover:bg-gray-50">
-          <td class="p-3 ${obterCorColaborador(c.nome)}">${c.nome}</td>
-          <td class="p-3">${c.funcao}</td>
-          <td class="p-3"><span class="px-2 py-1 text-xs rounded-full font-bold ${c.status === 'Ativo' ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'}">${c.status}</span></td>
-          <td class="p-3 text-right space-x-2">
+          <td class="p-2.5 ${obterCorColaborador(c.nome)}">${c.nome}</td>
+          <td class="p-2.5">${c.funcao}</td>
+          <td class="p-2.5"><span class="px-2 py-0.5 text-xs rounded-full font-bold ${c.status === 'Ativo' ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'}">${c.status}</span></td>
+          <td class="p-2.5 text-right space-x-2">
             <button onclick="toggleStatusColab(${c.id})" class="text-xs px-2 py-1 bg-gray-200 rounded">Status</button>
             <button onclick="removerColab(${c.id})" class="text-xs px-2 py-1 bg-red-100 text-red-600 rounded">Excluir</button>
           </td>
