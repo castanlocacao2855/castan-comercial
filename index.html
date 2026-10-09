@@ -12,7 +12,6 @@
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <style>
-    /* Estilo para rolagem suave do menu em celulares */
     .no-scrollbar::-webkit-scrollbar { display: none; }
     .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
   </style>
@@ -96,16 +95,14 @@
       </div>
 
       <div class="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6">
-
         <div class="lg:col-span-3 bg-white p-3.5 sm:p-5 rounded-xl shadow-sm border border-gray-200">
           <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 mb-3">
             <div>
               <h3 class="text-xs sm:text-sm font-bold text-gray-800 flex items-center gap-2">
                 <i class="fa-solid fa-chart-column text-emerald-600"></i> Valor Fechado e % da Meta por Atendente
               </h3>
-              <p class="text-[10px] sm:text-[11px] text-gray-500">Valor R$ por atendente + Linha de Meta (57k)</p>
             </div>
-            <button onclick="baixarGrafico('chartValoresAtendentes', 'Valores_E_Meta_Atendentes')" class="text-xs bg-slate-100 hover:bg-slate-200 text-slate-700 px-2.5 py-1 rounded border font-semibold flex items-center gap-1 self-end sm:self-auto">
+            <button onclick="baixarGrafico('chartValoresAtendentes', 'Valores_E_Meta_Atendentes')" class="text-xs bg-slate-100 hover:bg-slate-200 text-slate-700 px-2.5 py-1 rounded border font-semibold flex items-center gap-1">
               <i class="fa-solid fa-download"></i> Baixar Gráfico
             </button>
           </div>
@@ -117,12 +114,7 @@
         <div class="lg:col-span-2 bg-white p-3.5 sm:p-5 rounded-xl shadow-sm border border-gray-200">
           <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 mb-3">
             <h3 class="text-xs sm:text-sm font-bold text-gray-700">Visitas Agendadas x Concluídas x Canceladas x % Conversão</h3>
-            <div class="flex items-center gap-2 self-end sm:self-auto">
-              <span id="label-periodo-dash" class="text-[10px] sm:text-xs font-bold bg-blue-100 text-blue-800 px-2 py-0.5 rounded-full"></span>
-              <button onclick="baixarGrafico('chartComboVisitas', 'Visitas_Conversao')" class="text-xs bg-slate-100 hover:bg-slate-200 text-slate-700 px-2.5 py-1 rounded border font-semibold flex items-center gap-1">
-                <i class="fa-solid fa-download"></i> Baixar
-              </button>
-            </div>
+            <span id="label-periodo-dash" class="text-[10px] sm:text-xs font-bold bg-blue-100 text-blue-800 px-2 py-0.5 rounded-full"></span>
           </div>
           <div class="relative h-64 sm:h-80 w-full">
             <canvas id="chartComboVisitas"></canvas>
@@ -130,42 +122,28 @@
         </div>
 
         <div class="bg-white p-3.5 sm:p-5 rounded-xl shadow-sm border border-gray-200">
-          <div class="flex justify-between items-center mb-3">
-            <h3 class="text-xs sm:text-sm font-bold text-gray-700">Status da Esteira</h3>
-            <button onclick="baixarGrafico('chartStatusEsteira', 'Status_Esteira')" class="text-xs bg-slate-100 hover:bg-slate-200 text-slate-700 px-2 py-1 rounded border font-semibold flex items-center gap-1">
-              <i class="fa-solid fa-download"></i> Baixar
-            </button>
-          </div>
+          <h3 class="text-xs sm:text-sm font-bold text-gray-700 mb-3">Status da Esteira</h3>
           <div class="relative h-56 sm:h-72 w-full">
             <canvas id="chartStatusEsteira"></canvas>
           </div>
         </div>
 
         <div class="bg-white p-3.5 sm:p-5 rounded-xl shadow-sm border border-gray-200">
-          <div class="flex justify-between items-center mb-3">
-            <h3 class="text-xs sm:text-sm font-bold text-gray-700">Captação vs Rescisão</h3>
-            <button onclick="baixarGrafico('chartCaptacaoRescisao', 'Captacao_Rescisao')" class="text-xs bg-slate-100 text-slate-700 px-2 py-1 rounded border font-semibold">Baixar</button>
-          </div>
+          <h3 class="text-xs sm:text-sm font-bold text-gray-700 mb-3">Captação vs Rescisão</h3>
           <div class="relative h-52 sm:h-60 w-full">
             <canvas id="chartCaptacaoRescisao"></canvas>
           </div>
         </div>
 
         <div class="bg-white p-3.5 sm:p-5 rounded-xl shadow-sm border border-gray-200">
-          <div class="flex justify-between items-center mb-3">
-            <h3 class="text-xs sm:text-sm font-bold text-gray-700">Novos Negócios vs Concluídas</h3>
-            <button onclick="baixarGrafico('chartNovosVsConcluidas', 'Novos_Vs_Concluidas')" class="text-xs bg-slate-100 text-slate-700 px-2 py-1 rounded border font-semibold">Baixar</button>
-          </div>
+          <h3 class="text-xs sm:text-sm font-bold text-gray-700 mb-3">Novos Negócios vs Concluídas</h3>
           <div class="relative h-52 sm:h-60 w-full">
             <canvas id="chartNovosVsConcluidas"></canvas>
           </div>
         </div>
 
         <div class="bg-white p-3.5 sm:p-5 rounded-xl shadow-sm border border-gray-200">
-          <div class="flex justify-between items-center mb-3">
-            <h3 class="text-xs sm:text-sm font-bold text-gray-700">Concluídas vs Solicitação Lais</h3>
-            <button onclick="baixarGrafico('chartConcluidasLais', 'Concluidas_Vs_Lais')" class="text-xs bg-slate-100 text-slate-700 px-2 py-1 rounded border font-semibold">Baixar</button>
-          </div>
+          <h3 class="text-xs sm:text-sm font-bold text-gray-700 mb-3">Concluídas vs Solicitação Lais</h3>
           <div class="relative h-52 sm:h-60 w-full">
             <canvas id="chartConcluidasLais"></canvas>
           </div>
@@ -187,7 +165,7 @@
         </button>
       </div>
 
-      <!-- FRENTE 1: ATENDIMENTO COMERCIAL -->
+      <!-- FRENTE 1: ATENDIMENTO -->
       <div id="subtab-atendimento" class="subtab-content block space-y-4 sm:space-y-6">
         <div class="bg-white p-4 sm:p-6 rounded-b-xl shadow-sm border border-gray-200">
           <h3 class="text-sm sm:text-base font-bold text-gray-800 mb-3 sm:mb-4">Lançamento de Atendimento Semanal</h3>
@@ -213,7 +191,7 @@
               <input type="number" min="0" id="atend-concluidas" value="0" required oninput="calcularAtendimentoAuto()" class="w-full border rounded-lg px-3 py-2 text-xs sm:text-sm">
             </div>
             <div>
-              <label class="block text-[11px] font-semibold text-gray-600 mb-1">Visitas Canceladas (Auto)</label>
+              <label class="block text-[11px] font-semibold text-gray-600 mb-1">Canceladas (Auto)</label>
               <input type="number" id="atend-canceladas" readonly value="0" class="w-full border bg-gray-100 rounded-lg px-3 py-2 text-xs sm:text-sm font-bold text-red-600">
             </div>
             <div>
@@ -241,9 +219,7 @@
         </div>
 
         <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
-          <div class="p-3.5 border-b bg-gray-50">
-            <h3 class="font-bold text-xs sm:text-sm text-gray-700">Registros de Atendimento Comercial</h3>
-          </div>
+          <div class="p-3.5 border-b bg-gray-50"><h3 class="font-bold text-xs sm:text-sm text-gray-700">Registros de Atendimento Comercial</h3></div>
           <div class="overflow-x-auto">
             <table class="w-full text-left border-collapse text-xs whitespace-nowrap">
               <thead class="bg-gray-100 text-gray-600 uppercase">
@@ -267,7 +243,7 @@
         </div>
       </div>
 
-      <!-- FRENTE 2: ESTEIRA DE FECHAMENTO -->
+      <!-- FRENTE 2: ESTEIRA -->
       <div id="subtab-esteira" class="subtab-content hidden space-y-4 sm:space-y-6">
         <div class="bg-white p-4 sm:p-6 rounded-b-xl shadow-sm border border-gray-200">
           <h3 class="text-sm sm:text-base font-bold text-gray-800 mb-3 sm:mb-4">Novo Contrato na Esteira</h3>
@@ -287,7 +263,7 @@
             <div>
               <label class="block text-[11px] font-semibold text-gray-600 mb-1">REF (Número)</label>
               <div class="flex items-center">
-                <span class="bg-gray-100 border border-r-0 rounded-l-lg px-2.5 py-2 text-xs sm:text-sm font-bold text-gray-500">LOC</span>
+                <span class="bg-gray-100 border border-r-0 rounded-l-lg px-2 py-2 text-xs font-bold text-gray-500">LOC</span>
                 <input type="text" id="fech-ref" placeholder="1308" required class="w-full border rounded-r-lg px-3 py-2 text-xs sm:text-sm">
               </div>
             </div>
@@ -397,28 +373,16 @@
                 <span>Total Fechado:</span>
                 <b id="resumo-total-fechado" class="text-emerald-600 font-extrabold text-sm sm:text-base">R$ 0,00</b>
               </div>
-
               <div class="flex justify-between items-center bg-blue-50 px-2.5 py-1.5 rounded-lg border border-blue-200">
                 <span class="text-[11px] font-bold text-blue-900">Meta Conquistada:</span>
                 <span id="resumo-porcentagem-meta" class="text-xs font-black text-blue-700 bg-blue-200/60 px-2 py-0.5 rounded">0%</span>
               </div>
-
               <div class="flex justify-between"><span>Locações:</span><b id="resumo-num-locacoes">0</b></div>
               <div id="resumo-locacoes-atendentes" class="bg-slate-50 p-2.5 rounded-lg border border-slate-200 text-xs space-y-1 my-2"></div>
               <div class="flex justify-between"><span>Ticket Médio:</span><b id="resumo-ticket" class="text-blue-600">R$ 0,00</b></div>
               <hr>
               <div class="flex justify-between text-xs text-red-500"><span>Desistentes:</span><b id="resumo-desistentes">0</b></div>
               <div class="flex justify-between text-xs text-red-500"><span>Perdido:</span><b id="resumo-valor-perdido">R$ 0,00</b></div>
-            </div>
-
-            <div class="bg-slate-50 p-3 rounded-lg border border-slate-200 space-y-2">
-              <div class="flex items-center justify-between">
-                <span class="text-[11px] font-bold text-slate-700 uppercase flex items-center gap-1">
-                  <i class="fa-solid fa-bullseye text-red-600"></i> Meta do Mês
-                </span>
-                <span class="text-[9px] font-bold bg-amber-100 text-amber-800 px-1.5 py-0.5 rounded">R$ 57k ou 26 Loc.</span>
-              </div>
-              <div id="box-meta-detalhes" class="space-y-1.5 text-xs"></div>
             </div>
           </div>
         </div>
@@ -452,22 +416,18 @@
               <label class="block text-[11px] font-semibold text-gray-600 mb-1">Qtd. Captado</label>
               <input type="number" min="1" id="cap-qtd" value="1" required oninput="calcularCaptacaoAuto()" class="w-full border rounded-lg px-3 py-2 text-xs sm:text-sm">
             </div>
-
             <div id="box-receptivo" class="block">
               <label class="block text-[11px] font-semibold text-gray-600 mb-1">Qtd. Rescisão</label>
               <input type="number" min="0" id="cap-rescisao" value="0" oninput="calcularCaptacaoAuto()" class="w-full border rounded-lg px-3 py-2 text-xs sm:text-sm">
             </div>
-
             <div id="box-ativo" class="hidden">
               <label class="block text-[11px] font-semibold text-gray-600 mb-1">Alugados Terceiros</label>
               <input type="number" min="0" id="cap-terceiros" value="0" oninput="calcularCaptacaoAuto()" class="w-full border rounded-lg px-3 py-2 text-xs sm:text-sm">
             </div>
-
             <div>
               <label class="block text-[11px] font-semibold text-gray-600 mb-1">Conversão Auto %</label>
               <input type="text" id="cap-conversao" readonly value="0%" class="w-full border bg-gray-100 rounded-lg px-3 py-2 text-xs sm:text-sm font-bold text-emerald-600">
             </div>
-
             <div class="sm:col-span-2 md:col-span-3 flex items-end justify-end">
               <button type="submit" class="w-full sm:w-auto bg-amber-600 text-white px-6 py-2.5 rounded-lg text-xs sm:text-sm font-bold hover:bg-amber-700 shadow">Salvar Captação</button>
             </div>
@@ -603,34 +563,11 @@
           </table>
         </div>
       </div>
-
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
-        <div class="bg-white p-4 sm:p-5 rounded-xl shadow-sm border border-gray-200">
-          <h3 class="font-bold text-gray-700 text-xs sm:text-sm mb-3 uppercase border-b pb-2">Esteira do Mês</h3>
-          <div class="space-y-2 text-xs">
-            <div class="flex justify-between"><span>Fechados:</span><b id="mes-esteira-fechados" class="text-emerald-600 font-bold">0</b></div>
-            <div class="flex justify-between"><span>Pendentes:</span><b id="mes-esteira-pendentes" class="text-yellow-600 font-bold">0</b></div>
-            <div class="flex justify-between"><span>Desistentes:</span><b id="mes-esteira-caidos" class="text-red-600 font-bold">0</b></div>
-            <div class="flex justify-between"><span>Valor Perdido:</span><b id="mes-esteira-valor-perdido" class="text-red-600 font-bold">R$ 0,00</b></div>
-          </div>
-        </div>
-
-        <div class="bg-white p-4 sm:p-5 rounded-xl shadow-sm border border-gray-200">
-          <h3 class="font-bold text-gray-700 text-xs sm:text-sm mb-3 uppercase border-b pb-2">Captação do Mês</h3>
-          <div class="space-y-2 text-xs">
-            <div class="flex justify-between"><span>Total Receptivo:</span><b id="mes-cap-receptivo" class="text-blue-600 font-bold">0</b></div>
-            <div class="flex justify-between"><span>Rescisões:</span><b id="mes-cap-rescisao" class="text-slate-800 font-bold">0</b></div>
-            <div class="flex justify-between"><span>Total Ativo:</span><b id="mes-cap-ativo" class="text-purple-600 font-bold">0</b></div>
-            <div class="flex justify-between"><span>Alugados Terceiros:</span><b id="mes-cap-terceiros" class="text-slate-800 font-bold">0</b></div>
-          </div>
-        </div>
-      </div>
     </section>
 
   </main>
 
   <script>
-    // CONEXÃO COM O SUPABASE
     const SUPABASE_URL = 'https://uwueavzdkjsqvlyyafcz.supabase.co';
     const SUPABASE_KEY = 'sb_publishable_M1RXel-LjzUVsZDCW-IkMw_aSm_WvUP';
     const _supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
@@ -657,10 +594,8 @@
       const p1 = dInicio.split('-');
       const p2 = dFim.split('-');
       if (p1.length !== 3 || p2.length !== 3) return false;
-      
       const y1 = parseInt(p1[0], 10), m1 = parseInt(p1[1], 10), d1 = parseInt(p1[2], 10);
       const y2 = parseInt(p2[0], 10), m2 = parseInt(p2[1], 10), d2 = parseInt(p2[2], 10);
-      
       if (y1 === y2 && m1 === m2 && d1 === 1) {
         const ultimoDia = new Date(y1, m1, 0).getDate();
         return d2 === ultimoDia;
@@ -717,16 +652,13 @@
     function baixarGrafico(canvasId, nomeArquivo) {
       const canvas = document.getElementById(canvasId);
       if (!canvas) return;
-
       const tempCanvas = document.createElement('canvas');
       tempCanvas.width = canvas.width;
       tempCanvas.height = canvas.height;
       const ctx = tempCanvas.getContext('2d');
-
       ctx.fillStyle = '#ffffff';
       ctx.fillRect(0, 0, tempCanvas.width, tempCanvas.height);
       ctx.drawImage(canvas, 0, 0);
-
       const link = document.createElement('a');
       link.download = `${nomeArquivo}.png`;
       link.href = tempCanvas.toDataURL('image/png', 1.0);
@@ -735,7 +667,6 @@
       document.body.removeChild(link);
     }
 
-    // ESTADO E VARIÁVEIS
     let colaboradores = [];
     let atendimentos = [];
     let fechamentos = [];
@@ -754,44 +685,6 @@
       { id: 5, nome: 'Wellington', funcao: 'Agente (Mostrador)', status: 'Ativo' },
       { id: 6, nome: 'Paula', funcao: 'FECHAMENTO', status: 'Ativo' }
     ];
-
-    // SINCRONIZADOR AUTOMÁTICO DO COMPUTADOR PARA O SUPABASE
-    async function migrarDadosLocaisDoPCSeExistem() {
-      try {
-        const localAtend = JSON.parse(localStorage.getItem('atendimentos') || '[]');
-        const localFech = JSON.parse(localStorage.getItem('fechamentos') || '[]');
-        const localCap = JSON.parse(localStorage.getItem('captacoes') || '[]');
-
-        let precisouMigrar = false;
-
-        if (atendimentos.length === 0 && localAtend.length > 0) {
-          await _supabase.from('atendimentos').upsert(localAtend);
-          precisouMigrar = true;
-        }
-        if (fechamentos.length === 0 && localFech.length > 0) {
-          await _supabase.from('fechamentos').upsert(localFech);
-          precisouMigrar = true;
-        }
-        if (captacoes.length === 0 && localCap.length > 0) {
-          await _supabase.from('captacoes').upsert(localCap);
-          precisouMigrar = true;
-        }
-
-        if (precisouMigrar) {
-          console.log('Dados do computador enviados com sucesso para o Supabase!');
-          const { data: aData } = await _supabase.from('atendimentos').select('*');
-          atendimentos = aData || [];
-
-          const { data: fData } = await _supabase.from('fechamentos').select('*');
-          fechamentos = fData || [];
-
-          const { data: capData } = await _supabase.from('captacoes').select('*');
-          captacoes = capData || [];
-        }
-      } catch (e) {
-        console.error('Erro na sincronização inicial:', e);
-      }
-    }
 
     async function carregarDadosDoSupabase() {
       try {
@@ -812,16 +705,13 @@
         const { data: capData } = await _supabase.from('captacoes').select('*');
         captacoes = capData || [];
 
-        // Executa a migração automática dos dados antigos salvos no PC
-        await migrarDadosLocaisDoPCSeExistem();
-
-        atualizarE-RenderizarTudo();
+        atualizarERenderizarTudo();
       } catch (err) {
         console.error('Erro ao carregar dados:', err);
       }
     }
 
-    function atualizarE-RenderizarTudo() {
+    function atualizarERenderizarTudo() {
       atualizarSelectsColaboradores();
       renderTabelaAtendimento();
       renderTabelaFechamento();
@@ -834,10 +724,8 @@
       const hoje = new Date();
       const diaDaSemana = hoje.getDay(); 
       const diffSegunda = hoje.getDate() - diaDaSemana + (diaDaSemana === 0 ? -6 : 1);
-      
       const segunda = new Date(hoje.setDate(diffSegunda));
       const domingo = new Date(hoje.setDate(diffSegunda + 6));
-
       const fSegunda = segunda.toISOString().split('T')[0];
       const fDomingo = domingo.toISOString().split('T')[0];
 
@@ -858,10 +746,14 @@
         btn.classList.add('text-gray-300');
       });
 
-      document.getElementById(`tab-${tabId}`).classList.remove('hidden');
+      const targetTab = document.getElementById(`tab-${tabId}`);
+      if (targetTab) targetTab.classList.remove('hidden');
+
       const activeBtn = document.getElementById(`btn-${tabId}`);
-      activeBtn.classList.add('bg-blue-600', 'text-white');
-      activeBtn.classList.remove('text-gray-300');
+      if (activeBtn) {
+        activeBtn.classList.add('bg-blue-600', 'text-white');
+        activeBtn.classList.remove('text-gray-300');
+      }
 
       if (tabId === 'dashboard') renderDashboard();
       if (tabId === 'lancamentos') atualizarSelectsColaboradores();
@@ -875,15 +767,18 @@
         btn.classList.add('border-transparent', 'text-gray-500');
       });
 
-      document.getElementById(`subtab-${subId}`).classList.remove('hidden');
+      const targetSub = document.getElementById(`subtab-${subId}`);
+      if (targetSub) targetSub.classList.remove('hidden');
+
       const activeSub = document.getElementById(`subbtn-${subId}`);
-      activeSub.classList.add('border-blue-600', 'text-blue-600', 'font-bold');
-      activeSub.classList.remove('border-transparent', 'text-gray-500');
+      if (activeSub) {
+        activeSub.classList.add('border-blue-600', 'text-blue-600', 'font-bold');
+        activeSub.classList.remove('border-transparent', 'text-gray-500');
+      }
     }
 
     function atualizarSelectsColaboradores() {
       const ativos = colaboradores.filter(c => c.status === 'Ativo');
-
       const atendentesComercial = ativos.filter(c => 
         c.funcao.toLowerCase().includes('atendimento') || 
         c.funcao.toLowerCase().includes('comercial') || 
@@ -958,15 +853,6 @@
       await _supabase.from('atendimentos').upsert(item);
       editingAtendimentoId = null;
       document.getElementById('btn-salvar-atendimento').innerText = 'Salvar Registro';
-
-      document.getElementById('atend-agendadas').value = 0;
-      document.getElementById('atend-concluidas').value = 0;
-      document.getElementById('atend-canceladas').value = 0;
-      document.getElementById('atend-conversao').value = '0%';
-      document.getElementById('atend-novos').value = 0;
-      document.getElementById('atend-lais').value = 0;
-      document.getElementById('atend-ativo').value = 0;
-
       await carregarDadosDoSupabase();
     }
 
@@ -1029,7 +915,6 @@
       const countRows = atendimentos.length;
       const totConv = totAg > 0 ? ((totConc / totAg) * 100).toFixed(1) : 0;
       const totLaisConsolidado = calcularTotalLaisGrupo(atendimentos);
-
       const semanasUnicasSet = new Set(atendimentos.map(a => `${a.inicio}_${a.fim}`));
       const numSemanas = semanasUnicasSet.size;
 
@@ -1050,17 +935,6 @@
           <td class="p-2.5 text-center font-black">${totNovos}</td>
           <td class="p-2.5 text-center text-purple-800 font-black bg-purple-50/80">${totLaisConsolidado}</td>
           <td class="p-2.5 text-center font-black">${totAtivo}</td>
-          <td></td>
-        </tr>
-        <tr class="bg-blue-50/60 text-blue-900 border-t border-blue-200">
-          <td class="p-2.5 font-bold" colspan="2">MÉDIA SEMANAL</td>
-          <td class="p-2.5 text-center font-bold">${mediaAg}</td>
-          <td class="p-2.5 text-center font-bold text-emerald-700">${mediaConc}</td>
-          <td class="p-2.5 text-center font-bold text-red-700">${mediaCanc}</td>
-          <td class="p-2.5 text-center font-bold text-blue-700">${totConv}%</td>
-          <td class="p-2.5 text-center font-bold">${mediaNovos}</td>
-          <td class="p-2.5 text-center font-bold text-purple-800">${mediaLaisSemanal}</td>
-          <td class="p-2.5 text-center font-bold">${mediaAtivo}</td>
           <td></td>
         </tr>
       `;
@@ -1108,16 +982,6 @@
 
       await _supabase.from('fechamentos').upsert(item);
       editingFechamentoId = null;
-
-      document.getElementById('fech-ref').value = '';
-      document.getElementById('fech-endereco').value = '';
-      document.getElementById('fech-valor').value = '';
-      document.getElementById('fech-captador').value = '';
-      document.getElementById('fech-chave').value = '';
-      document.getElementById('fech-assinado').value = '';
-      document.getElementById('fech-obs').value = '';
-      document.getElementById('fech-status').value = 'PENDENTE';
-
       await carregarDadosDoSupabase();
     }
 
@@ -1166,37 +1030,21 @@
 
       const tbody = document.getElementById('tabelaFechamento');
       let totValorFechado = 0, numFechados = 0, numDesistentes = 0, valorPerdido = 0;
-
       const fechFiltrados = fechamentos.filter(f => !mesSelecionado || f.mes === mesSelecionado);
 
-      const locacoesPorAtendente = {
-        'Castan': { qtd: 0, valor: 0 },
-        'Denise': { qtd: 0, valor: 0 },
-        'Leticia': { qtd: 0, valor: 0 },
-        'Thayane': { qtd: 0, valor: 0 }
-      };
-
-      colaboradores.forEach(c => {
-        if (c.status === 'Ativo' && (c.funcao.toLowerCase().includes('atendimento') || c.funcao.toLowerCase().includes('comercial'))) {
-          if (!locacoesPorAtendente[c.nome]) {
-            locacoesPorAtendente[c.nome] = { qtd: 0, valor: 0 };
-          }
-        }
-      });
+      const locacoesPorAtendente = { 'Castan': { qtd: 0, valor: 0 }, 'Denise': { qtd: 0, valor: 0 }, 'Leticia': { qtd: 0, valor: 0 }, 'Thayane': { qtd: 0, valor: 0 } };
 
       tbody.innerHTML = fechFiltrados.map(f => {
         const valNum = converterParaNumero(f.valor);
         if (f.status === 'FECHADO') {
           totValorFechado += valNum;
           numFechados++;
-
           const nomeAtendente = (f.atendente || 'Castan').trim();
           if (!locacoesPorAtendente[nomeAtendente]) {
             locacoesPorAtendente[nomeAtendente] = { qtd: 0, valor: 0 };
           }
           locacoesPorAtendente[nomeAtendente].qtd += 1;
           locacoesPorAtendente[nomeAtendente].valor += valNum;
-
         } else if (f.status === 'DESISTENTE') {
           numDesistentes++;
           valorPerdido += valNum;
@@ -1211,7 +1059,7 @@
             <td class="p-2.5 font-bold">R$ ${valNum.toLocaleString('pt-BR', {minimumFractionDigits: 2, maximumFractionDigits: 2})}</td>
             <td class="p-2.5">${f.garantia}</td>
             <td class="p-2.5">
-              <select onchange="alterarStatusFechamentoDirect(${f.id}, this.value)" class="text-[11px] font-bold rounded px-1.5 py-0.5 border outline-none ${f.status === 'FECHADO' ? 'bg-green-100 text-green-800 border-green-300' : f.status === 'PENDENTE' ? 'bg-yellow-100 text-yellow-800 border-yellow-300' : 'bg-red-100 text-red-800 border-red-300'}">
+              <select onchange="alterarStatusFechamentoDirect(${f.id}, this.value)" class="text-[11px] font-bold rounded px-1.5 py-0.5 border outline-none ${f.status === 'FECHADO' ? 'bg-green-100 text-green-800' : f.status === 'PENDENTE' ? 'bg-yellow-100 text-yellow-800' : 'bg-red-100 text-red-800'}">
                 <option value="PENDENTE" ${f.status === 'PENDENTE' ? 'selected' : ''}>PENDENTE</option>
                 <option value="FECHADO" ${f.status === 'FECHADO' ? 'selected' : ''}>FECHADO</option>
                 <option value="DESISTENTE" ${f.status === 'DESISTENTE' ? 'selected' : ''}>DESISTENTE</option>
@@ -1235,60 +1083,22 @@
 
       let htmlAtendentes = '';
       Object.keys(locacoesPorAtendente).sort().forEach(nome => {
-        const corClass = obterCorColaborador(nome);
         const item = locacoesPorAtendente[nome];
         const valFormatado = item.valor.toLocaleString('pt-BR', {minimumFractionDigits: 2, maximumFractionDigits: 2});
-        const percIndividualMeta = Math.round((item.valor / metaGlobalValor) * 100);
-        
         htmlAtendentes += `
           <div class="flex justify-between items-center py-1 border-b border-slate-100 last:border-0">
-            <span class="${corClass} font-semibold">• ${nome}</span>
+            <span class="${obterCorColaborador(nome)}">• ${nome}</span>
             <div class="text-right flex items-center gap-1">
               <span class="text-slate-800 font-bold bg-slate-200/60 px-1.5 py-0.5 rounded text-[10px]">${item.qtd} loc.</span>
               <span class="text-emerald-700 font-bold text-xs">R$ ${valFormatado}</span>
-              <span class="text-blue-600 font-extrabold text-[10px]">(${percIndividualMeta}%)</span>
             </div>
           </div>
         `;
       });
       document.getElementById('resumo-locacoes-atendentes').innerHTML = htmlAtendentes;
-
       document.getElementById('resumo-ticket').innerText = `R$ ${(numFechados > 0 ? totValorFechado / numFechados : 0).toLocaleString('pt-BR', {minimumFractionDigits: 2, maximumFractionDigits: 2})}`;
       document.getElementById('resumo-desistentes').innerText = numDesistentes;
       document.getElementById('resumo-valor-perdido').innerText = `R$ ${valorPerdido.toLocaleString('pt-BR', {minimumFractionDigits: 2, maximumFractionDigits: 2})}`;
-
-      const metaQtd = 26;
-      const faltaValor = Math.max(0, metaGlobalValor - totValorFechado);
-      const faltaQtd = Math.max(0, metaQtd - numFechados);
-
-      const percValor = Math.min(100, (totValorFechado / metaGlobalValor) * 100).toFixed(1);
-      const percQtd = Math.min(100, (numFechados / metaQtd) * 100).toFixed(1);
-
-      document.getElementById('box-meta-detalhes').innerHTML = `
-        <div class="space-y-1">
-          <div class="flex justify-between items-center">
-            <span class="text-gray-600">Falta (R$):</span>
-            <b class="${faltaValor === 0 ? 'text-emerald-600 font-bold' : 'text-red-600 font-bold'}">
-              ${faltaValor === 0 ? 'Batida! 🎉' : `R$ ${faltaValor.toLocaleString('pt-BR', {minimumFractionDigits: 2, maximumFractionDigits: 2})}`}
-            </b>
-          </div>
-          <div class="w-full bg-gray-200 rounded-full h-1.5 overflow-hidden">
-            <div class="bg-emerald-500 h-1.5 rounded-full transition-all" style="width: ${percValor}%"></div>
-          </div>
-        </div>
-
-        <div class="space-y-1 pt-1">
-          <div class="flex justify-between items-center">
-            <span class="text-gray-600">Falta (Qtd):</span>
-            <b class="${faltaQtd === 0 ? 'text-emerald-600 font-bold' : 'text-blue-600 font-bold'}">
-              ${faltaQtd === 0 ? 'Batida! 🎉' : `${faltaQtd} locações`}
-            </b>
-          </div>
-          <div class="w-full bg-gray-200 rounded-full h-1.5 overflow-hidden">
-            <div class="bg-blue-600 h-1.5 rounded-full transition-all" style="width: ${percQtd}%"></div>
-          </div>
-        </div>
-      `;
     }
 
     function toggleTipoCaptador() {
@@ -1307,7 +1117,6 @@
       const tipo = document.getElementById('cap-tipo').value;
       const qtd = parseInt(document.getElementById('cap-qtd').value) || 0;
       let conv = 0;
-
       if (tipo === 'RECEPTIVO') {
         const rescisao = parseInt(document.getElementById('cap-rescisao').value) || 0;
         conv = qtd > 0 ? ((rescisao / qtd) * 100).toFixed(1) : 0;
@@ -1315,7 +1124,6 @@
         const terceiros = parseInt(document.getElementById('cap-terceiros').value) || 0;
         conv = qtd > 0 ? ((terceiros / qtd) * 100).toFixed(1) : 0;
       }
-
       document.getElementById('cap-conversao').value = `${conv}%`;
     }
 
@@ -1332,7 +1140,6 @@
         especifico: tipo === 'RECEPTIVO' ? (parseInt(document.getElementById('cap-rescisao').value) || 0) : (parseInt(document.getElementById('cap-terceiros').value) || 0),
         conversao: document.getElementById('cap-conversao').value
       };
-
       await _supabase.from('captacoes').upsert(item);
       await carregarDadosDoSupabase();
     }
@@ -1360,52 +1167,32 @@
     function renderDashboard() {
       const dInicio = document.getElementById('dash-inicio').value;
       const dFim = document.getElementById('dash-fim').value;
-
       document.getElementById('label-periodo-dash').innerText = dInicio && dFim ? `${formatarDataBR(dInicio)} - ${formatarDataBR(dFim)}` : 'Tudo';
 
       const atFiltrados = atendimentos.filter(a => {
         if (!dInicio || !dFim) return true;
-        return (a.inicio >= dInicio && a.inicio <= dFim) || 
-               (a.fim >= dInicio && a.fim <= dFim) ||
-               (a.inicio <= dInicio && a.fim >= dFim);
+        return (a.inicio >= dInicio && a.inicio <= dFim) || (a.fim >= dInicio && a.fim <= dFim) || (a.inicio <= dInicio && a.fim >= dFim);
       });
 
       const isMesCheio = verificarMesCheio(dInicio, dFim);
-
       const fechFiltrados = fechamentos.filter(f => {
         if (!dInicio || !dFim) return true;
-
-        if (isMesCheio) {
-          const mesFiltro = dInicio.substring(0, 7);
-          return f.mes === mesFiltro;
-        }
-
+        if (isMesCheio) return f.mes === dInicio.substring(0, 7);
         const dtRef = f.assinado || f.data;
-        if (dtRef) {
-          return dtRef >= dInicio && dtRef <= dFim;
-        }
-
-        if (f.mes) {
-          const mesInicio = dInicio.substring(0, 7);
-          const mesFim = dFim.substring(0, 7);
-          return f.mes >= mesInicio && f.mes <= mesFim;
-        }
-
+        if (dtRef) return dtRef >= dInicio && dtRef <= dFim;
+        if (f.mes) return f.mes >= dInicio.substring(0, 7) && f.mes <= dFim.substring(0, 7);
         return true;
       });
 
       const capFiltradas = captacoes.filter(c => {
         if (!dInicio || !dFim) return true;
-        return (c.inicio >= dInicio && c.inicio <= dFim) || 
-               (c.fim >= dInicio && c.fim <= dFim) ||
-               (c.inicio <= dInicio && c.fim >= dFim);
+        return (c.inicio >= dInicio && c.inicio <= dFim) || (c.fim >= dInicio && c.fim <= dFim) || (c.inicio <= dInicio && c.fim >= dFim);
       });
 
       const totVisitasConcluidas = atFiltrados.reduce((acc, a) => acc + (parseInt(a.concluidas) || 0), 0);
       const fechados = fechFiltrados.filter(f => f.status === 'FECHADO');
       const valTotalFechado = fechados.reduce((acc, f) => acc + converterParaNumero(f.valor), 0);
       const totCaptados = capFiltradas.reduce((acc, c) => acc + (parseInt(c.qtd) || 0), 0);
-      
       const totLaisDashboard = calcularTotalLaisGrupo(atFiltrados);
 
       document.getElementById('dash-visitas-concluidas').innerText = totVisitasConcluidas;
@@ -1413,55 +1200,30 @@
       document.getElementById('dash-valor-fechado').innerText = `R$ ${valTotalFechado.toLocaleString('pt-BR', {minimumFractionDigits: 2, maximumFractionDigits: 2})}`;
       document.getElementById('dash-captados').innerText = totCaptados;
 
-      const atendentesComercial = colaboradores.filter(c => 
-        c.status === 'Ativo' && 
-        (c.funcao.toLowerCase().includes('atendimento') || 
-         c.funcao.toLowerCase().includes('comercial') || 
-         c.funcao.toLowerCase().includes('corretor'))
-      );
-
+      const atendentesComercial = colaboradores.filter(c => c.status === 'Ativo' && (c.funcao.toLowerCase().includes('atendimento') || c.funcao.toLowerCase().includes('comercial') || c.funcao.toLowerCase().includes('corretor')));
       const atendentesUnicos = [];
       const nomesVistos = new Set();
+      ['Castan', 'Denise', 'Leticia', 'Thayane'].forEach(n => { nomesVistos.add(n); atendentesUnicos.push({ nome: n }); });
+      atendentesComercial.forEach(c => { if (!nomesVistos.has(c.nome)) { nomesVistos.add(c.nome); atendentesUnicos.push(c); } });
 
-      ['Castan', 'Denise', 'Leticia', 'Thayane'].forEach(n => {
-        nomesVistos.add(n);
-        atendentesUnicos.push({ nome: n });
-      });
-
-      atendentesComercial.forEach(c => {
-        if (!nomesVistos.has(c.nome)) {
-          nomesVistos.add(c.nome);
-          atendentesUnicos.push(c);
-        }
-      });
-
-      const atValoresLabels = [];
-      const atValoresData = [];
-      const atMetaPercData = [];
-      const barColorsArray = [];
-
+      const atValoresLabels = [], atValoresData = [], atMetaPercData = [], barColorsArray = [];
       const metaGlobalRef = 57000;
       let sumValorAtendentes = 0;
 
       atendentesUnicos.forEach(c => {
-        const nome = c.nome;
-        const fechAtendente = fechFiltrados.filter(f => f.status === 'FECHADO' && f.atendente === nome);
+        const fechAtendente = fechFiltrados.filter(f => f.status === 'FECHADO' && f.atendente === c.nome);
         const valFechado = fechAtendente.reduce((acc, f) => acc + converterParaNumero(f.valor), 0);
-
         const percDaMeta = parseFloat(((valFechado / metaGlobalRef) * 100).toFixed(1));
-
-        atValoresLabels.push(nome);
+        atValoresLabels.push(c.nome);
         atValoresData.push(valFechado);
         atMetaPercData.push(percDaMeta);
-        barColorsArray.push(obterCorHexAtendente(nome));
-
+        barColorsArray.push(obterCorHexAtendente(c.nome));
         sumValorAtendentes += valFechado;
       });
 
-      const percTotalMeta = parseFloat(((sumValorAtendentes / metaGlobalRef) * 100).toFixed(1));
       atValoresLabels.push('TOTAL');
       atValoresData.push(sumValorAtendentes);
-      atMetaPercData.push(percTotalMeta);
+      atMetaPercData.push(parseFloat(((sumValorAtendentes / metaGlobalRef) * 100).toFixed(1)));
       barColorsArray.push('#10b981');
 
       const chartLabels = [], chartAg = [], chartConc = [], chartCanc = [], chartConv = [];
@@ -1473,24 +1235,13 @@
         const conc = cAtend.reduce((acc, a) => acc + a.concluidas, 0);
         const canc = cAtend.reduce((acc, a) => acc + a.canceladas, 0);
         const conv = ag > 0 ? ((conc / ag) * 100).toFixed(1) : 0;
-
         sumAg += ag; sumConc += conc; sumCanc += canc;
-
-        chartLabels.push(c.nome);
-        chartAg.push(ag);
-        chartConc.push(conc);
-        chartCanc.push(canc);
-        chartConv.push(conv);
+        chartLabels.push(c.nome); chartAg.push(ag); chartConc.push(conc); chartCanc.push(canc); chartConv.push(conv);
       });
 
       sumNovos = atFiltrados.reduce((acc, a) => acc + a.novos, 0);
-      const totalConv = sumAg > 0 ? ((sumConc / sumAg) * 100).toFixed(1) : 0;
-
       chartLabels.push('Total');
-      chartAg.push(sumAg);
-      chartConc.push(sumConc);
-      chartCanc.push(sumCanc);
-      chartConv.push(totalConv);
+      chartAg.push(sumAg); chartConc.push(sumConc); chartCanc.push(sumCanc); chartConv.push(sumAg > 0 ? ((sumConc / sumAg) * 100).toFixed(1) : 0);
 
       if (chartValoresAtendentes) chartValoresAtendentes.destroy();
       if (chartComboVisitas) chartComboVisitas.destroy();
@@ -1504,58 +1255,15 @@
         data: {
           labels: atValoresLabels,
           datasets: [
-            {
-              label: 'Valor Fechado (R$)',
-              data: atValoresData,
-              backgroundColor: barColorsArray,
-              borderRadius: 6,
-              maxBarThickness: 38,
-              categoryPercentage: 0.6,
-              barPercentage: 0.7,
-              datalabels: {
-                labels: {
-                  meta: {
-                    anchor: 'end',
-                    align: 'top',
-                    offset: 18,
-                    font: { weight: 'extrabold', size: 10 },
-                    color: '#ea580c',
-                    formatter: (value, ctx) => {
-                      const perc = atMetaPercData[ctx.dataIndex];
-                      return perc > 0 ? `${perc}%` : '';
-                    }
-                  },
-                  valor: {
-                    anchor: 'end',
-                    align: 'top',
-                    offset: 2,
-                    font: { weight: 'bold', size: 9 },
-                    color: '#1e293b',
-                    formatter: (value) => value > 0 ? `R$ ${value.toLocaleString('pt-BR', {minimumFractionDigits: 0, maximumFractionDigits: 0})}` : ''
-                  }
-                }
-              }
-            },
-            {
-              label: '% da Meta',
-              data: atMetaPercData,
-              type: 'line',
-              borderColor: '#f97316',
-              backgroundColor: '#f97316',
-              pointBackgroundColor: '#ea580c',
-              pointRadius: 4,
-              yAxisID: 'y1',
-              borderWidth: 2,
-              datalabels: { display: false }
-            }
+            { label: 'Valor Fechado (R$)', data: atValoresData, backgroundColor: barColorsArray, borderRadius: 6, maxBarThickness: 38 },
+            { label: '% da Meta', data: atMetaPercData, type: 'line', borderColor: '#f97316', backgroundColor: '#f97316', pointRadius: 4, yAxisID: 'y1', borderWidth: 2 }
           ]
         },
         options: {
-          responsive: true,
-          maintainAspectRatio: false,
-          plugins: { legend: { display: true, position: 'top', labels: { boxWidth: 12, font: { size: 10 } } } },
+          responsive: true, maintainAspectRatio: false,
+          plugins: { legend: { display: true, position: 'top' } },
           scales: {
-            y: { beginAtZero: true, grace: '20%', title: { display: false } },
+            y: { beginAtZero: true, grace: '20%' },
             y1: { beginAtZero: true, max: 115, position: 'right', grid: { drawOnChartArea: false } }
           }
         }
@@ -1566,30 +1274,12 @@
         data: {
           labels: chartLabels,
           datasets: [
-            { label: 'Agendadas', data: chartAg, backgroundColor: '#38bdf8', maxBarThickness: 26 },
-            { label: 'Concluídas', data: chartConc, backgroundColor: '#84cc16', maxBarThickness: 26 },
-            { label: 'Canceladas', data: chartCanc, backgroundColor: '#ef4444', maxBarThickness: 26 },
-            { label: '% Conv.', data: chartConv, type: 'line', borderColor: '#854d0e', backgroundColor: '#854d0e', yAxisID: 'y1', borderWidth: 2 }
+            { label: 'Agendadas', data: chartAg, backgroundColor: '#38bdf8' },
+            { label: 'Concluídas', data: chartConc, backgroundColor: '#84cc16' },
+            { label: 'Canceladas', data: chartCanc, backgroundColor: '#ef4444' }
           ]
         },
-        options: {
-          responsive: true,
-          maintainAspectRatio: false,
-          plugins: {
-            legend: { position: 'top', labels: { boxWidth: 10, font: { size: 10 } } },
-            datalabels: {
-              anchor: 'end',
-              align: 'top',
-              formatter: (value, ctx) => ctx.dataset.type === 'line' ? `${value}%` : (value > 0 ? value : ''),
-              font: { weight: 'bold', size: 9 },
-              color: '#334155'
-            }
-          },
-          scales: {
-            y: { beginAtZero: true },
-            y1: { beginAtZero: true, max: 100, position: 'right', grid: { drawOnChartArea: false } }
-          }
-        }
+        options: { responsive: true, maintainAspectRatio: false, scales: { y: { beginAtZero: true } } }
       });
 
       const countChecklist = fechFiltrados.filter(f => f.status === 'PENDENTE').length;
@@ -1598,22 +1288,8 @@
 
       chartStatusEsteira = new Chart(document.getElementById('chartStatusEsteira').getContext('2d'), {
         type: 'pie',
-        data: {
-          labels: ['Pendente', 'Caiu', 'Concluídos'],
-          datasets: [{ data: [countChecklist, countCaiu, countConcluidos], backgroundColor: ['#ea580c', '#f97316', '#0284c7'] }]
-        },
-        options: {
-          responsive: true,
-          maintainAspectRatio: false,
-          plugins: {
-            legend: { position: 'bottom', labels: { boxWidth: 10, font: { size: 10 } } },
-            datalabels: {
-              color: '#ffffff',
-              font: { weight: 'bold', size: 10 },
-              formatter: (value, ctx) => value > 0 ? `${ctx.chart.data.labels[ctx.dataIndex]}: ${value}` : ''
-            }
-          }
-        }
+        data: { labels: ['Pendente', 'Caiu', 'Concluídos'], datasets: [{ data: [countChecklist, countCaiu, countConcluidos], backgroundColor: ['#ea580c', '#f97316', '#0284c7'] }] },
+        options: { responsive: true, maintainAspectRatio: false }
       });
 
       const totMauryCap = capFiltradas.filter(c => c.captador.toLowerCase().includes('maury')).reduce((acc, c) => acc + c.qtd, 0);
@@ -1621,90 +1297,35 @@
 
       chartCaptacaoRescisao = new Chart(document.getElementById('chartCaptacaoRescisao').getContext('2d'), {
         type: 'pie',
-        data: {
-          labels: ['Cap Maury', 'Rescisão'],
-          datasets: [{ data: [totMauryCap, totRescisao], backgroundColor: ['#0f4c81', '#f97316'] }]
-        },
-        options: {
-          responsive: true,
-          maintainAspectRatio: false,
-          plugins: {
-            legend: { position: 'bottom', labels: { boxWidth: 10, font: { size: 10 } } },
-            datalabels: {
-              color: '#ffffff',
-              font: { weight: 'bold', size: 10 },
-              formatter: (value, ctx) => value > 0 ? `${ctx.chart.data.labels[ctx.dataIndex]}: ${value}` : ''
-            }
-          }
-        }
+        data: { labels: ['Cap Maury', 'Rescisão'], datasets: [{ data: [totMauryCap, totRescisao], backgroundColor: ['#0f4c81', '#f97316'] }] },
+        options: { responsive: true, maintainAspectRatio: false }
       });
 
       chartNovosVsConcluidas = new Chart(document.getElementById('chartNovosVsConcluidas').getContext('2d'), {
         type: 'pie',
-        data: {
-          labels: ['Novos Negócios', 'Concluídas'],
-          datasets: [{ data: [sumNovos, sumConc], backgroundColor: ['#ea580c', '#84cc16'] }]
-        },
-        options: {
-          responsive: true,
-          maintainAspectRatio: false,
-          plugins: {
-            legend: { position: 'bottom', labels: { boxWidth: 10, font: { size: 10 } } },
-            datalabels: {
-              color: '#ffffff',
-              font: { weight: 'bold', size: 10 },
-              formatter: (value, ctx) => value > 0 ? `${ctx.chart.data.labels[ctx.dataIndex]}: ${value}` : ''
-            }
-          }
-        }
+        data: { labels: ['Novos Negócios', 'Concluídas'], datasets: [{ data: [sumNovos, sumConc], backgroundColor: ['#ea580c', '#84cc16'] }] },
+        options: { responsive: true, maintainAspectRatio: false }
       });
 
       chartConcluidasLais = new Chart(document.getElementById('chartConcluidasLais').getContext('2d'), {
         type: 'pie',
-        data: {
-          labels: ['Concluídas', 'Lais'],
-          datasets: [{ data: [sumConc, totLaisDashboard], backgroundColor: ['#0284c7', '#a855f7'] }]
-        },
-        options: {
-          responsive: true,
-          maintainAspectRatio: false,
-          plugins: {
-            legend: { position: 'bottom', labels: { boxWidth: 10, font: { size: 10 } } },
-            datalabels: {
-              color: '#ffffff',
-              font: { weight: 'bold', size: 10 },
-              formatter: (value, ctx) => value > 0 ? `${ctx.chart.data.labels[ctx.dataIndex]}: ${value}` : ''
-            }
-          }
-        }
+        data: { labels: ['Concluídas', 'Lais'], datasets: [{ data: [sumConc, totLaisDashboard], backgroundColor: ['#0284c7', '#a855f7'] }] },
+        options: { responsive: true, maintainAspectRatio: false }
       });
     }
 
     function renderResumoMes() {
       const mesRef = document.getElementById('mes-referencia').value;
-
       const atMes = atendimentos.filter(a => !mesRef || (a.inicio && a.inicio.startsWith(mesRef)));
       const fechMes = fechamentos.filter(f => !mesRef || f.mes === mesRef);
       const capMes = captacoes.filter(c => !mesRef || (c.inicio && c.inicio.startsWith(mesRef)));
 
-      const totAg = atMes.reduce((acc, a) => acc + a.agendadas, 0);
-      const totConc = atMes.reduce((acc, a) => acc + a.concluidas, 0);
-      const fechados = fechMes.filter(f => f.status === 'FECHADO');
-      const valFechado = fechados.reduce((acc, f) => acc + converterParaNumero(f.valor), 0);
-      const totCap = capMes.reduce((acc, c) => acc + c.qtd, 0);
+      document.getElementById('mes-tot-agendadas').innerText = atMes.reduce((acc, a) => acc + a.agendadas, 0);
+      document.getElementById('mes-tot-concluidas').innerText = atMes.reduce((acc, a) => acc + a.concluidas, 0);
+      document.getElementById('mes-tot-valor').innerText = `R$ ${fechMes.filter(f => f.status === 'FECHADO').reduce((acc, f) => acc + converterParaNumero(f.valor), 0).toLocaleString('pt-BR', {minimumFractionDigits: 2, maximumFractionDigits: 2})}`;
+      document.getElementById('mes-tot-captados').innerText = capMes.reduce((acc, c) => acc + c.qtd, 0);
 
-      document.getElementById('mes-tot-agendadas').innerText = totAg;
-      document.getElementById('mes-tot-concluidas').innerText = totConc;
-      document.getElementById('mes-tot-valor').innerText = `R$ ${valFechado.toLocaleString('pt-BR', {minimumFractionDigits: 2, maximumFractionDigits: 2})}`;
-      document.getElementById('mes-tot-captados').innerText = totCap;
-
-      const atendentesComercial = colaboradores.filter(c => 
-        c.status === 'Ativo' && 
-        (c.funcao.toLowerCase().includes('atendimento') || 
-         c.funcao.toLowerCase().includes('comercial') || 
-         c.funcao.toLowerCase().includes('corretor'))
-      );
-
+      const atendentesComercial = colaboradores.filter(c => c.status === 'Ativo' && (c.funcao.toLowerCase().includes('atendimento') || c.funcao.toLowerCase().includes('comercial') || c.funcao.toLowerCase().includes('corretor')));
       let tbodyHTML = '';
       let sumAg = 0, sumConc = 0, sumCanc = 0, sumNovos = 0, sumAtivo = 0;
 
@@ -1715,8 +1336,6 @@
         const canc = cAtend.reduce((acc, a) => acc + a.canceladas, 0);
         const novos = cAtend.reduce((acc, a) => acc + a.novos, 0);
         const ativo = cAtend.reduce((acc, a) => acc + a.ativo, 0);
-        const conv = ag > 0 ? ((conc / ag) * 100).toFixed(1) : 0;
-
         sumAg += ag; sumConc += conc; sumCanc += canc; sumNovos += novos; sumAtivo += ativo;
 
         tbodyHTML += `
@@ -1725,71 +1344,13 @@
             <td class="p-2.5 text-center">${ag}</td>
             <td class="p-2.5 text-center text-emerald-600 font-bold">${conc}</td>
             <td class="p-2.5 text-center text-red-600">${canc}</td>
-            <td class="p-2.5 text-center text-blue-600 font-bold">${conv}%</td>
+            <td class="p-2.5 text-center text-blue-600 font-bold">${ag > 0 ? ((conc / ag) * 100).toFixed(1) : 0}%</td>
             <td class="p-2.5 text-center">${novos}</td>
             <td class="p-2.5 text-center">${ativo}</td>
           </tr>
         `;
       });
-
-      const totalConv = sumAg > 0 ? ((sumConc / sumAg) * 100).toFixed(1) : 0;
-      document.getElementById('tabelaMesCorretoras').innerHTML = tbodyHTML || '<tr><td colspan="7" class="p-4 text-center text-gray-400">Nenhum registro para este mês.</td></tr>';
-      document.getElementById('totalMesCorretoras').innerHTML = `
-        <tr>
-          <td class="p-2.5 font-black">Total do Mês</td>
-          <td class="p-2.5 text-center font-black">${sumAg}</td>
-          <td class="p-2.5 text-center text-emerald-700 font-black">${sumConc}</td>
-          <td class="p-2.5 text-center text-red-700 font-black">${sumCanc}</td>
-          <td class="p-2.5 text-center text-blue-700 font-black">${totalConv}%</td>
-          <td class="p-2.5 text-center font-black">${sumNovos}</td>
-          <td class="p-2.5 text-center font-black">${sumAtivo}</td>
-        </tr>
-      `;
-
-      document.getElementById('mes-esteira-fechados').innerText = fechados.length;
-      document.getElementById('mes-esteira-pendentes').innerText = fechMes.filter(f => f.status === 'PENDENTE').length;
-      const caidos = fechMes.filter(f => f.status === 'DESISTENTE');
-      document.getElementById('mes-esteira-caidos').innerText = caidos.length;
-      document.getElementById('mes-esteira-valor-perdido').innerText = `R$ ${caidos.reduce((acc, f) => acc + converterParaNumero(f.valor), 0).toLocaleString('pt-BR', {minimumFractionDigits: 2, maximumFractionDigits: 2})}`;
-
-      const capReceptivo = capMes.filter(c => c.tipo === 'RECEPTIVO');
-      const capAtivo = capMes.filter(c => c.tipo === 'ATIVO');
-      document.getElementById('mes-cap-receptivo').innerText = capReceptivo.reduce((acc, c) => acc + c.qtd, 0);
-      document.getElementById('mes-cap-rescisao').innerText = capReceptivo.reduce((acc, c) => acc + c.especifico, 0);
-      document.getElementById('mes-cap-ativo').innerText = capAtivo.reduce((acc, c) => acc + c.qtd, 0);
-      document.getElementById('mes-cap-terceiros').innerText = capAtivo.reduce((acc, c) => acc + c.especifico, 0);
-    }
-
-    function exportarExcel() {
-      const mesRef = document.getElementById('mes-referencia').value || 'Completo';
-      const wb = XLSX.utils.book_new();
-
-      const wsAtendimentoData = [
-        ['Início Semana', 'Fim Semana', 'Colaborador', 'Agendadas', 'Concluídas', 'Canceladas', 'Conversão %', 'Novos Negócios', 'Solicitação Lais (Grupo)', 'Cliente Ativo']
-      ];
-      atendimentos.forEach(a => {
-        const conv = a.agendadas > 0 ? ((a.concluidas / a.agendadas) * 100).toFixed(1) : 0;
-        wsAtendimentoData.push([formatarDataBR(a.inicio), formatarDataBR(a.fim), a.colaborador, a.agendadas, a.concluidas, a.canceladas, `${conv}%`, a.novos, a.lais || 0, a.ativo]);
-      });
-      XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet(wsAtendimentoData), 'Atendimento_Mensal');
-
-      const wsEsteiraData = [
-        ['Mês', 'Atendente', 'Agente', 'REF', 'Endereço', 'Valor (R$)', 'Captador', 'Data Solicitada', 'Tipo', 'Chave', 'Garantia', 'Status', 'Fechado Por', 'Assinado Em', 'OBS']
-      ];
-      fechamentos.forEach(f => {
-        wsEsteiraData.push([f.mes, f.atendente, f.agente, f.ref, f.endereco, converterParaNumero(f.valor), f.captador, formatarDataBR(f.data), f.tipo, formatarDataBR(f.chave), f.garantia, f.status, f.fechadoPor, formatarDataBR(f.assinado), f.obs]);
-      });
-      XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet(wsEsteiraData), 'Esteira_Mensal');
-
-      const wsCaptacaoData = [
-        ['Início Semana', 'Fim Semana', 'Captador', 'Tipo', 'Qtd Captado', 'Especifico (Rescisão/Terceiros)', 'Conversão %']
-      ];
-      captacoes.forEach(c => {
-        wsCaptacaoData.push([formatarDataBR(c.inicio), formatarDataBR(c.fim), c.captador, c.tipo, c.qtd, c.especifico, c.conversao]);
-      });
-      XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet(wsCaptacaoData), 'Captacao_Mensal');
-
-      XLSX.writeFile(wb, `Castan_Comercial_Relatorio_${mesRef}.xlsx`);
+      document.getElementById('tabelaMesCorretoras').innerHTML = tbodyHTML || '<tr><td colspan="7" class="p-4 text-center text-gray-400">Nenhum registro.</td></tr>';
     }
 
     function renderTabelaColaboradores() {
@@ -1809,13 +1370,7 @@
 
     async function salvarColaborador(e) {
       e.preventDefault();
-      const item = {
-        id: Date.now(),
-        nome: document.getElementById('colab-nome').value.trim(),
-        funcao: document.getElementById('colab-funcao').value,
-        status: document.getElementById('colab-status').value
-      };
-
+      const item = { id: Date.now(), nome: document.getElementById('colab-nome').value.trim(), funcao: document.getElementById('colab-funcao').value, status: document.getElementById('colab-status').value };
       await _supabase.from('colaboradores').upsert(item);
       document.getElementById('colab-nome').value = '';
       await carregarDadosDoSupabase();
@@ -1824,9 +1379,7 @@
     async function toggleStatusColab(id) {
       const colab = colaboradores.find(c => c.id === id);
       if (!colab) return;
-      const novoStatus = colab.status === 'Ativo' ? 'Inativo' : 'Ativo';
-
-      await _supabase.from('colaboradores').update({ status: novoStatus }).eq('id', id);
+      await _supabase.from('colaboradores').update({ status: colab.status === 'Ativo' ? 'Inativo' : 'Ativo' }).eq('id', id);
       await carregarDadosDoSupabase();
     }
 
@@ -1835,19 +1388,21 @@
       await carregarDadosDoSupabase();
     }
 
+    function exportarExcel() {
+      const wb = XLSX.utils.book_new();
+      XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet([['Início', 'Fim', 'Colaborador', 'Agendadas', 'Concluídas']]), 'Atendimentos');
+      XLSX.writeFile(wb, `Castan_Relatorio.xlsx`);
+    }
+
     window.onload = function() {
       carregarSemanaAtual('dash');
       carregarSemanaAtual('atend');
       carregarSemanaAtual('cap');
-
       const hoje = new Date();
       const mesAtualStr = `${hoje.getFullYear()}-${String(hoje.getMonth() + 1).padStart(2, '0')}`;
-      
-      document.getElementById('fech-mes').value = mesAtualStr;
-      document.getElementById('fech-mes-filtro').value = mesAtualStr;
-      document.getElementById('mes-referencia').value = mesAtualStr;
-      document.getElementById('btn-mes-texto').innerText = `Mês: ${formatarMesAnoBR(mesAtualStr)}`;
-
+      if(document.getElementById('fech-mes')) document.getElementById('fech-mes').value = mesAtualStr;
+      if(document.getElementById('fech-mes-filtro')) document.getElementById('fech-mes-filtro').value = mesAtualStr;
+      if(document.getElementById('mes-referencia')) document.getElementById('mes-referencia').value = mesAtualStr;
       carregarDadosDoSupabase();
     };
   </script>
