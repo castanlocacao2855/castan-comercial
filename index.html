@@ -715,10 +715,7 @@
         atendimentos = aData || [];
 
         const { data: fData } = await _supabase.from('fechamentos').select('*');
-        fechamentos = (fData || []).map(item => ({
-          ...item,
-          fechadoPor: item.fechadoPor || item.fechadopor || item.fechado_por || 'Castan'
-        }));
+        fechamentos = fData || [];
 
         const { data: capData } = await _supabase.from('captacoes').select('*');
         captacoes = capData || [];
@@ -863,4 +860,634 @@
         canceladas: parseInt(document.getElementById('atend-canceladas').value) || 0,
         novos: parseInt(document.getElementById('atend-novos').value) || 0,
         lais: parseInt(document.getElementById('atend-lais').value) || 0,
-        ativo: parseInt(document.getElementById('atend-
+        ativo: parseInt(document.getElementById('atend-ativo').value) || 0
+      };
+
+      const { error } = await _supabase.from('atendimentos').upsert(item);
+      if (error) {
+        alert('Erro ao salvar no Supabase: ' + error.message);
+        return;
+      }
+
+      cancelarEdicaoAtendimento();
+      await carregarDadosDoSupabase();
+      alert('Atendimento salvo com sucesso!');
+    }
+
+    function editarAtendimento(id) {
+      const item = atendimentos.find(a => a.id === id);
+      if (!item) return;
+
+      editingAtendimentoId = item.id;
+      document.getElementById('atend-inicio').value = item.inicio;
+      document.getElementById('atend-fim').value = item.fim;
+      document.getElementById('atend-colaborador').value = item.colaborador;
+      document.getElementById('atend-agendadas').value = item.agendadas;
+      document.getElementById('atend-concluidas').value = item.concluidas;
+      document.getElementById('atend-canceladas').value = item.canceladas;
+      document.getElementById('atend-conversao').value = item.agendadas > 0 ? `${((item.concluidas / item.agendadas) * 100).toFixed(1)}%` : '0%';
+      document.getElementById('atend-novos').value = item.novos;
+      document.getElementById('atend-lais').value = item.lais || 0;
+      document.getElementById('atend-ativo').value = item.ativo;
+
+      document.getElementById('titulo-form-atendimento').innerText = 'Editar Atendimento';
+      document.getElementById('btn-salvar-atendimento').innerText = 'Atualizar Registro';
+      document.getElementById('btn-cancelar-atendimento').classList.remove('hidden');
+      window.scrollTo({ top: document.getElementById('subtab-atendimento').offsetTop, behavior: 'smooth' });
+    }
+
+    function cancelarEdicaoAtendimento() {
+      editingAtendimentoId = null;
+      document.getElementById('formAtendimento').reset();
+      document.getElementById('titulo-form-atendimento').innerText = 'Lançamento de Atendimento Semanal';
+      document.getElementById('btn-salvar-atendimento').innerText = 'Salvar Registro';
+      document.getElementById('btn-cancelar-atendimento').classList.add('hidden');
+      carregarSemanaAtual('atend');
+    }
+
+    async function removerAtendimento(id) {
+      await _supabase.from('atendimentos').delete().eq('id', id);
+      await carregarDadosDoSupabase();
+    }
+
+    function renderTabelaAtendimento() {
+      const tbody = document.getElementById('tabelaAtendimento');
+      let totAg = 0, totConc = 0, totCanc = 0, totNovos = 0, totAtivo = 0;
+
+      tbody.innerHTML = atendimentos.map(a => {
+        totAg += a.agendadas;
+        totConc += a.concluidas;
+        totCanc += a.canceladas;
+        totNovos += a.novos;
+        totAtivo += a.ativo;
+        const conv = a.agendadas > 0 ? ((a.concluidas / a.agendadas) * 100).toFixed(1) : 0;
+
+        return `
+          <tr class="hover:bg-gray-50">
+            <td class="p-2.5 font-medium text-gray-700">${formatarDataBR(a.inicio)} - ${formatarDataBR(a.fim)}</td>
+            <td class="p-2.5 ${obterCorColaborador(a.colaborador)}">${a.colaborador}</td>
+            <td class="p-2.5 text-center">${a.agendadas}</td>
+            <td class="p-2.5 text-center text-emerald-600 font-bold">${a.concluidas}</td>
+            <td class="p-2.5 text-center text-red-600">${a.canceladas}</td>
+            <td class="p-2.5 text-center font-bold text-blue-600">${conv}%</td>
+            <td class="p-2.5 text-center">${a.novos}</td>
+            <td class="p-2.5 text-center font-semibold text-purple-700">${a.lais || 0}</td>
+            <td class="p-2.5 text-center">${a.ativo}</td>
+            <td class="p-2.5 text-right space-x-2">
+              <button onclick="editarAtendimento(${a.id})" class="text-xs text-blue-600 font-bold hover:underline">Editar</button>
+              <button onclick="removerAtendimento(${a.id})" class="text-xs text-red-600 hover:underline">Excluir</button>
+            </td>
+          </tr>
+        `;
+      }).join('');
+
+      const countRows = atendimentos.length;
+      const totConv = totAg > 0 ? ((totConc / totAg) * 100).toFixed(1) : 0;
+      const totLaisConsolidado = calcularTotalLaisGrupo(atendimentos);
+
+      document.getElementById('totalAtendimento').innerHTML = `
+        <tr class="bg-slate-100">
+          <td class="p-2.5 font-black" colspan="2">TOTAL REGISTRADO</td>
+          <td class="p-2.5 text-center font-black">${totAg}</td>
+          <td class="p-2.5 text-center text-emerald-700 font-black">${totConc}</td>
+          <td class="p-2.5 text-center text-red-700 font-black">${totCanc}</td>
+          <td class="p-2.5 text-center text-blue-700 font-black">${totConv}%</td>
+          <td class="p-2.5 text-center font-black">${totNovos}</td>
+          <td class="p-2.5 text-center text-purple-800 font-black bg-purple-50/80">${totLaisConsolidado}</td>
+          <td class="p-2.5 text-center font-black">${totAtivo}</td>
+          <td></td>
+        </tr>
+      `;
+    }
+
+    function sincronizarFiltroMesFechamento() {
+      const mesVal = document.getElementById('fech-mes').value;
+      document.getElementById('fech-mes-filtro').value = mesVal;
+      document.getElementById('btn-mes-texto').innerText = `Mês: ${formatarMesAnoBR(mesVal)}`;
+      renderTabelaFechamento();
+    }
+
+    function alterarMesFiltroEsteira() {
+      const mesFiltroVal = document.getElementById('fech-mes-filtro').value;
+      if (mesFiltroVal) {
+        document.getElementById('fech-mes').value = mesFiltroVal;
+        document.getElementById('btn-mes-texto').innerText = `Mês: ${formatarMesAnoBR(mesFiltroVal)}`;
+        renderTabelaFechamento();
+      }
+    }
+
+    async function salvarFechamento(e) {
+      e.preventDefault();
+      const mesVal = document.getElementById('fech-mes').value;
+      const refNum = document.getElementById('fech-ref').value.trim();
+
+      const item = {
+        id: editingFechamentoId || Date.now(),
+        mes: mesVal,
+        atendente: document.getElementById('fech-atendente').value,
+        agente: document.getElementById('fech-agente').value || 'Sem visita',
+        ref: refNum.startsWith('LOC') ? refNum : `LOC${refNum}`,
+        endereco: document.getElementById('fech-endereco').value,
+        valor: converterParaNumero(document.getElementById('fech-valor').value),
+        captador: document.getElementById('fech-captador').value || 'Castan',
+        data: document.getElementById('fech-data').value || new Date().toISOString().split('T')[0],
+        tipo: document.getElementById('fech-tipo').value,
+        chave: document.getElementById('fech-chave').value || null,
+        garantia: document.getElementById('fech-garantia').value,
+        status: document.getElementById('fech-status').value,
+        fechadoPor: document.getElementById('fech-por').value || 'Castan',
+        assinado: document.getElementById('fech-assinado').value || null,
+        obs: document.getElementById('fech-obs').value || ''
+      };
+
+      const { error } = await _supabase.from('fechamentos').upsert(item);
+      if (error) {
+        alert('Erro ao salvar no Supabase: ' + error.message);
+        return;
+      }
+
+      cancelarEdicaoFechamento();
+      await carregarDadosDoSupabase();
+      alert('Contrato salvo na esteira com sucesso!');
+    }
+
+    function editarFechamento(id) {
+      const item = fechamentos.find(f => f.id === id);
+      if (!item) return;
+
+      editingFechamentoId = item.id;
+      document.getElementById('fech-mes').value = item.mes;
+      document.getElementById('fech-mes-filtro').value = item.mes;
+      document.getElementById('btn-mes-texto').innerText = `Mês: ${formatarMesAnoBR(item.mes)}`;
+
+      document.getElementById('fech-atendente').value = item.atendente;
+      document.getElementById('fech-agente').value = item.agente || '';
+      document.getElementById('fech-ref').value = item.ref.replace('LOC', '');
+      document.getElementById('fech-endereco').value = item.endereco;
+      document.getElementById('fech-valor').value = item.valor;
+      document.getElementById('fech-captador').value = item.captador || '';
+      document.getElementById('fech-data').value = item.data || '';
+      document.getElementById('fech-tipo').value = item.tipo;
+      document.getElementById('fech-chave').value = item.chave || '';
+      document.getElementById('fech-garantia').value = item.garantia;
+      document.getElementById('fech-status').value = item.status;
+      document.getElementById('fech-por').value = item.fechadoPor;
+      document.getElementById('fech-assinado').value = item.assinado || '';
+      document.getElementById('fech-obs').value = item.obs || '';
+
+      document.getElementById('titulo-form-fechamento').innerText = 'Editar Contrato na Esteira';
+      document.getElementById('btn-salvar-fechamento').innerText = 'Atualizar Contrato';
+      document.getElementById('btn-cancelar-fechamento').classList.remove('hidden');
+      window.scrollTo({ top: document.getElementById('subtab-esteira').offsetTop, behavior: 'smooth' });
+    }
+
+    function cancelarEdicaoFechamento() {
+      editingFechamentoId = null;
+      document.getElementById('formFechamento').reset();
+      const hoje = new Date();
+      document.getElementById('fech-mes').value = `${hoje.getFullYear()}-${String(hoje.getMonth() + 1).padStart(2, '0')}`;
+      document.getElementById('titulo-form-fechamento').innerText = 'Novo Contrato na Esteira';
+      document.getElementById('btn-salvar-fechamento').innerText = 'Adicionar à Esteira';
+      document.getElementById('btn-cancelar-fechamento').classList.add('hidden');
+      sincronizarFiltroMesFechamento();
+    }
+
+    async function alterarStatusFechamentoDirect(id, newStatus) {
+      await _supabase.from('fechamentos').update({ status: newStatus }).eq('id', id);
+      await carregarDadosDoSupabase();
+    }
+
+    async function removerFechamento(id) {
+      await _supabase.from('fechamentos').delete().eq('id', id);
+      await carregarDadosDoSupabase();
+    }
+
+    function renderTabelaFechamento() {
+      const mesSelecionado = document.getElementById('fech-mes-filtro').value || document.getElementById('fech-mes').value;
+      if (mesSelecionado) {
+        document.getElementById('btn-mes-texto').innerText = `Mês: ${formatarMesAnoBR(mesSelecionado)}`;
+      }
+
+      const tbody = document.getElementById('tabelaFechamento');
+      let totValorFechado = 0, numFechados = 0, numDesistentes = 0, valorPerdido = 0;
+      const fechFiltrados = fechamentos.filter(f => !mesSelecionado || f.mes === mesSelecionado);
+
+      const locacoesPorAtendente = { 'Castan': { qtd: 0, valor: 0 }, 'Denise': { qtd: 0, valor: 0 }, 'Leticia': { qtd: 0, valor: 0 }, 'Thayane': { qtd: 0, valor: 0 } };
+
+      tbody.innerHTML = fechFiltrados.map(f => {
+        const valNum = converterParaNumero(f.valor);
+        if (f.status === 'FECHADO') {
+          totValorFechado += valNum;
+          numFechados++;
+          const nomeAtendente = (f.atendente || 'Castan').trim();
+          if (!locacoesPorAtendente[nomeAtendente]) {
+            locacoesPorAtendente[nomeAtendente] = { qtd: 0, valor: 0 };
+          }
+          locacoesPorAtendente[nomeAtendente].qtd += 1;
+          locacoesPorAtendente[nomeAtendente].valor += valNum;
+        } else if (f.status === 'DESISTENTE') {
+          numDesistentes++;
+          valorPerdido += valNum;
+        }
+
+        return `
+          <tr class="hover:bg-gray-50">
+            <td class="p-2.5 ${obterCorColaborador(f.atendente)}">${f.atendente}</td>
+            <td class="p-2.5 font-medium">${f.captador || '-'}</td>
+            <td class="p-2.5 font-mono font-bold text-blue-600">${f.ref}</td>
+            <td class="p-2.5">${f.endereco}</td>
+            <td class="p-2.5 font-bold">R$ ${valNum.toLocaleString('pt-BR', {minimumFractionDigits: 2, maximumFractionDigits: 2})}</td>
+            <td class="p-2.5">${f.garantia}</td>
+            <td class="p-2.5">
+              <select onchange="alterarStatusFechamentoDirect(${f.id}, this.value)" class="text-[11px] font-bold rounded px-1.5 py-0.5 border outline-none ${f.status === 'FECHADO' ? 'bg-green-100 text-green-800' : f.status === 'PENDENTE' ? 'bg-yellow-100 text-yellow-800' : 'bg-red-100 text-red-800'}">
+                <option value="PENDENTE" ${f.status === 'PENDENTE' ? 'selected' : ''}>PENDENTE</option>
+                <option value="FECHADO" ${f.status === 'FECHADO' ? 'selected' : ''}>FECHADO</option>
+                <option value="DESISTENTE" ${f.status === 'DESISTENTE' ? 'selected' : ''}>DESISTENTE</option>
+              </select>
+            </td>
+            <td class="p-2.5 text-gray-600 font-medium">${formatarDataBR(f.assinado)}</td>
+            <td class="p-2.5 text-right space-x-1.5">
+              <button onclick="editarFechamento(${f.id})" class="text-blue-600 font-bold hover:underline">Editar</button>
+              <button onclick="removerFechamento(${f.id})" class="text-red-600 hover:underline">Excluir</button>
+            </td>
+          </tr>
+        `;
+      }).join('');
+
+      const metaGlobalValor = 57000;
+      const percMetaRealizado = metaGlobalValor > 0 ? ((totValorFechado / metaGlobalValor) * 100).toFixed(0) : 0;
+
+      document.getElementById('resumo-total-fechado').innerText = `R$ ${totValorFechado.toLocaleString('pt-BR', {minimumFractionDigits: 2, maximumFractionDigits: 2})}`;
+      document.getElementById('resumo-porcentagem-meta').innerText = `${percMetaRealizado}%`;
+      document.getElementById('resumo-num-locacoes').innerText = numFechados;
+
+      let htmlAtendentes = '';
+      Object.keys(locacoesPorAtendente).sort().forEach(nome => {
+        const item = locacoesPorAtendente[nome];
+        const valFormatado = item.valor.toLocaleString('pt-BR', {minimumFractionDigits: 2, maximumFractionDigits: 2});
+        htmlAtendentes += `
+          <div class="flex justify-between items-center py-1 border-b border-slate-100 last:border-0">
+            <span class="${obterCorColaborador(nome)}">• ${nome}</span>
+            <div class="text-right flex items-center gap-1">
+              <span class="text-slate-800 font-bold bg-slate-200/60 px-1.5 py-0.5 rounded text-[10px]">${item.qtd} loc.</span>
+              <span class="text-emerald-700 font-bold text-xs">R$ ${valFormatado}</span>
+            </div>
+          </div>
+        `;
+      });
+      document.getElementById('resumo-locacoes-atendentes').innerHTML = htmlAtendentes;
+      document.getElementById('resumo-ticket').innerText = `R$ ${(numFechados > 0 ? totValorFechado / numFechados : 0).toLocaleString('pt-BR', {minimumFractionDigits: 2, maximumFractionDigits: 2})}`;
+      document.getElementById('resumo-desistentes').innerText = numDesistentes;
+      document.getElementById('resumo-valor-perdido').innerText = `R$ ${valorPerdido.toLocaleString('pt-BR', {minimumFractionDigits: 2, maximumFractionDigits: 2})}`;
+    }
+
+    function toggleTipoCaptador() {
+      const tipo = document.getElementById('cap-tipo').value;
+      if (tipo === 'RECEPTIVO') {
+        document.getElementById('box-receptivo').classList.remove('hidden');
+        document.getElementById('box-ativo').classList.add('hidden');
+      } else {
+        document.getElementById('box-receptivo').classList.add('hidden');
+        document.getElementById('box-ativo').classList.remove('hidden');
+      }
+      calcularCaptacaoAuto();
+    }
+
+    function calcularCaptacaoAuto() {
+      const tipo = document.getElementById('cap-tipo').value;
+      const qtd = parseInt(document.getElementById('cap-qtd').value) || 0;
+      let conv = 0;
+      if (tipo === 'RECEPTIVO') {
+        const rescisao = parseInt(document.getElementById('cap-rescisao').value) || 0;
+        conv = qtd > 0 ? ((rescisao / qtd) * 100).toFixed(1) : 0;
+      } else {
+        const terceiros = parseInt(document.getElementById('cap-terceiros').value) || 0;
+        conv = qtd > 0 ? ((terceiros / qtd) * 100).toFixed(1) : 0;
+      }
+      document.getElementById('cap-conversao').value = `${conv}%`;
+    }
+
+    async function salvarCaptacao(e) {
+      e.preventDefault();
+      const tipo = document.getElementById('cap-tipo').value;
+      const item = {
+        id: editingCaptacaoId || Date.now(),
+        inicio: document.getElementById('cap-inicio').value,
+        fim: document.getElementById('cap-fim').value,
+        captador: document.getElementById('cap-captador').value,
+        tipo: tipo,
+        qtd: parseInt(document.getElementById('cap-qtd').value) || 0,
+        especifico: tipo === 'RECEPTIVO' ? (parseInt(document.getElementById('cap-rescisao').value) || 0) : (parseInt(document.getElementById('cap-terceiros').value) || 0),
+        conversao: document.getElementById('cap-conversao').value
+      };
+      const { error } = await _supabase.from('captacoes').upsert(item);
+      if (error) {
+        alert('Erro ao salvar captação: ' + error.message);
+        return;
+      }
+      cancelarEdicaoCaptacao();
+      await carregarDadosDoSupabase();
+      alert('Captação salva com sucesso!');
+    }
+
+    function editarCaptacao(id) {
+      const item = captacoes.find(c => c.id === id);
+      if (!item) return;
+
+      editingCaptacaoId = item.id;
+      document.getElementById('cap-inicio').value = item.inicio;
+      document.getElementById('cap-fim').value = item.fim;
+      document.getElementById('cap-captador').value = item.captador;
+      document.getElementById('cap-tipo').value = item.tipo;
+      toggleTipoCaptador();
+      document.getElementById('cap-qtd').value = item.qtd;
+      if (item.tipo === 'RECEPTIVO') {
+        document.getElementById('cap-rescisao').value = item.especifico;
+      } else {
+        document.getElementById('cap-terceiros').value = item.especifico;
+      }
+      document.getElementById('cap-conversao').value = item.conversao;
+
+      document.getElementById('titulo-form-captacao').innerText = 'Editar Captação';
+      document.getElementById('btn-salvar-captacao').innerText = 'Atualizar Captação';
+      document.getElementById('btn-cancelar-captacao').classList.remove('hidden');
+      window.scrollTo({ top: document.getElementById('subtab-captacao').offsetTop, behavior: 'smooth' });
+    }
+
+    function cancelarEdicaoCaptacao() {
+      editingCaptacaoId = null;
+      document.getElementById('formCaptacao').reset();
+      toggleTipoCaptador();
+      document.getElementById('titulo-form-captacao').innerText = 'Lançamento de Captação';
+      document.getElementById('btn-salvar-captacao').innerText = 'Salvar Captação';
+      document.getElementById('btn-cancelar-captacao').classList.add('hidden');
+      carregarSemanaAtual('cap');
+    }
+
+    async function removerCaptacao(id) {
+      await _supabase.from('captacoes').delete().eq('id', id);
+      await carregarDadosDoSupabase();
+    }
+
+    function renderTabelaCaptacao() {
+      const tbody = document.getElementById('tabelaCaptacao');
+      tbody.innerHTML = captacoes.map(c => `
+        <tr class="hover:bg-gray-50">
+          <td class="p-2.5 text-gray-700">${c.inicio ? `${formatarDataBR(c.inicio)} -${formatarDataBR(c.fim)}` : 'N/A'}</td>
+          <td class="p-2.5 ${obterCorColaborador(c.captador)}">${c.captador}</td>
+          <td class="p-2.5"><span class="px-2 py-0.5 rounded text-[10px] font-bold ${c.tipo === 'RECEPTIVO' ? 'bg-blue-100 text-blue-700' : 'bg-purple-100 text-purple-700'}">${c.tipo}</span></td>
+          <td class="p-2.5">${c.qtd}</td>
+          <td class="p-2.5">${c.tipo === 'RECEPTIVO' ? `Rescisão: ${c.especifico}` : `Terceiros: ${c.especifico}`}</td>
+          <td class="p-2.5 font-bold text-emerald-600">${c.conversao}</td>
+          <td class="p-2.5 text-right space-x-2">
+            <button onclick="editarCaptacao(${c.id})" class="text-blue-600 font-bold hover:underline">Editar</button>
+            <button onclick="removerCaptacao(${c.id})" class="text-red-600 hover:underline">Excluir</button>
+          </td>
+        </tr>
+      `).join('');
+    }
+
+    function renderDashboard() {
+      const dInicio = document.getElementById('dash-inicio').value;
+      const dFim = document.getElementById('dash-fim').value;
+      document.getElementById('label-periodo-dash').innerText = dInicio && dFim ? `${formatarDataBR(dInicio)} - ${formatarDataBR(dFim)}` : 'Tudo';
+
+      const atFiltrados = atendimentos.filter(a => {
+        if (!dInicio || !dFim) return true;
+        return (a.inicio >= dInicio && a.inicio <= dFim) || (a.fim >= dInicio && a.fim <= dFim) || (a.inicio <= dInicio && a.fim >= dFim);
+      });
+
+      const isMesCheio = verificarMesCheio(dInicio, dFim);
+      const fechFiltrados = fechamentos.filter(f => {
+        if (!dInicio || !dFim) return true;
+        if (isMesCheio) return f.mes === dInicio.substring(0, 7);
+        const dtRef = f.assinado || f.data;
+        if (dtRef) return dtRef >= dInicio && dtRef <= dFim;
+        if (f.mes) return f.mes >= dInicio.substring(0, 7) && f.mes <= dFim.substring(0, 7);
+        return true;
+      });
+
+      const capFiltradas = captacoes.filter(c => {
+        if (!dInicio || !dFim) return true;
+        return (c.inicio >= dInicio && c.inicio <= dFim) || (c.fim >= dInicio && c.fim <= dFim) || (c.inicio <= dInicio && c.fim >= dFim);
+      });
+
+      const totVisitasConcluidas = atFiltrados.reduce((acc, a) => acc + (parseInt(a.concluidas) || 0), 0);
+      const fechados = fechFiltrados.filter(f => f.status === 'FECHADO');
+      const valTotalFechado = fechados.reduce((acc, f) => acc + converterParaNumero(f.valor), 0);
+      const totCaptados = capFiltradas.reduce((acc, c) => acc + (parseInt(c.qtd) || 0), 0);
+      const totLaisDashboard = calcularTotalLaisGrupo(atFiltrados);
+
+      document.getElementById('dash-visitas-concluidas').innerText = totVisitasConcluidas;
+      document.getElementById('dash-contratos-fechados').innerText = fechados.length;
+      document.getElementById('dash-valor-fechado').innerText = `R$ ${valTotalFechado.toLocaleString('pt-BR', {minimumFractionDigits: 2, maximumFractionDigits: 2})}`;
+      document.getElementById('dash-captados').innerText = totCaptados;
+
+      const atendentesComercial = colaboradores.filter(c => c.status === 'Ativo' && (c.funcao.toLowerCase().includes('atendimento') || c.funcao.toLowerCase().includes('comercial') || c.funcao.toLowerCase().includes('corretor')));
+      const atendentesUnicos = [];
+      const nomesVistos = new Set();
+      ['Castan', 'Denise', 'Leticia', 'Thayane'].forEach(n => { nomesVistos.add(n); atendentesUnicos.push({ nome: n }); });
+      atendentesComercial.forEach(c => { if (!nomesVistos.has(c.nome)) { nomesVistos.add(c.nome); atendentesUnicos.push(c); } });
+
+      const atValoresLabels = [], atValoresData = [], atMetaPercData = [], barColorsArray = [];
+      const metaGlobalRef = 57000;
+      let sumValorAtendentes = 0;
+
+      atendentesUnicos.forEach(c => {
+        const fechAtendente = fechFiltrados.filter(f => f.status === 'FECHADO' && f.atendente === c.nome);
+        const valFechado = fechAtendente.reduce((acc, f) => acc + converterParaNumero(f.valor), 0);
+        const percDaMeta = parseFloat(((valFechado / metaGlobalRef) * 100).toFixed(1));
+        atValoresLabels.push(c.nome);
+        atValoresData.push(valFechado);
+        atMetaPercData.push(percDaMeta);
+        barColorsArray.push(obterCorHexAtendente(c.nome));
+        sumValorAtendentes += valFechado;
+      });
+
+      atValoresLabels.push('TOTAL');
+      atValoresData.push(sumValorAtendentes);
+      atMetaPercData.push(parseFloat(((sumValorAtendentes / metaGlobalRef) * 100).toFixed(1)));
+      barColorsArray.push('#10b981');
+
+      const chartLabels = [], chartAg = [], chartConc = [], chartCanc = [], chartConv = [];
+      let sumAg = 0, sumConc = 0, sumCanc = 0, sumNovos = 0;
+
+      atendentesUnicos.forEach(c => {
+        const cAtend = atFiltrados.filter(a => a.colaborador === c.nome);
+        const ag = cAtend.reduce((acc, a) => acc + a.agendadas, 0);
+        const conc = cAtend.reduce((acc, a) => acc + a.concluidas, 0);
+        const canc = cAtend.reduce((acc, a) => acc + a.canceladas, 0);
+        const conv = ag > 0 ? ((conc / ag) * 100).toFixed(1) : 0;
+        sumAg += ag; sumConc += conc; sumCanc += canc;
+        chartLabels.push(c.nome); chartAg.push(ag); chartConc.push(conc); chartCanc.push(canc); chartConv.push(conv);
+      });
+
+      sumNovos = atFiltrados.reduce((acc, a) => acc + a.novos, 0);
+      chartLabels.push('Total');
+      chartAg.push(sumAg); chartConc.push(sumConc); chartCanc.push(sumCanc); chartConv.push(sumAg > 0 ? ((sumConc / sumAg) * 100).toFixed(1) : 0);
+
+      if (chartValoresAtendentes) chartValoresAtendentes.destroy();
+      if (chartComboVisitas) chartComboVisitas.destroy();
+      if (chartStatusEsteira) chartStatusEsteira.destroy();
+      if (chartCaptacaoRescisao) chartCaptacaoRescisao.destroy();
+      if (chartNovosVsConcluidas) chartNovosVsConcluidas.destroy();
+      if (chartConcluidasLais) chartConcluidasLais.destroy();
+
+      chartValoresAtendentes = new Chart(document.getElementById('chartValoresAtendentes').getContext('2d'), {
+        type: 'bar',
+        data: {
+          labels: atValoresLabels,
+          datasets: [
+            { label: 'Valor Fechado (R$)', data: atValoresData, backgroundColor: barColorsArray, borderRadius: 6, maxBarThickness: 38 },
+            { label: '% da Meta', data: atMetaPercData, type: 'line', borderColor: '#f97316', backgroundColor: '#f97316', pointRadius: 4, yAxisID: 'y1', borderWidth: 2 }
+          ]
+        },
+        options: {
+          responsive: true, maintainAspectRatio: false,
+          plugins: { legend: { display: true, position: 'top' } },
+          scales: {
+            y: { beginAtZero: true, grace: '20%' },
+            y1: { beginAtZero: true, max: 115, position: 'right', grid: { drawOnChartArea: false } }
+          }
+        }
+      });
+
+      chartComboVisitas = new Chart(document.getElementById('chartComboVisitas').getContext('2d'), {
+        type: 'bar',
+        data: {
+          labels: chartLabels,
+          datasets: [
+            { label: 'Agendadas', data: chartAg, backgroundColor: '#38bdf8' },
+            { label: 'Concluídas', data: chartConc, backgroundColor: '#84cc16' },
+            { label: 'Canceladas', data: chartCanc, backgroundColor: '#ef4444' }
+          ]
+        },
+        options: { responsive: true, maintainAspectRatio: false, scales: { y: { beginAtZero: true } } }
+      });
+
+      const countChecklist = fechFiltrados.filter(f => f.status === 'PENDENTE').length;
+      const countCaiu = fechFiltrados.filter(f => f.status === 'DESISTENTE').length;
+      const countConcluidos = fechFiltrados.filter(f => f.status === 'FECHADO').length;
+
+      chartStatusEsteira = new Chart(document.getElementById('chartStatusEsteira').getContext('2d'), {
+        type: 'pie',
+        data: { labels: ['Pendente', 'Caiu', 'Concluídos'], datasets: [{ data: [countChecklist, countCaiu, countConcluidos], backgroundColor: ['#ea580c', '#f97316', '#0284c7'] }] },
+        options: { responsive: true, maintainAspectRatio: false }
+      });
+
+      const totMauryCap = capFiltradas.filter(c => c.captador.toLowerCase().includes('maury')).reduce((acc, c) => acc + c.qtd, 0);
+      const totRescisao = capFiltradas.filter(c => c.tipo === 'RECEPTIVO').reduce((acc, c) => acc + c.especifico, 0);
+
+      chartCaptacaoRescisao = new Chart(document.getElementById('chartCaptacaoRescisao').getContext('2d'), {
+        type: 'pie',
+        data: { labels: ['Cap Maury', 'Rescisão'], datasets: [{ data: [totMauryCap, totRescisao], backgroundColor: ['#0f4c81', '#f97316'] }] },
+        options: { responsive: true, maintainAspectRatio: false }
+      });
+
+      chartNovosVsConcluidas = new Chart(document.getElementById('chartNovosVsConcluidas').getContext('2d'), {
+        type: 'pie',
+        data: { labels: ['Novos Negócios', 'Concluídas'], datasets: [{ data: [sumNovos, sumConc], backgroundColor: ['#ea580c', '#84cc16'] }] },
+        options: { responsive: true, maintainAspectRatio: false }
+      });
+
+      chartConcluidasLais = new Chart(document.getElementById('chartConcluidasLais').getContext('2d'), {
+        type: 'pie',
+        data: { labels: ['Concluídas', 'Lais'], datasets: [{ data: [sumConc, totLaisDashboard], backgroundColor: ['#0284c7', '#a855f7'] }] },
+        options: { responsive: true, maintainAspectRatio: false }
+      });
+    }
+
+    function renderResumoMes() {
+      const mesRef = document.getElementById('mes-referencia').value;
+      const atMes = atendimentos.filter(a => !mesRef || (a.inicio && a.inicio.startsWith(mesRef)));
+      const fechMes = fechamentos.filter(f => !mesRef || f.mes === mesRef);
+      const capMes = captacoes.filter(c => !mesRef || (c.inicio && c.inicio.startsWith(mesRef)));
+
+      document.getElementById('mes-tot-agendadas').innerText = atMes.reduce((acc, a) => acc + a.agendadas, 0);
+      document.getElementById('mes-tot-concluidas').innerText = atMes.reduce((acc, a) => acc + a.concluidas, 0);
+      document.getElementById('mes-tot-valor').innerText = `R$ ${fechMes.filter(f => f.status === 'FECHADO').reduce((acc, f) => acc + converterParaNumero(f.valor), 0).toLocaleString('pt-BR', {minimumFractionDigits: 2, maximumFractionDigits: 2})}`;
+      document.getElementById('mes-tot-captados').innerText = capMes.reduce((acc, c) => acc + c.qtd, 0);
+
+      const atendentesComercial = colaboradores.filter(c => c.status === 'Ativo' && (c.funcao.toLowerCase().includes('atendimento') || c.funcao.toLowerCase().includes('comercial') || c.funcao.toLowerCase().includes('corretor')));
+      let tbodyHTML = '';
+      let sumAg = 0, sumConc = 0, sumCanc = 0, sumNovos = 0, sumAtivo = 0;
+
+      atendentesComercial.forEach(c => {
+        const cAtend = atMes.filter(a => a.colaborador === c.nome);
+        const ag = cAtend.reduce((acc, a) => acc + a.agendadas, 0);
+        const conc = cAtend.reduce((acc, a) => acc + a.concluidas, 0);
+        const canc = cAtend.reduce((acc, a) => acc + a.canceladas, 0);
+        const novos = cAtend.reduce((acc, a) => acc + a.novos, 0);
+        const ativo = cAtend.reduce((acc, a) => acc + a.ativo, 0);
+        sumAg += ag; sumConc += conc; sumCanc += canc; sumNovos += novos; sumAtivo += ativo;
+
+        tbodyHTML += `
+          <tr class="hover:bg-gray-50">
+            <td class="p-2.5 ${obterCorColaborador(c.nome)}">${c.nome}</td>
+            <td class="p-2.5 text-center">${ag}</td>
+            <td class="p-2.5 text-center text-emerald-600 font-bold">${conc}</td>
+            <td class="p-2.5 text-center text-red-600">${canc}</td>
+            <td class="p-2.5 text-center text-blue-600 font-bold">${ag > 0 ? ((conc / ag) * 100).toFixed(1) : 0}%</td>
+            <td class="p-2.5 text-center">${novos}</td>
+            <td class="p-2.5 text-center">${ativo}</td>
+          </tr>
+        `;
+      });
+      document.getElementById('tabelaMesCorretoras').innerHTML = tbodyHTML || '<tr><td colspan="7" class="p-4 text-center text-gray-400">Nenhum registro.</td></tr>';
+    }
+
+    function renderTabelaColaboradores() {
+      const tbody = document.getElementById('tabelaColaboradores');
+      tbody.innerHTML = colaboradores.map(c => `
+        <tr class="hover:bg-gray-50">
+          <td class="p-2.5 ${obterCorColaborador(c.nome)}">${c.nome}</td>
+          <td class="p-2.5">${c.funcao}</td>
+          <td class="p-2.5"><span class="px-2 py-0.5 text-xs rounded-full font-bold ${c.status === 'Ativo' ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'}">${c.status}</span></td>
+          <td class="p-2.5 text-right space-x-2">
+            <button onclick="toggleStatusColab(${c.id})" class="text-xs px-2 py-1 bg-gray-200 rounded">Status</button>
+            <button onclick="removerColab(${c.id})" class="text-xs px-2 py-1 bg-red-100 text-red-600 rounded">Excluir</button>
+          </td>
+        </tr>
+      `).join('');
+    }
+
+    async function salvarColaborador(e) {
+      e.preventDefault();
+      const item = { id: Date.now(), nome: document.getElementById('colab-nome').value.trim(), funcao: document.getElementById('colab-funcao').value, status: document.getElementById('colab-status').value };
+      await _supabase.from('colaboradores').upsert(item);
+      document.getElementById('colab-nome').value = '';
+      await carregarDadosDoSupabase();
+    }
+
+    async function toggleStatusColab(id) {
+      const colab = colaboradores.find(c => c.id === id);
+      if (!colab) return;
+      await _supabase.from('colaboradores').update({ status: colab.status === 'Ativo' ? 'Inativo' : 'Ativo' }).eq('id', id);
+      await carregarDadosDoSupabase();
+    }
+
+    async function removerColab(id) {
+      await _supabase.from('colaboradores').delete().eq('id', id);
+      await carregarDadosDoSupabase();
+    }
+
+    function exportarExcel() {
+      const wb = XLSX.utils.book_new();
+      XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet([['Início', 'Fim', 'Colaborador', 'Agendadas', 'Concluídas']]), 'Atendimentos');
+      XLSX.writeFile(wb, `Castan_Relatorio.xlsx`);
+    }
+
+    window.onload = function() {
+      carregarSemanaAtual('dash');
+      carregarSemanaAtual('atend');
+      carregarSemanaAtual('cap');
+      const hoje = new Date();
+      const mesAtualStr = `${hoje.getFullYear()}-${String(hoje.getMonth() + 1).padStart(2, '0')}`;
+      if(document.getElementById('fech-mes')) document.getElementById('fech-mes').value = mesAtualStr;
+      if(document.getElementById('fech-mes-filtro')) document.getElementById('fech-mes-filtro').value = mesAtualStr;
+      if(document.getElementById('mes-referencia')) document.getElementById('mes-referencia').value = mesAtualStr;
+      carregarDadosDoSupabase();
+    };
+  </script>
+</body>
+</html>
