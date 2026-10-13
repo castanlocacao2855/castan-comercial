@@ -168,7 +168,7 @@
       <!-- FRENTE 1: ATENDIMENTO -->
       <div id="subtab-atendimento" class="subtab-content block space-y-4 sm:space-y-6">
         <div class="bg-white p-4 sm:p-6 rounded-b-xl shadow-sm border border-gray-200">
-          <h3 class="text-sm sm:text-base font-bold text-gray-800 mb-3 sm:mb-4">Lançamento de Atendimento Semanal</h3>
+          <h3 id="titulo-form-atendimento" class="text-sm sm:text-base font-bold text-gray-800 mb-3 sm:mb-4">Lançamento de Atendimento Semanal</h3>
           <form id="formAtendimento" onsubmit="salvarAtendimento(event)" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-3 sm:gap-4">
             <div>
               <label class="block text-[11px] font-semibold text-gray-600 mb-1">Início da Semana</label>
@@ -210,7 +210,8 @@
               <label class="block text-[11px] font-semibold text-gray-600 mb-1">Cliente Ativo</label>
               <input type="number" min="0" id="atend-ativo" value="0" required class="w-full border rounded-lg px-3 py-2 text-xs sm:text-sm">
             </div>
-            <div class="sm:col-span-2 md:col-span-2 flex items-end justify-end">
+            <div class="sm:col-span-2 md:col-span-2 flex items-end justify-end gap-2">
+              <button type="button" id="btn-cancelar-atendimento" onclick="cancelarEdicaoAtendimento()" class="hidden bg-gray-300 text-gray-700 px-4 py-2.5 rounded-lg text-xs sm:text-sm font-bold hover:bg-gray-400">Cancelar</button>
               <button type="submit" id="btn-salvar-atendimento" class="w-full sm:w-auto bg-blue-600 text-white px-8 py-2.5 rounded-lg text-xs sm:text-sm font-bold hover:bg-blue-700 shadow">
                 Salvar Registro
               </button>
@@ -246,7 +247,7 @@
       <!-- FRENTE 2: ESTEIRA -->
       <div id="subtab-esteira" class="subtab-content hidden space-y-4 sm:space-y-6">
         <div class="bg-white p-4 sm:p-6 rounded-b-xl shadow-sm border border-gray-200">
-          <h3 class="text-sm sm:text-base font-bold text-gray-800 mb-3 sm:mb-4">Novo Contrato na Esteira</h3>
+          <h3 id="titulo-form-fechamento" class="text-sm sm:text-base font-bold text-gray-800 mb-3 sm:mb-4">Novo Contrato na Esteira</h3>
           <form id="formFechamento" onsubmit="salvarFechamento(event)" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-3 sm:gap-4">
             <div>
               <label class="block text-[11px] font-semibold text-gray-600 mb-1">Mês Referência</label>
@@ -325,7 +326,8 @@
               <label class="block text-[11px] font-semibold text-gray-600 mb-1">Observação (OBS)</label>
               <input type="text" id="fech-obs" placeholder="Ex: aguardando fiador" class="w-full border rounded-lg px-3 py-2 text-xs sm:text-sm">
             </div>
-            <div class="sm:col-span-2 md:col-span-4 flex justify-end">
+            <div class="sm:col-span-2 md:col-span-4 flex justify-end gap-2">
+              <button type="button" id="btn-cancelar-fechamento" onclick="cancelarEdicaoFechamento()" class="hidden bg-gray-300 text-gray-700 px-6 py-2.5 rounded-lg text-xs sm:text-sm font-bold hover:bg-gray-400">Cancelar</button>
               <button type="submit" id="btn-salvar-fechamento" class="w-full sm:w-auto bg-emerald-600 text-white px-8 py-2.5 rounded-lg text-xs sm:text-sm font-bold hover:bg-emerald-700 shadow">
                 Adicionar à Esteira
               </button>
@@ -570,7 +572,7 @@
 
   <script>
     const SUPABASE_URL = 'https://uwueavzdkjsqvlyyafcz.supabase.co';
-    const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InV3dWVhdnpka2pzcXZseXlhZmN6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzEwNTc4MTgsImV4cCI6MjA4NjYzMzgxOH0.M1RXel-LjzUVsZDCW-IkMw_aSm_WvUP';
+    const SUPABASE_KEY = 'sb_publishable_M1RXel-LjzUVsZDCW-IkMw_aSm_WvUP';
     const _supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
     if (typeof ChartDataLabels !== 'undefined') {
@@ -653,7 +655,7 @@
       if (n.includes('leti')) return 'text-red-600 font-bold';
       if (n.includes('maury')) return 'text-blue-600 font-bold';       // Azul
       if (n.includes('fernando')) return 'text-blue-900 font-bold';    // Azul Marinho
-      if (n.includes('welligton') || n.includes('wellington')) return 'text-emerald-400 font-bold'; // Verde claro
+      if (n.includes('welligton') || n.includes('wellington')) return 'text-emerald-500 font-bold'; // Verde claro
       if (n.includes('lukas') || n.includes('lucas')) return 'text-green-600 font-bold';         // Verde
       if (n.includes('paula')) return 'text-orange-500 font-bold';     // Laranja
       if (n.includes('castan')) return 'text-blue-600 font-bold';
@@ -867,10 +869,7 @@
         return;
       }
 
-      editingAtendimentoId = null;
-      document.getElementById('btn-salvar-atendimento').innerText = 'Salvar Registro';
-      document.getElementById('formAtendimento').reset();
-      carregarSemanaAtual('atend');
+      cancelarEdicaoAtendimento();
       await carregarDadosDoSupabase();
       alert('Atendimento salvo com sucesso!');
     }
@@ -891,8 +890,19 @@
       document.getElementById('atend-lais').value = item.lais || 0;
       document.getElementById('atend-ativo').value = item.ativo;
 
+      document.getElementById('titulo-form-atendimento').innerText = 'Editar Atendimento';
       document.getElementById('btn-salvar-atendimento').innerText = 'Atualizar Registro';
+      document.getElementById('btn-cancelar-atendimento').classList.remove('hidden');
       window.scrollTo({ top: document.getElementById('subtab-atendimento').offsetTop, behavior: 'smooth' });
+    }
+
+    function cancelarEdicaoAtendimento() {
+      editingAtendimentoId = null;
+      document.getElementById('formAtendimento').reset();
+      document.getElementById('titulo-form-atendimento').innerText = 'Lançamento de Atendimento Semanal';
+      document.getElementById('btn-salvar-atendimento').innerText = 'Salvar Registro';
+      document.getElementById('btn-cancelar-atendimento').classList.add('hidden');
+      carregarSemanaAtual('atend');
     }
 
     async function removerAtendimento(id) {
@@ -996,13 +1006,9 @@
         return;
       }
 
-      editingFechamentoId = null;
-      document.getElementById('formFechamento').reset();
-      const hoje = new Date();
-      document.getElementById('fech-mes').value = `${hoje.getFullYear()}-${String(hoje.getMonth() + 1).padStart(2, '0')}`;
-      
+      cancelarEdicaoFechamento();
       await carregarDadosDoSupabase();
-      alert('Contrato adicionado à esteira com sucesso!');
+      alert('Contrato salvo na esteira com sucesso!');
     }
 
     function editarFechamento(id) {
@@ -1029,7 +1035,21 @@
       document.getElementById('fech-assinado').value = item.assinado || '';
       document.getElementById('fech-obs').value = item.obs || '';
 
+      document.getElementById('titulo-form-fechamento').innerText = 'Editar Contrato na Esteira';
+      document.getElementById('btn-salvar-fechamento').innerText = 'Atualizar Contrato';
+      document.getElementById('btn-cancelar-fechamento').classList.remove('hidden');
       window.scrollTo({ top: document.getElementById('subtab-esteira').offsetTop, behavior: 'smooth' });
+    }
+
+    function cancelarEdicaoFechamento() {
+      editingFechamentoId = null;
+      document.getElementById('formFechamento').reset();
+      const hoje = new Date();
+      document.getElementById('fech-mes').value = `${hoje.getFullYear()}-${String(hoje.getMonth() + 1).padStart(2, '0')}`;
+      document.getElementById('titulo-form-fechamento').innerText = 'Novo Contrato na Esteira';
+      document.getElementById('btn-salvar-fechamento').innerText = 'Adicionar à Esteira';
+      document.getElementById('btn-cancelar-fechamento').classList.add('hidden');
+      sincronizarFiltroMesFechamento();
     }
 
     async function alterarStatusFechamentoDirect(id, newStatus) {
