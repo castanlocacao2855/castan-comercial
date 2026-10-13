@@ -326,7 +326,7 @@
               <input type="text" id="fech-obs" placeholder="Ex: aguardando fiador" class="w-full border rounded-lg px-3 py-2 text-xs sm:text-sm">
             </div>
             <div class="sm:col-span-2 md:col-span-4 flex justify-end">
-              <button type="submit" class="w-full sm:w-auto bg-emerald-600 text-white px-8 py-2.5 rounded-lg text-xs sm:text-sm font-bold hover:bg-emerald-700 shadow">
+              <button type="submit" id="btn-salvar-fechamento" class="w-full sm:w-auto bg-emerald-600 text-white px-8 py-2.5 rounded-lg text-xs sm:text-sm font-bold hover:bg-emerald-700 shadow">
                 Adicionar à Esteira
               </button>
             </div>
@@ -391,8 +391,8 @@
       <!-- FRENTE 3: CAPTAÇÃO -->
       <div id="subtab-captacao" class="subtab-content hidden space-y-4 sm:space-y-6">
         <div class="bg-white p-4 sm:p-6 rounded-b-xl shadow-sm border border-gray-200">
-          <h3 class="text-sm sm:text-base font-bold text-gray-800 mb-3 sm:mb-4">Lançamento de Captação</h3>
-          <form onsubmit="salvarCaptacao(event)" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-3 sm:gap-4">
+          <h3 id="titulo-form-captacao" class="text-sm sm:text-base font-bold text-gray-800 mb-3 sm:mb-4">Lançamento de Captação</h3>
+          <form id="formCaptacao" onsubmit="salvarCaptacao(event)" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-3 sm:gap-4">
             <div>
               <label class="block text-[11px] font-semibold text-gray-600 mb-1">Início da Semana</label>
               <input type="date" id="cap-inicio" required class="w-full border rounded-lg px-3 py-2 text-xs sm:text-sm">
@@ -428,8 +428,9 @@
               <label class="block text-[11px] font-semibold text-gray-600 mb-1">Conversão Auto %</label>
               <input type="text" id="cap-conversao" readonly value="0%" class="w-full border bg-gray-100 rounded-lg px-3 py-2 text-xs sm:text-sm font-bold text-emerald-600">
             </div>
-            <div class="sm:col-span-2 md:col-span-3 flex items-end justify-end">
-              <button type="submit" class="w-full sm:w-auto bg-amber-600 text-white px-6 py-2.5 rounded-lg text-xs sm:text-sm font-bold hover:bg-amber-700 shadow">Salvar Captação</button>
+            <div class="sm:col-span-2 md:col-span-3 flex items-end justify-end gap-2">
+              <button type="button" id="btn-cancelar-captacao" onclick="cancelarEdicaoCaptacao()" class="hidden bg-gray-300 text-gray-700 px-4 py-2.5 rounded-lg text-xs sm:text-sm font-bold hover:bg-gray-400">Cancelar</button>
+              <button type="submit" id="btn-salvar-captacao" class="w-full sm:w-auto bg-amber-600 text-white px-6 py-2.5 rounded-lg text-xs sm:text-sm font-bold hover:bg-amber-700 shadow">Salvar Captação</button>
             </div>
           </form>
         </div>
@@ -634,6 +635,11 @@
       if (n.includes('thay')) return '#9333ea';
       if (n.includes('denise')) return '#db2777';
       if (n.includes('leti')) return '#dc2626';
+      if (n.includes('maury')) return '#2563eb';       // Azul
+      if (n.includes('fernando')) return '#1e3a8a';    // Azul Marinho
+      if (n.includes('welligton') || n.includes('wellington')) return '#4ade80'; // Verde claro
+      if (n.includes('lukas') || n.includes('lucas')) return '#16a34a';         // Verde
+      if (n.includes('paula')) return '#f97316';       // Laranja
       if (n.includes('castan')) return '#2563eb';
       if (n.includes('total')) return '#10b981';
       return '#0284c7';
@@ -645,6 +651,11 @@
       if (n.includes('thay')) return 'text-purple-600 font-bold';
       if (n.includes('denise')) return 'text-pink-600 font-bold';
       if (n.includes('leti')) return 'text-red-600 font-bold';
+      if (n.includes('maury')) return 'text-blue-600 font-bold';       // Azul
+      if (n.includes('fernando')) return 'text-blue-900 font-bold';    // Azul Marinho
+      if (n.includes('welligton') || n.includes('wellington')) return 'text-emerald-400 font-bold'; // Verde claro
+      if (n.includes('lukas') || n.includes('lucas')) return 'text-green-600 font-bold';         // Verde
+      if (n.includes('paula')) return 'text-orange-500 font-bold';     // Laranja
       if (n.includes('castan')) return 'text-blue-600 font-bold';
       return 'text-gray-800 font-bold';
     }
@@ -674,6 +685,7 @@
 
     let editingAtendimentoId = null;
     let editingFechamentoId = null;
+    let editingCaptacaoId = null;
 
     let chartValoresAtendentes = null, chartComboVisitas = null, chartStatusEsteira = null, chartCaptacaoRescisao = null, chartNovosVsConcluidas = null, chartConcluidasLais = null;
 
@@ -1139,7 +1151,7 @@
       e.preventDefault();
       const tipo = document.getElementById('cap-tipo').value;
       const item = {
-        id: Date.now(),
+        id: editingCaptacaoId || Date.now(),
         inicio: document.getElementById('cap-inicio').value,
         fim: document.getElementById('cap-fim').value,
         captador: document.getElementById('cap-captador').value,
@@ -1148,8 +1160,48 @@
         especifico: tipo === 'RECEPTIVO' ? (parseInt(document.getElementById('cap-rescisao').value) || 0) : (parseInt(document.getElementById('cap-terceiros').value) || 0),
         conversao: document.getElementById('cap-conversao').value
       };
-      await _supabase.from('captacoes').upsert(item);
+      const { error } = await _supabase.from('captacoes').upsert(item);
+      if (error) {
+        alert('Erro ao salvar captação: ' + error.message);
+        return;
+      }
+      cancelarEdicaoCaptacao();
       await carregarDadosDoSupabase();
+      alert('Captação salva com sucesso!');
+    }
+
+    function editarCaptacao(id) {
+      const item = captacoes.find(c => c.id === id);
+      if (!item) return;
+
+      editingCaptacaoId = item.id;
+      document.getElementById('cap-inicio').value = item.inicio;
+      document.getElementById('cap-fim').value = item.fim;
+      document.getElementById('cap-captador').value = item.captador;
+      document.getElementById('cap-tipo').value = item.tipo;
+      toggleTipoCaptador();
+      document.getElementById('cap-qtd').value = item.qtd;
+      if (item.tipo === 'RECEPTIVO') {
+        document.getElementById('cap-rescisao').value = item.especifico;
+      } else {
+        document.getElementById('cap-terceiros').value = item.especifico;
+      }
+      document.getElementById('cap-conversao').value = item.conversao;
+
+      document.getElementById('titulo-form-captacao').innerText = 'Editar Captação';
+      document.getElementById('btn-salvar-captacao').innerText = 'Atualizar Captação';
+      document.getElementById('btn-cancelar-captacao').classList.remove('hidden');
+      window.scrollTo({ top: document.getElementById('subtab-captacao').offsetTop, behavior: 'smooth' });
+    }
+
+    function cancelarEdicaoCaptacao() {
+      editingCaptacaoId = null;
+      document.getElementById('formCaptacao').reset();
+      toggleTipoCaptador();
+      document.getElementById('titulo-form-captacao').innerText = 'Lançamento de Captação';
+      document.getElementById('btn-salvar-captacao').innerText = 'Salvar Captação';
+      document.getElementById('btn-cancelar-captacao').classList.add('hidden');
+      carregarSemanaAtual('cap');
     }
 
     async function removerCaptacao(id) {
@@ -1167,7 +1219,10 @@
           <td class="p-2.5">${c.qtd}</td>
           <td class="p-2.5">${c.tipo === 'RECEPTIVO' ? `Rescisão: ${c.especifico}` : `Terceiros: ${c.especifico}`}</td>
           <td class="p-2.5 font-bold text-emerald-600">${c.conversao}</td>
-          <td class="p-2.5 text-right"><button onclick="removerCaptacao(${c.id})" class="text-red-600 hover:underline">Excluir</button></td>
+          <td class="p-2.5 text-right space-x-2">
+            <button onclick="editarCaptacao(${c.id})" class="text-blue-600 font-bold hover:underline">Editar</button>
+            <button onclick="removerCaptacao(${c.id})" class="text-red-600 hover:underline">Excluir</button>
+          </td>
         </tr>
       `).join('');
     }
