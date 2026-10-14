@@ -177,6 +177,9 @@
         <button type="button" onclick="switchSubTab('captacao')" id="subbtn-captacao" class="sub-tab-btn whitespace-nowrap border-b-2 border-transparent text-gray-500 font-medium px-3 py-2 text-xs sm:text-sm flex items-center gap-1.5">
           <i class="fa-solid fa-house-user"></i> Captação
         </button>
+        <button type="button" onclick="switchSubTab('leads')" id="subbtn-leads" class="sub-tab-btn whitespace-nowrap border-b-2 border-transparent text-purple-600 font-medium px-3 py-2 text-xs sm:text-sm flex items-center gap-1.5">
+          <i class="fa-solid fa-bullhorn"></i> Origem de Leads
+        </button>
       </div>
 
       <!-- FRENTE 1: ATENDIMENTO -->
@@ -471,6 +474,108 @@
           </div>
         </div>
       </div>
+
+      <!-- FRENTE 4: ORIGEM DE LEADS -->
+      <div id="subtab-leads" class="subtab-content hidden space-y-4 sm:space-y-6">
+        <div class="bg-white p-4 sm:p-6 rounded-b-xl shadow-sm border border-gray-200">
+          <h3 id="titulo-form-leads" class="text-sm sm:text-base font-bold text-purple-900 mb-3 sm:mb-4 flex items-center gap-2">
+            <i class="fa-solid fa-bullhorn text-purple-600"></i> Lançamento Mensal de Origem de Leads
+          </h3>
+          <form id="formLeads" onsubmit="salvarOrigemLeads(event)" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-3 sm:gap-4">
+            <div class="sm:col-span-2 md:col-span-4 bg-purple-50 p-3 rounded-lg border border-purple-200 flex flex-col sm:flex-row items-center justify-between gap-3">
+              <div class="w-full sm:w-auto flex items-center gap-2">
+                <label class="text-xs font-bold text-purple-900 uppercase">Mês de Referência:</label>
+                <input type="month" id="lead-mes" required class="border rounded-lg px-3 py-1.5 text-xs font-bold text-purple-900 bg-white">
+              </div>
+              <span class="text-[11px] text-purple-700 font-medium">Selecione o Ano e Mês para gravar ou atualizar os indicadores de tráfego.</span>
+            </div>
+
+            <div class="col-span-1 sm:col-span-2 md:col-span-4 font-bold text-xs text-gray-500 uppercase border-b pb-1 mt-2">Atendimento LAIS & CRM</div>
+            <div>
+              <label class="block text-[11px] font-semibold text-gray-600 mb-1">Total Leads LAIS</label>
+              <input type="number" min="0" id="lead-tot-lais" value="0" required class="w-full border rounded-lg px-3 py-2 text-xs sm:text-sm font-semibold">
+            </div>
+            <div>
+              <label class="block text-[11px] font-semibold text-gray-600 mb-1">Enviados p/ CRM</label>
+              <input type="number" min="0" id="lead-enviados-crm" value="0" required class="w-full border rounded-lg px-3 py-2 text-xs sm:text-sm font-semibold">
+            </div>
+            <div>
+              <label class="block text-[11px] font-semibold text-gray-600 mb-1">Solicitações de Visitas</label>
+              <input type="number" min="0" id="lead-solic-visitas" value="0" required class="w-full border rounded-lg px-3 py-2 text-xs sm:text-sm font-semibold">
+            </div>
+
+            <div class="col-span-1 sm:col-span-2 md:col-span-4 font-bold text-xs text-gray-500 uppercase border-b pb-1 mt-2">Canais de Entrada (Mídias)</div>
+            <div>
+              <label class="block text-[11px] font-semibold text-gray-600 mb-1">Site Próprio</label>
+              <input type="number" min="0" id="lead-site" value="0" class="w-full border rounded-lg px-3 py-2 text-xs sm:text-sm">
+            </div>
+            <div>
+              <label class="block text-[11px] font-semibold text-gray-600 mb-1">ImovelWeb</label>
+              <input type="number" min="0" id="lead-imovelweb" value="0" class="w-full border rounded-lg px-3 py-2 text-xs sm:text-sm">
+            </div>
+            <div>
+              <label class="block text-[11px] font-semibold text-gray-600 mb-1">Chaves na mão</label>
+              <input type="number" min="0" id="lead-chaves" value="0" class="w-full border rounded-lg px-3 py-2 text-xs sm:text-sm">
+            </div>
+            <div>
+              <label class="block text-[11px] font-semibold text-gray-600 mb-1">GrupoZap</label>
+              <input type="number" min="0" id="lead-zap" value="0" class="w-full border rounded-lg px-3 py-2 text-xs sm:text-sm">
+            </div>
+            <div>
+              <label class="block text-[11px] font-semibold text-gray-600 mb-1">Google Ads</label>
+              <input type="number" min="0" id="lead-google" value="0" class="w-full border rounded-lg px-3 py-2 text-xs sm:text-sm">
+            </div>
+            <div>
+              <label class="block text-[11px] font-semibold text-gray-600 mb-1">Wimoveis</label>
+              <input type="number" min="0" id="lead-wimoveis" value="0" class="w-full border rounded-lg px-3 py-2 text-xs sm:text-sm">
+            </div>
+            <div>
+              <label class="block text-[11px] font-semibold text-gray-600 mb-1">Email</label>
+              <input type="number" min="0" id="lead-email" value="0" class="w-full border rounded-lg px-3 py-2 text-xs sm:text-sm">
+            </div>
+            <div>
+              <label class="block text-[11px] font-semibold text-gray-600 mb-1">WhatsApp Direto</label>
+              <input type="number" min="0" id="lead-whatsapp" value="0" class="w-full border rounded-lg px-3 py-2 text-xs sm:text-sm">
+            </div>
+
+            <div class="sm:col-span-2 md:col-span-4 flex justify-end gap-2 mt-2">
+              <button type="button" id="btn-cancelar-leads" onclick="cancelarEdicaoLeads()" class="hidden bg-gray-300 text-gray-700 px-6 py-2.5 rounded-lg text-xs sm:text-sm font-bold hover:bg-gray-400">Cancelar</button>
+              <button type="submit" id="btn-salvar-leads" class="w-full sm:w-auto bg-purple-600 text-white px-8 py-2.5 rounded-lg text-xs sm:text-sm font-bold hover:bg-purple-700 shadow">
+                Salvar Origem de Leads
+              </button>
+            </div>
+          </form>
+        </div>
+
+        <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+          <div class="p-3.5 border-b bg-gray-50 flex justify-between items-center">
+            <h3 class="font-bold text-xs sm:text-sm text-gray-700">Histórico Consolidado por Origem de Leads</h3>
+          </div>
+          <div class="overflow-x-auto">
+            <table class="w-full text-left border-collapse text-xs whitespace-nowrap">
+              <thead class="bg-gray-100 text-gray-600 uppercase">
+                <tr>
+                  <th class="p-2.5">Mês/Ano</th>
+                  <th class="p-2.5 text-center">Total LAIS</th>
+                  <th class="p-2.5 text-center">CRM</th>
+                  <th class="p-2.5 text-center">Solic. Visitas</th>
+                  <th class="p-2.5 text-center">Site Próprio</th>
+                  <th class="p-2.5 text-center">ImovelWeb</th>
+                  <th class="p-2.5 text-center">Chaves mão</th>
+                  <th class="p-2.5 text-center">GrupoZap</th>
+                  <th class="p-2.5 text-center">Google Ads</th>
+                  <th class="p-2.5 text-center">Wimoveis</th>
+                  <th class="p-2.5 text-center">Email</th>
+                  <th class="p-2.5 text-center">Whats Direto</th>
+                  <th class="p-2.5 text-right">Ações</th>
+                </tr>
+              </thead>
+              <tbody id="tabelaOrigemLeads" class="divide-y divide-gray-200"></tbody>
+              <tfoot id="totalOrigemLeads" class="bg-purple-50 font-bold border-t-2 border-purple-200"></tfoot>
+            </table>
+          </div>
+        </div>
+      </div>
     </section>
 
     <!-- ABA 3: COLABORADORES -->
@@ -713,10 +818,12 @@
     let atendimentos = [];
     let fechamentos = [];
     let captacoes = [];
+    let origensLeads = [];
 
     let editingAtendimentoId = null;
     let editingFechamentoId = null;
     let editingCaptacaoId = null;
+    let editingLeadId = null;
 
     let chartValoresAtendentes = null, chartComboVisitas = null, chartStatusEsteira = null, chartCaptacaoRescisao = null, chartNovosVsConcluidas = null, chartConcluidasLais = null;
 
@@ -742,6 +849,9 @@
 
         const { data: capData } = await _supabase.from('captacoes').select('*');
         if (capData) captacoes = capData;
+
+        const { data: leadData } = await _supabase.from('leads_origem').select('*');
+        if (leadData) origensLeads = leadData;
       } catch (err) {
         console.error('Aviso ao carregar do Supabase:', err);
       } finally {
@@ -754,6 +864,7 @@
       renderTabelaAtendimento();
       renderTabelaFechamento();
       renderTabelaCaptacao();
+      renderTabelaOrigemLeads();
       renderTabelaColaboradores();
       renderDashboard();
     }
@@ -991,6 +1102,151 @@
             <td class="p-2.5 text-center font-black">${totNovos}</td>
             <td class="p-2.5 text-center text-purple-800 font-black bg-purple-50/80">${totLaisConsolidado}</td>
             <td class="p-2.5 text-center font-black">${totAtivo}</td>
+            <td></td>
+          </tr>
+        `;
+      }
+    }
+
+    // NOVAS FUNÇÕES PARA ORIGEM DE LEADS
+    async function salvarOrigemLeads(e) {
+      e.preventDefault();
+      const mesVal = document.getElementById('lead-mes').value;
+      const item = {
+        id: editingLeadId || Date.now(),
+        mes: mesVal,
+        tot_lais: parseInt(document.getElementById('lead-tot-lais').value) || 0,
+        enviados_crm: parseInt(document.getElementById('lead-enviados-crm').value) || 0,
+        solic_visitas: parseInt(document.getElementById('lead-solic-visitas').value) || 0,
+        site: parseInt(document.getElementById('lead-site').value) || 0,
+        imovelweb: parseInt(document.getElementById('lead-imovelweb').value) || 0,
+        chaves: parseInt(document.getElementById('lead-chaves').value) || 0,
+        zap: parseInt(document.getElementById('lead-zap').value) || 0,
+        google: parseInt(document.getElementById('lead-google').value) || 0,
+        wimoveis: parseInt(document.getElementById('lead-wimoveis').value) || 0,
+        email: parseInt(document.getElementById('lead-email').value) || 0,
+        whatsapp: parseInt(document.getElementById('lead-whatsapp').value) || 0
+      };
+
+      if (_supabase) {
+        const { error } = await _supabase.from('leads_origem').upsert(item);
+        if (error) {
+          alert('Erro ao salvar no Supabase: ' + error.message);
+          return;
+        }
+      } else {
+        const idx = origensLeads.findIndex(l => l.id === item.id);
+        if (idx >= 0) origensLeads[idx] = item;
+        else origensLeads.push(item);
+      }
+
+      cancelarEdicaoLeads();
+      await carregarDadosDoSupabase();
+      alert('Métricas de Origem de Leads salvas com sucesso!');
+    }
+
+    function editarOrigemLeads(id) {
+      const item = origensLeads.find(l => l.id === id);
+      if (!item) return;
+
+      editingLeadId = item.id;
+      document.getElementById('lead-mes').value = item.mes;
+      document.getElementById('lead-tot-lais').value = item.tot_lais || 0;
+      document.getElementById('lead-enviados-crm').value = item.enviados_crm || 0;
+      document.getElementById('lead-solic-visitas').value = item.solic_visitas || 0;
+      document.getElementById('lead-site').value = item.site || 0;
+      document.getElementById('lead-imovelweb').value = item.imovelweb || 0;
+      document.getElementById('lead-chaves').value = item.chaves || 0;
+      document.getElementById('lead-zap').value = item.zap || 0;
+      document.getElementById('lead-google').value = item.google || 0;
+      document.getElementById('lead-wimoveis').value = item.wimoveis || 0;
+      document.getElementById('lead-email').value = item.email || 0;
+      document.getElementById('lead-whatsapp').value = item.whatsapp || 0;
+
+      document.getElementById('titulo-form-leads').innerText = 'Editar Origem de Leads';
+      document.getElementById('btn-salvar-leads').innerText = 'Atualizar Mídia/Leads';
+      document.getElementById('btn-cancelar-leads').classList.remove('hidden');
+      switchTab('lancamentos');
+      switchSubTab('leads');
+      window.scrollTo({ top: document.getElementById('subtab-leads').offsetTop, behavior: 'smooth' });
+    }
+
+    function cancelarEdicaoLeads() {
+      editingLeadId = null;
+      document.getElementById('formLeads').reset();
+      const hoje = new Date();
+      document.getElementById('lead-mes').value = `${hoje.getFullYear()}-${String(hoje.getMonth() + 1).padStart(2, '0')}`;
+      document.getElementById('titulo-form-leads').innerText = 'Lançamento Mensal de Origem de Leads';
+      document.getElementById('btn-salvar-leads').innerText = 'Salvar Origem de Leads';
+      document.getElementById('btn-cancelar-leads').classList.add('hidden');
+    }
+
+    async function removerOrigemLeads(id) {
+      if(!confirm('Deseja realmente excluir este registro de origem de leads?')) return;
+      if (_supabase) await _supabase.from('leads_origem').delete().eq('id', id);
+      else origensLeads = origensLeads.filter(l => l.id !== id);
+      await carregarDadosDoSupabase();
+    }
+
+    function renderTabelaOrigemLeads() {
+      const tbody = document.getElementById('tabelaOrigemLeads');
+      if (!tbody) return;
+
+      let sumLais = 0, sumCrm = 0, sumSolic = 0, sumSite = 0, sumImovel = 0, sumChaves = 0, sumZap = 0, sumGoogle = 0, sumWimoveis = 0, sumEmail = 0, sumWhats = 0;
+
+      origensLeads.sort((a,b) => (a.mes > b.mes ? 1 : -1));
+
+      tbody.innerHTML = origensLeads.map(l => {
+        sumLais += l.tot_lais || 0;
+        sumCrm += l.enviados_crm || 0;
+        sumSolic += l.solic_visitas || 0;
+        sumSite += l.site || 0;
+        sumImovel += l.imovelweb || 0;
+        sumChaves += l.chaves || 0;
+        sumZap += l.zap || 0;
+        sumGoogle += l.google || 0;
+        sumWimoveis += l.wimoveis || 0;
+        sumEmail += l.email || 0;
+        sumWhats += l.whatsapp || 0;
+
+        return `
+          <tr class="hover:bg-purple-50/50">
+            <td class="p-2.5 font-bold text-purple-900">${formatarMesAnoBR(l.mes)}</td>
+            <td class="p-2.5 text-center font-bold text-purple-700">${l.tot_lais || 0}</td>
+            <td class="p-2.5 text-center font-semibold text-gray-700">${l.enviados_crm || 0}</td>
+            <td class="p-2.5 text-center font-semibold text-gray-700">${l.solic_visitas || 0}</td>
+            <td class="p-2.5 text-center">${l.site || 0}</td>
+            <td class="p-2.5 text-center">${l.imovelweb || 0}</td>
+            <td class="p-2.5 text-center">${l.chaves || 0}</td>
+            <td class="p-2.5 text-center font-bold text-slate-800">${l.zap || 0}</td>
+            <td class="p-2.5 text-center">${l.google || 0}</td>
+            <td class="p-2.5 text-center">${l.wimoveis || 0}</td>
+            <td class="p-2.5 text-center">${l.email || 0}</td>
+            <td class="p-2.5 text-center font-semibold text-emerald-600">${l.whatsapp || 0}</td>
+            <td class="p-2.5 text-right space-x-1.5">
+              <button type="button" onclick="editarOrigemLeads(${l.id})" class="text-blue-600 font-bold hover:underline">Editar</button>
+              <button type="button" onclick="removerOrigemLeads(${l.id})" class="text-red-600 hover:underline">Excluir</button>
+            </td>
+          </tr>
+        `;
+      }).join('');
+
+      const elFoot = document.getElementById('totalOrigemLeads');
+      if (elFoot) {
+        elFoot.innerHTML = `
+          <tr>
+            <td class="p-2.5 font-black text-purple-950">TOTAL ACUMULADO</td>
+            <td class="p-2.5 text-center font-black text-purple-900">${sumLais}</td>
+            <td class="p-2.5 text-center font-black text-slate-800">${sumCrm}</td>
+            <td class="p-2.5 text-center font-black text-slate-800">${sumSolic}</td>
+            <td class="p-2.5 text-center font-bold">${sumSite}</td>
+            <td class="p-2.5 text-center font-bold">${sumImovel}</td>
+            <td class="p-2.5 text-center font-bold">${sumChaves}</td>
+            <td class="p-2.5 text-center font-black text-slate-900">${sumZap}</td>
+            <td class="p-2.5 text-center font-bold">${sumGoogle}</td>
+            <td class="p-2.5 text-center font-bold">${sumWimoveis}</td>
+            <td class="p-2.5 text-center font-bold">${sumEmail}</td>
+            <td class="p-2.5 text-center font-black text-emerald-700">${sumWhats}</td>
             <td></td>
           </tr>
         `;
@@ -1598,6 +1854,7 @@
       if(document.getElementById('fech-mes')) document.getElementById('fech-mes').value = mesAtualStr;
       if(document.getElementById('fech-mes-filtro')) document.getElementById('fech-mes-filtro').value = mesAtualStr;
       if(document.getElementById('mes-referencia')) document.getElementById('mes-referencia').value = mesAtualStr;
+      if(document.getElementById('lead-mes')) document.getElementById('lead-mes').value = mesAtualStr;
       carregarDadosDoSupabase();
     };
   </script>
