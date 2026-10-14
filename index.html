@@ -14,19 +14,28 @@
   <style>
     .no-scrollbar::-webkit-scrollbar { display: none; }
     .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+    
+    header {
+      position: relative !important;
+      z-index: 9999 !important;
+    }
+    
     .tab-btn, .sub-tab-btn {
       cursor: pointer !important;
-      touch-action: manipulation;
-      user-select: none;
+      touch-action: manipulation !important;
+      user-select: none !important;
+      pointer-events: auto !important;
+      position: relative !important;
+      z-index: 10000 !important;
     }
   </style>
 </head>
 <body class="bg-gray-100 min-h-screen text-gray-800 font-sans antialiased">
 
   <!-- NAVEGAÇÃO PRINCIPAL -->
-  <header class="bg-slate-900 text-white shadow-lg sticky top-0 z-50 pointer-events-auto">
+  <header class="bg-slate-900 text-white shadow-lg sticky top-0 w-full">
     <div class="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8">
-      <div class="flex flex-col sm:flex-row items-center justify-between py-2 sm:py-0 sm:h-16 gap-2">
+      <div class="py-2.5 sm:py-0 sm:h-16 flex flex-col sm:flex-row items-center justify-between gap-2">
         <div class="flex items-center gap-2.5 w-full sm:w-auto justify-between sm:justify-start">
           <div class="flex items-center gap-2">
             <div class="bg-blue-600 p-1.5 sm:p-2 rounded-lg"><i class="fa-solid fa-chart-line text-lg sm:text-xl"></i></div>
@@ -36,17 +45,17 @@
             <i class="fa-solid fa-cloud text-[9px]"></i> On-line
           </span>
         </div>
-        <nav class="flex w-full sm:w-auto overflow-x-auto no-scrollbar space-x-1.5 pb-1 sm:pb-0 relative z-50">
-          <button type="button" onclick="switchTab('dashboard')" id="btn-dashboard" class="tab-btn whitespace-nowrap px-3 py-1.5 sm:py-2 rounded-lg text-xs sm:text-sm font-medium transition-all bg-blue-600 text-white flex items-center gap-1.5 shrink-0">
+        <nav class="flex w-full sm:w-auto overflow-x-auto no-scrollbar space-x-1.5 pb-1 sm:pb-0">
+          <button type="button" id="btn-dashboard" class="tab-btn whitespace-nowrap px-3 py-1.5 sm:py-2 rounded-lg text-xs sm:text-sm font-medium transition-all bg-blue-600 text-white flex items-center gap-1.5 shrink-0">
             <i class="fa-solid fa-chart-pie"></i> Dashboard
           </button>
-          <button type="button" onclick="switchTab('lancamentos')" id="btn-lancamentos" class="tab-btn whitespace-nowrap px-3 py-1.5 sm:py-2 rounded-lg text-xs sm:text-sm font-medium transition-all text-gray-300 hover:bg-slate-800 flex items-center gap-1.5 shrink-0">
+          <button type="button" id="btn-lancamentos" class="tab-btn whitespace-nowrap px-3 py-1.5 sm:py-2 rounded-lg text-xs sm:text-sm font-medium transition-all text-gray-300 hover:bg-slate-800 flex items-center gap-1.5 shrink-0">
             <i class="fa-solid fa-pen-to-square"></i> Lançamentos
           </button>
-          <button type="button" onclick="switchTab('colaboradores')" id="btn-colaboradores" class="tab-btn whitespace-nowrap px-3 py-1.5 sm:py-2 rounded-lg text-xs sm:text-sm font-medium transition-all text-gray-300 hover:bg-slate-800 flex items-center gap-1.5 shrink-0">
+          <button type="button" id="btn-colaboradores" class="tab-btn whitespace-nowrap px-3 py-1.5 sm:py-2 rounded-lg text-xs sm:text-sm font-medium transition-all text-gray-300 hover:bg-slate-800 flex items-center gap-1.5 shrink-0">
             <i class="fa-solid fa-users"></i> Equipe
           </button>
-          <button type="button" onclick="switchTab('resumo-mes')" id="btn-resumo-mes" class="tab-btn whitespace-nowrap px-3 py-1.5 sm:py-2 rounded-lg text-xs sm:text-sm font-medium transition-all text-emerald-400 hover:bg-slate-800 flex items-center gap-1.5 border border-emerald-500/30 shrink-0">
+          <button type="button" id="btn-resumo-mes" class="tab-btn whitespace-nowrap px-3 py-1.5 sm:py-2 rounded-lg text-xs sm:text-sm font-medium transition-all text-emerald-400 hover:bg-slate-800 flex items-center gap-1.5 border border-emerald-500/30 shrink-0">
             <i class="fa-solid fa-calendar-check"></i> Resumo Mês
           </button>
         </nav>
@@ -1519,4 +1528,78 @@
           </tr>
         `;
       });
-      const
+      const elTabMes = document.getElementById('tabelaMesCorretoras');
+      if(elTabMes) elTabMes.innerHTML = tbodyHTML || '<tr><td colspan="7" class="p-4 text-center text-gray-400">Nenhum registro.</td></tr>';
+    }
+
+    function renderTabelaColaboradores() {
+      const tbody = document.getElementById('tabelaColaboradores');
+      if(!tbody) return;
+      tbody.innerHTML = colaboradores.map(c => `
+        <tr class="hover:bg-gray-50">
+          <td class="p-2.5 ${obterCorColaborador(c.nome)}">${c.nome}</td>
+          <td class="p-2.5">${c.funcao}</td>
+          <td class="p-2.5"><span class="px-2 py-0.5 text-xs rounded-full font-bold ${c.status === 'Ativo' ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'}">${c.status}</span></td>
+          <td class="p-2.5 text-right space-x-2">
+            <button type="button" onclick="toggleStatusColab(${c.id})" class="text-xs px-2 py-1 bg-gray-200 rounded">Status</button>
+            <button type="button" onclick="removerColab(${c.id})" class="text-xs px-2 py-1 bg-red-100 text-red-600 rounded">Excluir</button>
+          </td>
+        </tr>
+      `).join('');
+    }
+
+    async function salvarColaborador(e) {
+      e.preventDefault();
+      const item = { id: Date.now(), nome: document.getElementById('colab-nome').value.trim(), funcao: document.getElementById('colab-funcao').value, status: document.getElementById('colab-status').value };
+      if (_supabase) await _supabase.from('colaboradores').upsert(item);
+      document.getElementById('colab-nome').value = '';
+      await carregarDadosDoSupabase();
+    }
+
+    async function toggleStatusColab(id) {
+      const colab = colaboradores.find(c => c.id === id);
+      if (!colab) return;
+      const novoStatus = colab.status === 'Ativo' ? 'Inativo' : 'Ativo';
+      if (_supabase) await _supabase.from('colaboradores').update({ status: novoStatus }).eq('id', id);
+      await carregarDadosDoSupabase();
+    }
+
+    async function removerColab(id) {
+      if(!confirm('Deseja realmente excluir este colaborador?')) return;
+      if (_supabase) await _supabase.from('colaboradores').delete().eq('id', id);
+      await carregarDadosDoSupabase();
+    }
+
+    function exportarExcel() {
+      const wb = XLSX.utils.book_new();
+      XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet([['Início', 'Fim', 'Colaborador', 'Agendadas', 'Concluídas']]), 'Atendimentos');
+      XLSX.writeFile(wb, `Castan_Relatorio.xlsx`);
+    }
+
+    // REGISTRO DE EVENTOS DIRETOS PARA EVITAR BLOQUEIO
+    document.addEventListener("DOMContentLoaded", function() {
+      const btnDash = document.getElementById("btn-dashboard");
+      const btnLanc = document.getElementById("btn-lancamentos");
+      const btnColab = document.getElementById("btn-colaboradores");
+      const btnResumo = document.getElementById("btn-resumo-mes");
+
+      if (btnDash) btnDash.addEventListener("click", function(e) { e.preventDefault(); switchTab('dashboard'); });
+      if (btnLanc) btnLanc.addEventListener("click", function(e) { e.preventDefault(); switchTab('lancamentos'); });
+      if (btnColab) btnColab.addEventListener("click", function(e) { e.preventDefault(); switchTab('colaboradores'); });
+      if (btnResumo) btnResumo.addEventListener("click", function(e) { e.preventDefault(); switchTab('resumo-mes'); });
+    });
+
+    window.onload = function() {
+      carregarSemanaAtual('dash');
+      carregarSemanaAtual('atend');
+      carregarSemanaAtual('cap');
+      const hoje = new Date();
+      const mesAtualStr = `${hoje.getFullYear()}-${String(hoje.getMonth() + 1).padStart(2, '0')}`;
+      if(document.getElementById('fech-mes')) document.getElementById('fech-mes').value = mesAtualStr;
+      if(document.getElementById('fech-mes-filtro')) document.getElementById('fech-mes-filtro').value = mesAtualStr;
+      if(document.getElementById('mes-referencia')) document.getElementById('mes-referencia').value = mesAtualStr;
+      carregarDadosDoSupabase();
+    };
+  </script>
+</body>
+</html>
