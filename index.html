@@ -21,27 +21,25 @@
   <!-- NAVEGAÇÃO PRINCIPAL -->
   <header class="bg-slate-900 text-white shadow-lg sticky top-0 z-50">
     <div class="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8">
-      <div class="flex flex-col sm:flex-row items-center justify-between py-2.5 sm:py-0 sm:h-16 gap-2">
-        <div class="flex items-center gap-2.5 w-full sm:w-auto justify-between sm:justify-start">
-          <div class="flex items-center gap-2">
-            <div class="bg-blue-600 p-1.5 sm:p-2 rounded-lg"><i class="fa-solid fa-chart-line text-lg sm:text-xl"></i></div>
-            <span class="font-bold text-lg sm:text-xl tracking-wide">Castan <span class="text-blue-400">Comercial</span></span>
-          </div>
-          <span class="text-[10px] bg-slate-800 text-emerald-400 font-semibold px-2 py-0.5 rounded-full border border-emerald-500/30 sm:hidden">
+      <div class="flex items-center justify-between h-16 gap-2">
+        <div class="flex items-center gap-2.5 shrink-0">
+          <div class="bg-blue-600 p-2 rounded-lg"><i class="fa-solid fa-chart-line text-xl"></i></div>
+          <span class="font-bold text-lg sm:text-xl tracking-wide">Castan <span class="text-blue-400">Comercial</span></span>
+          <span class="text-[10px] bg-slate-800 text-emerald-400 font-semibold px-2 py-0.5 rounded-full border border-emerald-500/30 hidden sm:inline-block">
             <i class="fa-solid fa-cloud text-[9px]"></i> On-line
           </span>
         </div>
-        <nav class="flex w-full sm:w-auto overflow-x-auto no-scrollbar space-x-1.5 pb-1 sm:pb-0">
-          <button type="button" onclick="switchTab('dashboard')" id="btn-dashboard" class="tab-btn whitespace-nowrap px-3 py-1.5 sm:py-2 rounded-lg text-xs sm:text-sm font-medium transition-all bg-blue-600 text-white flex items-center gap-1.5 shrink-0">
+        <nav class="flex items-center space-x-1.5 overflow-x-auto no-scrollbar py-2">
+          <button type="button" onclick="switchTab('dashboard')" id="btn-dashboard" class="tab-btn whitespace-nowrap px-3 py-2 rounded-lg text-xs sm:text-sm font-medium transition-all bg-blue-600 text-white flex items-center gap-1.5 shrink-0">
             <i class="fa-solid fa-chart-pie"></i> Dashboard
           </button>
-          <button type="button" onclick="switchTab('lancamentos')" id="btn-lancamentos" class="tab-btn whitespace-nowrap px-3 py-1.5 sm:py-2 rounded-lg text-xs sm:text-sm font-medium transition-all text-gray-300 hover:bg-slate-800 flex items-center gap-1.5 shrink-0">
+          <button type="button" onclick="switchTab('lancamentos')" id="btn-lancamentos" class="tab-btn whitespace-nowrap px-3 py-2 rounded-lg text-xs sm:text-sm font-medium transition-all text-gray-300 hover:bg-slate-800 flex items-center gap-1.5 shrink-0">
             <i class="fa-solid fa-pen-to-square"></i> Lançamentos
           </button>
-          <button type="button" onclick="switchTab('colaboradores')" id="btn-colaboradores" class="tab-btn whitespace-nowrap px-3 py-1.5 sm:py-2 rounded-lg text-xs sm:text-sm font-medium transition-all text-gray-300 hover:bg-slate-800 flex items-center gap-1.5 shrink-0">
+          <button type="button" onclick="switchTab('colaboradores')" id="btn-colaboradores" class="tab-btn whitespace-nowrap px-3 py-2 rounded-lg text-xs sm:text-sm font-medium transition-all text-gray-300 hover:bg-slate-800 flex items-center gap-1.5 shrink-0">
             <i class="fa-solid fa-users"></i> Equipe
           </button>
-          <button type="button" onclick="switchTab('resumo-mes')" id="btn-resumo-mes" class="tab-btn whitespace-nowrap px-3 py-1.5 sm:py-2 rounded-lg text-xs sm:text-sm font-medium transition-all text-emerald-400 hover:bg-slate-800 flex items-center gap-1.5 border border-emerald-500/30 shrink-0">
+          <button type="button" onclick="switchTab('resumo-mes')" id="btn-resumo-mes" class="tab-btn whitespace-nowrap px-3 py-2 rounded-lg text-xs sm:text-sm font-medium transition-all text-emerald-400 hover:bg-slate-800 flex items-center gap-1.5 border border-emerald-500/30 shrink-0">
             <i class="fa-solid fa-calendar-check"></i> Resumo Mês
           </button>
         </nav>
@@ -419,4 +417,401 @@
               <input type="number" min="1" id="cap-qtd" value="1" required oninput="calcularCaptacaoAuto()" class="w-full border rounded-lg px-3 py-2 text-xs sm:text-sm">
             </div>
             <div id="box-receptivo" class="block">
-              <label class="block text-[11px] font-semibold text-gray-600 mb-1
+              <label class="block text-[11px] font-semibold text-gray-600 mb-1">Qtd. Rescisão</label>
+              <input type="number" min="0" id="cap-rescisao" value="0" oninput="calcularCaptacaoAuto()" class="w-full border rounded-lg px-3 py-2 text-xs sm:text-sm">
+            </div>
+            <div id="box-ativo" class="hidden">
+              <label class="block text-[11px] font-semibold text-gray-600 mb-1">Alugados Terceiros</label>
+              <input type="number" min="0" id="cap-terceiros" value="0" oninput="calcularCaptacaoAuto()" class="w-full border rounded-lg px-3 py-2 text-xs sm:text-sm">
+            </div>
+            <div>
+              <label class="block text-[11px] font-semibold text-gray-600 mb-1">Conversão Auto %</label>
+              <input type="text" id="cap-conversao" readonly value="0%" class="w-full border bg-gray-100 rounded-lg px-3 py-2 text-xs sm:text-sm font-bold text-emerald-600">
+            </div>
+            <div class="sm:col-span-2 md:col-span-3 flex items-end justify-end gap-2">
+              <button type="button" id="btn-cancelar-captacao" onclick="cancelarEdicaoCaptacao()" class="hidden bg-gray-300 text-gray-700 px-4 py-2.5 rounded-lg text-xs sm:text-sm font-bold hover:bg-gray-400">Cancelar</button>
+              <button type="submit" id="btn-salvar-captacao" class="w-full sm:w-auto bg-amber-600 text-white px-6 py-2.5 rounded-lg text-xs sm:text-sm font-bold hover:bg-amber-700 shadow">Salvar Captação</button>
+            </div>
+          </form>
+        </div>
+
+        <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+          <div class="p-3.5 border-b bg-gray-50"><h3 class="font-bold text-xs sm:text-sm text-gray-700">Histórico de Captações</h3></div>
+          <div class="overflow-x-auto">
+            <table class="w-full text-left border-collapse text-xs whitespace-nowrap">
+              <thead class="bg-gray-100 text-gray-600 uppercase">
+                <tr>
+                  <th class="p-2.5">Período</th>
+                  <th class="p-2.5">Captador</th>
+                  <th class="p-2.5">Tipo</th>
+                  <th class="p-2.5">Qtd. Captado</th>
+                  <th class="p-2.5">Específico</th>
+                  <th class="p-2.5">Conversão</th>
+                  <th class="p-2.5 text-right">Ação</th>
+                </tr>
+              </thead>
+              <tbody id="tabelaCaptacao" class="divide-y divide-gray-200"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ABA 3: COLABORADORES -->
+    <section id="tab-colaboradores" class="tab-content hidden space-y-4 sm:space-y-6">
+      <div class="bg-white p-4 sm:p-6 rounded-xl shadow-sm border border-gray-200">
+        <h2 class="text-base sm:text-lg font-bold mb-3 sm:mb-4 text-gray-700">Cadastrar Colaborador</h2>
+        <form onsubmit="salvarColaborador(event)" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-3 sm:gap-4">
+          <div>
+            <label class="block text-[11px] font-semibold text-gray-600 mb-1">Nome</label>
+            <input type="text" id="colab-nome" required placeholder="Ex: Lucas Silva" class="w-full border rounded-lg px-3 py-2 text-xs sm:text-sm">
+          </div>
+          <div>
+            <label class="block text-[11px] font-semibold text-gray-600 mb-1">Função</label>
+            <select id="colab-funcao" class="w-full border rounded-lg px-3 py-2 text-xs sm:text-sm">
+              <option value="Atendimento Comercial">Atendimento Comercial</option>
+              <option value="Captador">Captador</option>
+              <option value="Agente (Mostrador)">Agente (Mostrador)</option>
+              <option value="FECHAMENTO">FECHAMENTO</option>
+            </select>
+          </div>
+          <div>
+            <label class="block text-[11px] font-semibold text-gray-600 mb-1">Status</label>
+            <select id="colab-status" class="w-full border rounded-lg px-3 py-2 text-xs sm:text-sm">
+              <option value="Ativo">Ativo</option>
+              <option value="Inativo">Inativo</option>
+            </select>
+          </div>
+          <div class="flex items-end">
+            <button type="submit" class="w-full bg-emerald-600 text-white py-2 rounded-lg text-xs sm:text-sm font-bold hover:bg-emerald-700 shadow">Adicionar Membro</button>
+          </div>
+        </form>
+      </div>
+
+      <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+        <div class="p-3.5 border-b bg-gray-50"><h3 class="font-bold text-xs sm:text-sm text-gray-700">Equipe Cadastrada</h3></div>
+        <div class="overflow-x-auto">
+          <table class="w-full text-left border-collapse text-xs whitespace-nowrap">
+            <thead class="bg-gray-100 text-gray-600 uppercase">
+              <tr>
+                <th class="p-2.5">Nome</th>
+                <th class="p-2.5">Função</th>
+                <th class="p-2.5">Status</th>
+                <th class="p-2.5 text-right">Ação</th>
+              </tr>
+            </thead>
+            <tbody id="tabelaColaboradores" class="divide-y divide-gray-200"></tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- ABA 4: RESUMO DO MÊS -->
+    <section id="tab-resumo-mes" class="tab-content hidden space-y-4 sm:space-y-6">
+      <div class="bg-white p-4 sm:p-6 rounded-xl shadow-sm border border-gray-200 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+        <div>
+          <h2 class="text-base sm:text-xl font-bold text-slate-800 flex items-center gap-2">
+            <i class="fa-solid fa-calendar-days text-emerald-600"></i> Consolidação Mensal
+          </h2>
+          <p class="text-[11px] sm:text-xs text-gray-500">Resultados acumulados do mês selecionado</p>
+        </div>
+        <div class="flex items-center gap-2 flex-wrap w-full sm:w-auto">
+          <div class="flex-1 sm:flex-none">
+            <input type="month" id="mes-referencia" onchange="renderResumoMes()" class="w-full border rounded-lg px-3 py-2 text-xs sm:text-sm font-bold bg-gray-50">
+          </div>
+          <button type="button" onclick="exportarExcel()" class="w-full sm:w-auto bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2 rounded-lg text-xs sm:text-sm font-bold shadow flex items-center justify-center gap-1.5">
+            <i class="fa-solid fa-file-excel"></i> Exportar Excel
+          </button>
+        </div>
+      </div>
+
+      <div class="grid grid-cols-2 md:grid-cols-4 gap-2.5 sm:gap-4">
+        <div class="bg-white p-3.5 sm:p-5 rounded-xl shadow-sm border border-gray-200 border-l-4 border-l-blue-600">
+          <p class="text-[10px] font-bold uppercase text-gray-400">Agendadas (Mês)</p>
+          <h3 id="mes-tot-agendadas" class="text-xl sm:text-2xl font-black text-blue-600 mt-1">0</h3>
+        </div>
+        <div class="bg-white p-3.5 sm:p-5 rounded-xl shadow-sm border border-gray-200 border-l-4 border-l-emerald-500">
+          <p class="text-[10px] font-bold uppercase text-gray-400">Concluídas (Mês)</p>
+          <h3 id="mes-tot-concluidas" class="text-xl sm:text-2xl font-black text-emerald-600 mt-1">0</h3>
+        </div>
+        <div class="bg-white p-3.5 sm:p-5 rounded-xl shadow-sm border border-gray-200 border-l-4 border-l-purple-600">
+          <p class="text-[10px] font-bold uppercase text-gray-400">Total Fechado</p>
+          <h3 id="mes-tot-valor" class="text-base sm:text-xl font-black text-slate-800 mt-1">R$ 0,00</h3>
+        </div>
+        <div class="bg-white p-3.5 sm:p-5 rounded-xl shadow-sm border border-gray-200 border-l-4 border-l-amber-500">
+          <p class="text-[10px] font-bold uppercase text-gray-400">Captados (Mês)</p>
+          <h3 id="mes-tot-captados" class="text-xl sm:text-2xl font-black text-amber-500 mt-1">0</h3>
+        </div>
+      </div>
+
+      <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+        <div class="p-3.5 border-b bg-gray-50"><h3 class="font-bold text-xs sm:text-sm text-gray-700">Resumo Acumulado das Atendentes</h3></div>
+        <div class="overflow-x-auto">
+          <table class="w-full text-left border-collapse text-xs whitespace-nowrap">
+            <thead class="bg-gray-100 text-gray-600 uppercase font-bold">
+              <tr>
+                <th class="p-2.5">Atendente</th>
+                <th class="p-2.5 text-center">Agendadas</th>
+                <th class="p-2.5 text-center">Concluídas</th>
+                <th class="p-2.5 text-center">Canceladas</th>
+                <th class="p-2.5 text-center">% Conversão</th>
+                <th class="p-2.5 text-center">Novos</th>
+                <th class="p-2.5 text-center">Ativos</th>
+              </tr>
+            </thead>
+            <tbody id="tabelaMesCorretoras" class="divide-y divide-gray-200 font-medium"></tbody>
+            <tfoot id="totalMesCorretoras" class="bg-slate-100 font-bold border-t border-slate-300"></tfoot>
+          </table>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <script>
+    const SUPABASE_URL = 'https://uwueavzdkjsqvlyyafcz.supabase.co';
+    const SUPABASE_KEY = 'sb_publishable_M1RXel-LjzUVsZDCW-IkMw_aSm_WvUP';
+    
+    let _supabase = null;
+    try {
+      if (typeof supabase !== 'undefined') {
+        _supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+      }
+    } catch(err) {
+      console.error('Erro ao iniciar Supabase:', err);
+    }
+
+    if (typeof ChartDataLabels !== 'undefined') {
+      Chart.register(ChartDataLabels);
+    }
+
+    function converterParaNumero(val) {
+      if (typeof val === 'number') return isNaN(val) ? 0 : val;
+      if (!val) return 0;
+      let s = String(val).trim();
+      if (s.includes(',') && s.includes('.')) {
+        s = s.replace(/\./g, '').replace(',', '.');
+      } else if (s.includes(',')) {
+        s = s.replace(',', '.');
+      }
+      const n = parseFloat(s);
+      return isNaN(n) ? 0 : n;
+    }
+
+    function verificarMesCheio(dInicio, dFim) {
+      if (!dInicio || !dFim) return false;
+      const p1 = dInicio.split('-');
+      const p2 = dFim.split('-');
+      if (p1.length !== 3 || p2.length !== 3) return false;
+      const y1 = parseInt(p1[0], 10), m1 = parseInt(p1[1], 10), d1 = parseInt(p1[2], 10);
+      const y2 = parseInt(p2[0], 10), m2 = parseInt(p2[1], 10), d2 = parseInt(p2[2], 10);
+      if (y1 === y2 && m1 === m2 && d1 === 1) {
+        const ultimoDia = new Date(y1, m1, 0).getDate();
+        return d2 === ultimoDia;
+      }
+      return false;
+    }
+
+    function calcularTotalLaisGrupo(listaAtendimentos) {
+      const semanasMap = {};
+      listaAtendimentos.forEach(a => {
+        const chaveSemana = `${a.inicio}_${a.fim}`;
+        const valLais = parseInt(a.lais) || 0;
+        semanasMap[chaveSemana] = Math.max(semanasMap[chaveSemana] || 0, valLais);
+      });
+      return Object.values(semanasMap).reduce((acc, v) => acc + v, 0);
+    }
+
+    function formatarDataBR(dataISO) {
+      if (!dataISO) return '-';
+      if (dataISO.includes('/')) return dataISO;
+      const partes = dataISO.split('-');
+      if (partes.length !== 3) return dataISO;
+      return `${partes[2]}/${partes[1]}/${partes[0]}`;
+    }
+
+    function formatarMesAnoBR(mesISO) {
+      if (!mesISO) return '-';
+      const partes = mesISO.split('-');
+      if (partes.length !== 2) return mesISO;
+      return `${partes[1]}/${partes[0]}`;
+    }
+
+    function obterCorHexAtendente(nome) {
+      if (!nome) return '#64748b';
+      const n = nome.trim().toLowerCase();
+      if (n.includes('thay')) return '#9333ea';
+      if (n.includes('denise')) return '#db2777';
+      if (n.includes('leti')) return '#dc2626';
+      if (n.includes('maury')) return '#2563eb';
+      if (n.includes('fernando')) return '#1e3a8a';
+      if (n.includes('welligton') || n.includes('wellington')) return '#4ade80';
+      if (n.includes('lukas') || n.includes('lucas')) return '#16a34a';
+      if (n.includes('paula')) return '#f97316';
+      if (n.includes('castan')) return '#2563eb';
+      if (n.includes('total')) return '#10b981';
+      return '#0284c7';
+    }
+
+    function obterCorColaborador(nome) {
+      if (!nome) return 'text-gray-800 font-bold';
+      const n = nome.trim().toLowerCase();
+      if (n.includes('thay')) return 'text-purple-600 font-bold';
+      if (n.includes('denise')) return 'text-pink-600 font-bold';
+      if (n.includes('leti')) return 'text-red-600 font-bold';
+      if (n.includes('maury')) return 'text-blue-600 font-bold';
+      if (n.includes('fernando')) return 'text-blue-900 font-bold';
+      if (n.includes('welligton') || n.includes('wellington')) return 'text-emerald-500 font-bold';
+      if (n.includes('lukas') || n.includes('lucas')) return 'text-green-600 font-bold';
+      if (n.includes('paula')) return 'text-orange-500 font-bold';
+      if (n.includes('castan')) return 'text-blue-600 font-bold';
+      return 'text-gray-800 font-bold';
+    }
+
+    function baixarGrafico(canvasId, nomeArquivo) {
+      const canvas = document.getElementById(canvasId);
+      if (!canvas) return;
+      const tempCanvas = document.createElement('canvas');
+      tempCanvas.width = canvas.width;
+      tempCanvas.height = canvas.height;
+      const ctx = tempCanvas.getContext('2d');
+      ctx.fillStyle = '#ffffff';
+      ctx.fillRect(0, 0, tempCanvas.width, tempCanvas.height);
+      ctx.drawImage(canvas, 0, 0);
+      const link = document.createElement('a');
+      link.download = `${nomeArquivo}.png`;
+      link.href = tempCanvas.toDataURL('image/png', 1.0);
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    }
+
+    let colaboradores = [
+      { id: 1, nome: 'Denise', funcao: 'Atendimento Comercial', status: 'Ativo' },
+      { id: 2, nome: 'Thayane', funcao: 'Atendimento Comercial', status: 'Ativo' },
+      { id: 3, nome: 'Leticia', funcao: 'Atendimento Comercial', status: 'Ativo' },
+      { id: 4, nome: 'Maury', funcao: 'Captador', status: 'Ativo' },
+      { id: 5, nome: 'Wellington', funcao: 'Agente (Mostrador)', status: 'Ativo' },
+      { id: 6, nome: 'Paula', funcao: 'FECHAMENTO', status: 'Ativo' }
+    ];
+    let atendimentos = [];
+    let fechamentos = [];
+    let captacoes = [];
+
+    let editingAtendimentoId = null;
+    let editingFechamentoId = null;
+    let editingCaptacaoId = null;
+
+    let chartValoresAtendentes = null, chartComboVisitas = null, chartStatusEsteira = null, chartCaptacaoRescisao = null, chartNovosVsConcluidas = null, chartConcluidasLais = null;
+
+    async function carregarDadosDoSupabase() {
+      if (!_supabase) {
+        atualizarERenderizarTudo();
+        return;
+      }
+      try {
+        const { data: cData } = await _supabase.from('colaboradores').select('*');
+        if (cData && cData.length > 0) colaboradores = cData;
+
+        const { data: aData } = await _supabase.from('atendimentos').select('*');
+        if (aData) atendimentos = aData;
+
+        const { data: fData } = await _supabase.from('fechamentos').select('*');
+        if (fData) {
+          fechamentos = fData.map(item => ({
+            ...item,
+            fechadoPor: item.fechado_por || item.fechadoPor || item.fechadopor || 'Castan'
+          }));
+        }
+
+        const { data: capData } = await _supabase.from('captacoes').select('*');
+        if (capData) captacoes = capData;
+      } catch (err) {
+        console.error('Aviso ao carregar do Supabase:', err);
+      } finally {
+        atualizarERenderizarTudo();
+      }
+    }
+
+    function atualizarERenderizarTudo() {
+      atualizarSelectsColaboradores();
+      renderTabelaAtendimento();
+      renderTabelaFechamento();
+      renderTabelaCaptacao();
+      renderTabelaColaboradores();
+      renderDashboard();
+    }
+
+    function carregarSemanaAtual(prefixo) {
+      const hoje = new Date();
+      const diaDaSemana = hoje.getDay(); 
+      const diffSegunda = hoje.getDate() - diaDaSemana + (diaDaSemana === 0 ? -6 : 1);
+      const segunda = new Date(hoje.setDate(diffSegunda));
+      const domingo = new Date(hoje.setDate(diffSegunda + 6));
+      const fSegunda = segunda.toISOString().split('T')[0];
+      const fDomingo = domingo.toISOString().split('T')[0];
+
+      if (prefixo === 'dash') {
+        const elInicio = document.getElementById('dash-inicio');
+        const elFim = document.getElementById('dash-fim');
+        if (elInicio && elFim) {
+          elInicio.value = fSegunda;
+          elFim.value = fDomingo;
+          renderDashboard();
+        }
+      } else {
+        const elInicio = document.getElementById(`${prefixo}-inicio`);
+        const elFim = document.getElementById(`${prefixo}-fim`);
+        if(elInicio) elInicio.value = fSegunda;
+        if(elFim) elFim.value = fDomingo;
+      }
+    }
+
+    function switchTab(tabId) {
+      document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
+      document.querySelectorAll('.tab-btn').forEach(btn => {
+        btn.classList.remove('bg-blue-600', 'text-white');
+        btn.classList.add('text-gray-300');
+      });
+
+      const targetTab = document.getElementById(`tab-${tabId}`);
+      if (targetTab) targetTab.classList.remove('hidden');
+
+      const activeBtn = document.getElementById(`btn-${tabId}`);
+      if (activeBtn) {
+        activeBtn.classList.add('bg-blue-600', 'text-white');
+        activeBtn.classList.remove('text-gray-300');
+      }
+
+      if (tabId === 'dashboard') renderDashboard();
+      if (tabId === 'lancamentos') atualizarSelectsColaboradores();
+      if (tabId === 'resumo-mes') renderResumoMes();
+    }
+
+    function switchSubTab(subId) {
+      document.querySelectorAll('.subtab-content').forEach(el => el.classList.add('hidden'));
+      document.querySelectorAll('.sub-tab-btn').forEach(btn => {
+        btn.classList.remove('border-blue-600', 'text-blue-600', 'font-bold');
+        btn.classList.add('border-transparent', 'text-gray-500');
+      });
+
+      const targetSub = document.getElementById(`subtab-${subId}`);
+      if (targetSub) targetSub.classList.remove('hidden');
+
+      const activeSub = document.getElementById(`subbtn-${subId}`);
+      if (activeSub) {
+        activeSub.classList.add('border-blue-600', 'text-blue-600', 'font-bold');
+        activeSub.classList.remove('border-transparent', 'text-gray-500');
+      }
+    }
+
+    function atualizarSelectsColaboradores() {
+      const ativos = colaboradores.filter(c => c.status === 'Ativo');
+      const atendentesComercial = ativos.filter(c => 
+        c.funcao.toLowerCase().includes('atendimento') || 
+        c.funcao.toLowerCase().includes('comercial') || 
+        c.funcao.toLowerCase().includes('corretor')
+      );
+
+      let optionsComercial = '<option value="Castan">Castan</option>';
+      if (atendentesComercial.
