@@ -14,32 +14,39 @@
   <style>
     .no-scrollbar::-webkit-scrollbar { display: none; }
     .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+    .tab-btn, .sub-tab-btn {
+      cursor: pointer !important;
+      touch-action: manipulation;
+      user-select: none;
+    }
   </style>
 </head>
 <body class="bg-gray-100 min-h-screen text-gray-800 font-sans antialiased">
 
   <!-- NAVEGAÇÃO PRINCIPAL -->
-  <header class="bg-slate-900 text-white shadow-lg sticky top-0 z-50">
+  <header class="bg-slate-900 text-white shadow-lg sticky top-0 z-50 pointer-events-auto">
     <div class="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8">
-      <div class="flex items-center justify-between h-16 gap-2">
-        <div class="flex items-center gap-2.5 shrink-0">
-          <div class="bg-blue-600 p-2 rounded-lg"><i class="fa-solid fa-chart-line text-xl"></i></div>
-          <span class="font-bold text-lg sm:text-xl tracking-wide">Castan <span class="text-blue-400">Comercial</span></span>
-          <span class="text-[10px] bg-slate-800 text-emerald-400 font-semibold px-2 py-0.5 rounded-full border border-emerald-500/30 hidden sm:inline-block">
+      <div class="flex flex-col sm:flex-row items-center justify-between py-2 sm:py-0 sm:h-16 gap-2">
+        <div class="flex items-center gap-2.5 w-full sm:w-auto justify-between sm:justify-start">
+          <div class="flex items-center gap-2">
+            <div class="bg-blue-600 p-1.5 sm:p-2 rounded-lg"><i class="fa-solid fa-chart-line text-lg sm:text-xl"></i></div>
+            <span class="font-bold text-lg sm:text-xl tracking-wide">Castan <span class="text-blue-400">Comercial</span></span>
+          </div>
+          <span class="text-[10px] bg-slate-800 text-emerald-400 font-semibold px-2 py-0.5 rounded-full border border-emerald-500/30 sm:hidden">
             <i class="fa-solid fa-cloud text-[9px]"></i> On-line
           </span>
         </div>
-        <nav class="flex items-center space-x-1.5 overflow-x-auto no-scrollbar py-2">
-          <button type="button" onclick="switchTab('dashboard')" id="btn-dashboard" class="tab-btn whitespace-nowrap px-3 py-2 rounded-lg text-xs sm:text-sm font-medium transition-all bg-blue-600 text-white flex items-center gap-1.5 shrink-0">
+        <nav class="flex w-full sm:w-auto overflow-x-auto no-scrollbar space-x-1.5 pb-1 sm:pb-0 relative z-50">
+          <button type="button" onclick="switchTab('dashboard')" id="btn-dashboard" class="tab-btn whitespace-nowrap px-3 py-1.5 sm:py-2 rounded-lg text-xs sm:text-sm font-medium transition-all bg-blue-600 text-white flex items-center gap-1.5 shrink-0">
             <i class="fa-solid fa-chart-pie"></i> Dashboard
           </button>
-          <button type="button" onclick="switchTab('lancamentos')" id="btn-lancamentos" class="tab-btn whitespace-nowrap px-3 py-2 rounded-lg text-xs sm:text-sm font-medium transition-all text-gray-300 hover:bg-slate-800 flex items-center gap-1.5 shrink-0">
+          <button type="button" onclick="switchTab('lancamentos')" id="btn-lancamentos" class="tab-btn whitespace-nowrap px-3 py-1.5 sm:py-2 rounded-lg text-xs sm:text-sm font-medium transition-all text-gray-300 hover:bg-slate-800 flex items-center gap-1.5 shrink-0">
             <i class="fa-solid fa-pen-to-square"></i> Lançamentos
           </button>
-          <button type="button" onclick="switchTab('colaboradores')" id="btn-colaboradores" class="tab-btn whitespace-nowrap px-3 py-2 rounded-lg text-xs sm:text-sm font-medium transition-all text-gray-300 hover:bg-slate-800 flex items-center gap-1.5 shrink-0">
+          <button type="button" onclick="switchTab('colaboradores')" id="btn-colaboradores" class="tab-btn whitespace-nowrap px-3 py-1.5 sm:py-2 rounded-lg text-xs sm:text-sm font-medium transition-all text-gray-300 hover:bg-slate-800 flex items-center gap-1.5 shrink-0">
             <i class="fa-solid fa-users"></i> Equipe
           </button>
-          <button type="button" onclick="switchTab('resumo-mes')" id="btn-resumo-mes" class="tab-btn whitespace-nowrap px-3 py-2 rounded-lg text-xs sm:text-sm font-medium transition-all text-emerald-400 hover:bg-slate-800 flex items-center gap-1.5 border border-emerald-500/30 shrink-0">
+          <button type="button" onclick="switchTab('resumo-mes')" id="btn-resumo-mes" class="tab-btn whitespace-nowrap px-3 py-1.5 sm:py-2 rounded-lg text-xs sm:text-sm font-medium transition-all text-emerald-400 hover:bg-slate-800 flex items-center gap-1.5 border border-emerald-500/30 shrink-0">
             <i class="fa-solid fa-calendar-check"></i> Resumo Mês
           </button>
         </nav>
@@ -814,4 +821,702 @@
       );
 
       let optionsComercial = '<option value="Castan">Castan</option>';
-      if (atendentesComercial.
+      if (atendentesComercial.length > 0) {
+        optionsComercial += atendentesComercial.map(c => `<option value="${c.nome}">${c.nome}</option>`).join('');
+      }
+
+      document.querySelectorAll('.select-colabs-comercial').forEach(s => {
+        const valAtual = s.value;
+        s.innerHTML = optionsComercial;
+        if (valAtual && s.querySelector(`option[value="${valAtual}"]`)) s.value = valAtual;
+      });
+
+      const agentesMostradores = ativos.filter(c => 
+        c.funcao.toLowerCase().includes('agente') || 
+        c.funcao.toLowerCase().includes('mostrador')
+      );
+
+      let optionsAgente = '<option value="Sem visita">Sem visita</option>';
+      if (agentesMostradores.length > 0) {
+        optionsAgente += agentesMostradores.map(c => `<option value="${c.nome}">${c.nome}</option>`).join('');
+      } else {
+        optionsAgente += ativos.map(c => `<option value="${c.nome}">${c.nome}</option>`).join('');
+      }
+
+      document.querySelectorAll('.select-colabs-agente').forEach(s => {
+        const valAtual = s.value;
+        s.innerHTML = optionsAgente;
+        if (valAtual && s.querySelector(`option[value="${valAtual}"]`)) s.value = valAtual;
+      });
+
+      const optionsTodos = '<option value="Castan">Castan</option>' + (ativos.length ? ativos.map(c => `<option value="${c.nome}">${c.nome} (${c.funcao})</option>`).join('') : '');
+
+      document.querySelectorAll('.select-colabs-todos').forEach(s => {
+        const valAtual = s.value;
+        s.innerHTML = optionsTodos;
+        if (valAtual && s.querySelector(`option[value="${valAtual}"]`)) s.value = valAtual;
+      });
+    }
+
+    function calcularAtendimentoAuto() {
+      const agendadas = parseInt(document.getElementById('atend-agendadas').value) || 0;
+      const concluidas = parseInt(document.getElementById('atend-concluidas').value) || 0;
+      const canceladas = Math.max(0, agendadas - concluidas);
+      const conversao = agendadas > 0 ? ((concluidas / agendadas) * 100).toFixed(1) : 0;
+
+      document.getElementById('atend-canceladas').value = canceladas;
+      document.getElementById('atend-conversao').value = `${conversao}%`;
+    }
+
+    async function salvarAtendimento(e) {
+      e.preventDefault();
+      const item = {
+        id: editingAtendimentoId || Date.now(),
+        inicio: document.getElementById('atend-inicio').value,
+        fim: document.getElementById('atend-fim').value,
+        colaborador: document.getElementById('atend-colaborador').value,
+        agendadas: parseInt(document.getElementById('atend-agendadas').value) || 0,
+        concluidas: parseInt(document.getElementById('atend-concluidas').value) || 0,
+        canceladas: parseInt(document.getElementById('atend-canceladas').value) || 0,
+        novos: parseInt(document.getElementById('atend-novos').value) || 0,
+        lais: parseInt(document.getElementById('atend-lais').value) || 0,
+        ativo: parseInt(document.getElementById('atend-ativo').value) || 0
+      };
+
+      if (_supabase) {
+        const { error } = await _supabase.from('atendimentos').upsert(item);
+        if (error) {
+          alert('Erro ao salvar no Supabase: ' + error.message);
+          return;
+        }
+      }
+
+      cancelarEdicaoAtendimento();
+      await carregarDadosDoSupabase();
+      alert('Atendimento salvo com sucesso!');
+    }
+
+    function editarAtendimento(id) {
+      const item = atendimentos.find(a => a.id === id);
+      if (!item) return;
+
+      editingAtendimentoId = item.id;
+      document.getElementById('atend-inicio').value = item.inicio;
+      document.getElementById('atend-fim').value = item.fim;
+      document.getElementById('atend-colaborador').value = item.colaborador;
+      document.getElementById('atend-agendadas').value = item.agendadas;
+      document.getElementById('atend-concluidas').value = item.concluidas;
+      document.getElementById('atend-canceladas').value = item.canceladas;
+      document.getElementById('atend-conversao').value = item.agendadas > 0 ? `${((item.concluidas / item.agendadas) * 100).toFixed(1)}%` : '0%';
+      document.getElementById('atend-novos').value = item.novos;
+      document.getElementById('atend-lais').value = item.lais || 0;
+      document.getElementById('atend-ativo').value = item.ativo;
+
+      document.getElementById('titulo-form-atendimento').innerText = 'Editar Atendimento';
+      document.getElementById('btn-salvar-atendimento').innerText = 'Atualizar Registro';
+      document.getElementById('btn-cancelar-atendimento').classList.remove('hidden');
+      switchTab('lancamentos');
+      switchSubTab('atendimento');
+      window.scrollTo({ top: document.getElementById('subtab-atendimento').offsetTop, behavior: 'smooth' });
+    }
+
+    function cancelarEdicaoAtendimento() {
+      editingAtendimentoId = null;
+      document.getElementById('formAtendimento').reset();
+      document.getElementById('titulo-form-atendimento').innerText = 'Lançamento de Atendimento Semanal';
+      document.getElementById('btn-salvar-atendimento').innerText = 'Salvar Registro';
+      document.getElementById('btn-cancelar-atendimento').classList.add('hidden');
+      carregarSemanaAtual('atend');
+    }
+
+    async function removerAtendimento(id) {
+      if(!confirm('Deseja realmente excluir este registro?')) return;
+      if (_supabase) await _supabase.from('atendimentos').delete().eq('id', id);
+      await carregarDadosDoSupabase();
+    }
+
+    function renderTabelaAtendimento() {
+      const tbody = document.getElementById('tabelaAtendimento');
+      if(!tbody) return;
+      let totAg = 0, totConc = 0, totCanc = 0, totNovos = 0, totAtivo = 0;
+
+      tbody.innerHTML = atendimentos.map(a => {
+        totAg += a.agendadas;
+        totConc += a.concluidas;
+        totCanc += a.canceladas;
+        totNovos += a.novos;
+        totAtivo += a.ativo;
+        const conv = a.agendadas > 0 ? ((a.concluidas / a.agendadas) * 100).toFixed(1) : 0;
+
+        return `
+          <tr class="hover:bg-gray-50">
+            <td class="p-2.5 font-medium text-gray-700">${formatarDataBR(a.inicio)} - ${formatarDataBR(a.fim)}</td>
+            <td class="p-2.5 ${obterCorColaborador(a.colaborador)}">${a.colaborador}</td>
+            <td class="p-2.5 text-center">${a.agendadas}</td>
+            <td class="p-2.5 text-center text-emerald-600 font-bold">${a.concluidas}</td>
+            <td class="p-2.5 text-center text-red-600">${a.canceladas}</td>
+            <td class="p-2.5 text-center font-bold text-blue-600">${conv}%</td>
+            <td class="p-2.5 text-center">${a.novos}</td>
+            <td class="p-2.5 text-center font-semibold text-purple-700">${a.lais || 0}</td>
+            <td class="p-2.5 text-center">${a.ativo}</td>
+            <td class="p-2.5 text-right space-x-2">
+              <button type="button" onclick="editarAtendimento(${a.id})" class="text-xs text-blue-600 font-bold hover:underline">Editar</button>
+              <button type="button" onclick="removerAtendimento(${a.id})" class="text-xs text-red-600 hover:underline">Excluir</button>
+            </td>
+          </tr>
+        `;
+      }).join('');
+
+      const totConv = totAg > 0 ? ((totConc / totAg) * 100).toFixed(1) : 0;
+      const totLaisConsolidado = calcularTotalLaisGrupo(atendimentos);
+
+      const elTotAtend = document.getElementById('totalAtendimento');
+      if(elTotAtend) {
+        elTotAtend.innerHTML = `
+          <tr class="bg-slate-100">
+            <td class="p-2.5 font-black" colspan="2">TOTAL REGISTRADO</td>
+            <td class="p-2.5 text-center font-black">${totAg}</td>
+            <td class="p-2.5 text-center text-emerald-700 font-black">${totConc}</td>
+            <td class="p-2.5 text-center text-red-700 font-black">${totCanc}</td>
+            <td class="p-2.5 text-center text-blue-700 font-black">${totConv}%</td>
+            <td class="p-2.5 text-center font-black">${totNovos}</td>
+            <td class="p-2.5 text-center text-purple-800 font-black bg-purple-50/80">${totLaisConsolidado}</td>
+            <td class="p-2.5 text-center font-black">${totAtivo}</td>
+            <td></td>
+          </tr>
+        `;
+      }
+    }
+
+    function sincronizarFiltroMesFechamento() {
+      const mesVal = document.getElementById('fech-mes').value;
+      const elFiltro = document.getElementById('fech-mes-filtro');
+      if(elFiltro) elFiltro.value = mesVal;
+      const elTexto = document.getElementById('btn-mes-texto');
+      if(elTexto) elTexto.innerText = `Mês: ${formatarMesAnoBR(mesVal)}`;
+      renderTabelaFechamento();
+    }
+
+    function alterarMesFiltroEsteira() {
+      const mesFiltroVal = document.getElementById('fech-mes-filtro').value;
+      if (mesFiltroVal) {
+        document.getElementById('fech-mes').value = mesFiltroVal;
+        document.getElementById('btn-mes-texto').innerText = `Mês: ${formatarMesAnoBR(mesFiltroVal)}`;
+        renderTabelaFechamento();
+      }
+    }
+
+    async function salvarFechamento(e) {
+      e.preventDefault();
+      const mesVal = document.getElementById('fech-mes').value;
+      const refNum = document.getElementById('fech-ref').value.trim();
+      const valChave = document.getElementById('fech-chave').value;
+      const valAssinado = document.getElementById('fech-assinado').value;
+      const valObs = document.getElementById('fech-obs').value;
+      const valData = document.getElementById('fech-data').value;
+      const valorPorVal = document.getElementById('fech-por').value || 'Castan';
+
+      const item = {
+        id: editingFechamentoId || Date.now(),
+        mes: mesVal,
+        atendente: document.getElementById('fech-atendente').value,
+        agente: document.getElementById('fech-agente').value || 'Sem visita',
+        ref: refNum.startsWith('LOC') ? refNum : `LOC${refNum}`,
+        endereco: document.getElementById('fech-endereco').value,
+        valor: converterParaNumero(document.getElementById('fech-valor').value),
+        captador: document.getElementById('fech-captador').value || 'Castan',
+        data: valData ? valData : null,
+        tipo: document.getElementById('fech-tipo').value,
+        chave: valChave ? valChave : null,
+        garantia: document.getElementById('fech-garantia').value,
+        status: document.getElementById('fech-status').value,
+        fechado_por: valorPorVal,
+        assinado: valAssinado ? valAssinado : null,
+        obs: valObs ? valObs : null
+      };
+
+      if (_supabase) {
+        const { error } = await _supabase.from('fechamentos').upsert(item);
+        if (error) {
+          alert('Erro ao salvar no Supabase: ' + error.message);
+          return;
+        }
+      }
+
+      cancelarEdicaoFechamento();
+      await carregarDadosDoSupabase();
+      alert('Contrato salvo na esteira com sucesso!');
+    }
+
+    function editarFechamento(id) {
+      const item = fechamentos.find(f => f.id === id);
+      if (!item) return;
+
+      editingFechamentoId = item.id;
+      document.getElementById('fech-mes').value = item.mes;
+      document.getElementById('fech-mes-filtro').value = item.mes;
+      document.getElementById('btn-mes-texto').innerText = `Mês: ${formatarMesAnoBR(item.mes)}`;
+
+      document.getElementById('fech-atendente').value = item.atendente;
+      document.getElementById('fech-agente').value = item.agente || '';
+      document.getElementById('fech-ref').value = item.ref.replace('LOC', '');
+      document.getElementById('fech-endereco').value = item.endereco;
+      document.getElementById('fech-valor').value = item.valor;
+      document.getElementById('fech-captador').value = item.captador || '';
+      document.getElementById('fech-data').value = item.data || '';
+      document.getElementById('fech-tipo').value = item.tipo;
+      document.getElementById('fech-chave').value = item.chave || '';
+      document.getElementById('fech-garantia').value = item.garantia;
+      document.getElementById('fech-status').value = item.status;
+      document.getElementById('fech-por').value = item.fechado_por || item.fechadoPor || item.fechadopor || 'Castan';
+      document.getElementById('fech-assinado').value = item.assinado || '';
+      document.getElementById('fech-obs').value = item.obs || '';
+
+      document.getElementById('titulo-form-fechamento').innerText = 'Editar Contrato na Esteira';
+      document.getElementById('btn-salvar-fechamento').innerText = 'Atualizar Contrato';
+      document.getElementById('btn-cancelar-fechamento').classList.remove('hidden');
+      switchTab('lancamentos');
+      switchSubTab('esteira');
+      window.scrollTo({ top: document.getElementById('subtab-esteira').offsetTop, behavior: 'smooth' });
+    }
+
+    function cancelarEdicaoFechamento() {
+      editingFechamentoId = null;
+      document.getElementById('formFechamento').reset();
+      const hoje = new Date();
+      document.getElementById('fech-mes').value = `${hoje.getFullYear()}-${String(hoje.getMonth() + 1).padStart(2, '0')}`;
+      document.getElementById('titulo-form-fechamento').innerText = 'Novo Contrato na Esteira';
+      document.getElementById('btn-salvar-fechamento').innerText = 'Adicionar à Esteira';
+      document.getElementById('btn-cancelar-fechamento').classList.add('hidden');
+      sincronizarFiltroMesFechamento();
+    }
+
+    async function alterarStatusFechamentoDirect(id, newStatus) {
+      if (_supabase) await _supabase.from('fechamentos').update({ status: newStatus }).eq('id', id);
+      await carregarDadosDoSupabase();
+    }
+
+    async function removerFechamento(id) {
+      if(!confirm('Deseja realmente excluir este contrato?')) return;
+      if (_supabase) await _supabase.from('fechamentos').delete().eq('id', id);
+      await carregarDadosDoSupabase();
+    }
+
+    function renderTabelaFechamento() {
+      const elFiltroMes = document.getElementById('fech-mes-filtro');
+      const elMes = document.getElementById('fech-mes');
+      const mesSelecionado = (elFiltroMes ? elFiltroMes.value : '') || (elMes ? elMes.value : '');
+      if (mesSelecionado) {
+        const elTexto = document.getElementById('btn-mes-texto');
+        if(elTexto) elTexto.innerText = `Mês: ${formatarMesAnoBR(mesSelecionado)}`;
+      }
+
+      const tbody = document.getElementById('tabelaFechamento');
+      if (!tbody) return;
+
+      let totValorFechado = 0, numFechados = 0, numDesistentes = 0, valorPerdido = 0;
+      const fechFiltrados = fechamentos.filter(f => !mesSelecionado || f.mes === mesSelecionado);
+
+      const locacoesPorAtendente = {};
+
+      tbody.innerHTML = fechFiltrados.map(f => {
+        const valNum = converterParaNumero(f.valor);
+        if (f.status === 'FECHADO') {
+          totValorFechado += valNum;
+          numFechados++;
+          const nomeAtendente = (f.atendente || 'Castan').trim();
+          if (!locacoesPorAtendente[nomeAtendente]) {
+            locacoesPorAtendente[nomeAtendente] = { qtd: 0, valor: 0 };
+          }
+          locacoesPorAtendente[nomeAtendente].qtd += 1;
+          locacoesPorAtendente[nomeAtendente].valor += valNum;
+        } else if (f.status === 'DESISTENTE') {
+          numDesistentes++;
+          valorPerdido += valNum;
+        }
+
+        return `
+          <tr class="hover:bg-gray-50">
+            <td class="p-2.5 ${obterCorColaborador(f.atendente)}">${f.atendente}</td>
+            <td class="p-2.5 font-medium">${f.captador || '-'}</td>
+            <td class="p-2.5 font-mono font-bold text-blue-600">${f.ref}</td>
+            <td class="p-2.5">${f.endereco}</td>
+            <td class="p-2.5 font-bold">R$ ${valNum.toLocaleString('pt-BR', {minimumFractionDigits: 2, maximumFractionDigits: 2})}</td>
+            <td class="p-2.5">${f.garantia}</td>
+            <td class="p-2.5">
+              <select onchange="alterarStatusFechamentoDirect(${f.id}, this.value)" class="text-[11px] font-bold rounded px-1.5 py-0.5 border outline-none ${f.status === 'FECHADO' ? 'bg-green-100 text-green-800' : f.status === 'PENDENTE' ? 'bg-yellow-100 text-yellow-800' : 'bg-red-100 text-red-800'}">
+                <option value="PENDENTE" ${f.status === 'PENDENTE' ? 'selected' : ''}>PENDENTE</option>
+                <option value="FECHADO" ${f.status === 'FECHADO' ? 'selected' : ''}>FECHADO</option>
+                <option value="DESISTENTE" ${f.status === 'DESISTENTE' ? 'selected' : ''}>DESISTENTE</option>
+              </select>
+            </td>
+            <td class="p-2.5 text-gray-600 font-medium">${formatarDataBR(f.assinado)}</td>
+            <td class="p-2.5 text-right space-x-1.5">
+              <button type="button" onclick="editarFechamento(${f.id})" class="text-blue-600 font-bold hover:underline">Editar</button>
+              <button type="button" onclick="removerFechamento(${f.id})" class="text-red-600 hover:underline">Excluir</button>
+            </td>
+          </tr>
+        `;
+      }).join('');
+
+      const metaGlobalValor = 57000;
+      const percMetaRealizado = metaGlobalValor > 0 ? ((totValorFechado / metaGlobalValor) * 100).toFixed(0) : 0;
+
+      const elResTotal = document.getElementById('resumo-total-fechado');
+      const elResMeta = document.getElementById('resumo-porcentagem-meta');
+      const elResNum = document.getElementById('resumo-num-locacoes');
+      if(elResTotal) elResTotal.innerText = `R$ ${totValorFechado.toLocaleString('pt-BR', {minimumFractionDigits: 2, maximumFractionDigits: 2})}`;
+      if(elResMeta) elResMeta.innerText = `${percMetaRealizado}%`;
+      if(elResNum) elResNum.innerText = numFechados;
+
+      let htmlAtendentes = '';
+      Object.keys(locacoesPorAtendente).sort().forEach(nome => {
+        const item = locacoesPorAtendente[nome];
+        const valFormatado = item.valor.toLocaleString('pt-BR', {minimumFractionDigits: 2, maximumFractionDigits: 2});
+        htmlAtendentes += `
+          <div class="flex justify-between items-center py-1 border-b border-slate-100 last:border-0">
+            <span class="${obterCorColaborador(nome)}">• ${nome}</span>
+            <div class="text-right flex items-center gap-1">
+              <span class="text-slate-800 font-bold bg-slate-200/60 px-1.5 py-0.5 rounded text-[10px]">${item.qtd} loc.</span>
+              <span class="text-emerald-700 font-bold text-xs">R$ ${valFormatado}</span>
+            </div>
+          </div>
+        `;
+      });
+      const elResAtend = document.getElementById('resumo-locacoes-atendentes');
+      if(elResAtend) elResAtend.innerHTML = htmlAtendentes || '<span class="text-gray-400">Nenhum fechado</span>';
+      
+      const elResTicket = document.getElementById('resumo-ticket');
+      const elResDes = document.getElementById('resumo-desistentes');
+      const elResPerdido = document.getElementById('resumo-valor-perdido');
+      if(elResTicket) elResTicket.innerText = `R$ ${(numFechados > 0 ? totValorFechado / numFechados : 0).toLocaleString('pt-BR', {minimumFractionDigits: 2, maximumFractionDigits: 2})}`;
+      if(elResDes) elResDes.innerText = numDesistentes;
+      if(elResPerdido) elResPerdido.innerText = `R$ ${valorPerdido.toLocaleString('pt-BR', {minimumFractionDigits: 2, maximumFractionDigits: 2})}`;
+    }
+
+    function toggleTipoCaptador() {
+      const tipo = document.getElementById('cap-tipo').value;
+      if (tipo === 'RECEPTIVO') {
+        document.getElementById('box-receptivo').classList.remove('hidden');
+        document.getElementById('box-ativo').classList.add('hidden');
+      } else {
+        document.getElementById('box-receptivo').classList.add('hidden');
+        document.getElementById('box-ativo').classList.remove('hidden');
+      }
+      calcularCaptacaoAuto();
+    }
+
+    function calcularCaptacaoAuto() {
+      const tipo = document.getElementById('cap-tipo').value;
+      const qtd = parseInt(document.getElementById('cap-qtd').value) || 0;
+      let conv = 0;
+      if (tipo === 'RECEPTIVO') {
+        const rescisao = parseInt(document.getElementById('cap-rescisao').value) || 0;
+        conv = qtd > 0 ? ((rescisao / qtd) * 100).toFixed(1) : 0;
+      } else {
+        const terceiros = parseInt(document.getElementById('cap-terceiros').value) || 0;
+        conv = qtd > 0 ? ((terceiros / qtd) * 100).toFixed(1) : 0;
+      }
+      document.getElementById('cap-conversao').value = `${conv}%`;
+    }
+
+    async function salvarCaptacao(e) {
+      e.preventDefault();
+      const tipo = document.getElementById('cap-tipo').value;
+      const item = {
+        id: editingCaptacaoId || Date.now(),
+        inicio: document.getElementById('cap-inicio').value,
+        fim: document.getElementById('cap-fim').value,
+        captador: document.getElementById('cap-captador').value,
+        tipo: tipo,
+        qtd: parseInt(document.getElementById('cap-qtd').value) || 0,
+        especifico: tipo === 'RECEPTIVO' ? (parseInt(document.getElementById('cap-rescisao').value) || 0) : (parseInt(document.getElementById('cap-terceiros').value) || 0),
+        conversao: document.getElementById('cap-conversao').value
+      };
+      if (_supabase) {
+        const { error } = await _supabase.from('captacoes').upsert(item);
+        if (error) {
+          alert('Erro ao salvar captação: ' + error.message);
+          return;
+        }
+      }
+      cancelarEdicaoCaptacao();
+      await carregarDadosDoSupabase();
+      alert('Captação salva com sucesso!');
+    }
+
+    function editarCaptacao(id) {
+      const item = captacoes.find(c => c.id === id);
+      if (!item) return;
+
+      editingCaptacaoId = item.id;
+      document.getElementById('cap-inicio').value = item.inicio;
+      document.getElementById('cap-fim').value = item.fim;
+      document.getElementById('cap-captador').value = item.captador;
+      document.getElementById('cap-tipo').value = item.tipo;
+      toggleTipoCaptador();
+      document.getElementById('cap-qtd').value = item.qtd;
+      if (item.tipo === 'RECEPTIVO') {
+        document.getElementById('cap-rescisao').value = item.especifico;
+      } else {
+        document.getElementById('cap-terceiros').value = item.especifico;
+      }
+      document.getElementById('cap-conversao').value = item.conversao;
+
+      document.getElementById('titulo-form-captacao').innerText = 'Editar Captação';
+      document.getElementById('btn-salvar-captacao').innerText = 'Atualizar Captação';
+      document.getElementById('btn-cancelar-captacao').classList.remove('hidden');
+      switchTab('lancamentos');
+      switchSubTab('captacao');
+      window.scrollTo({ top: document.getElementById('subtab-captacao').offsetTop, behavior: 'smooth' });
+    }
+
+    function cancelarEdicaoCaptacao() {
+      editingCaptacaoId = null;
+      document.getElementById('formCaptacao').reset();
+      toggleTipoCaptador();
+      document.getElementById('titulo-form-captacao').innerText = 'Lançamento de Captação';
+      document.getElementById('btn-salvar-captacao').innerText = 'Salvar Captação';
+      document.getElementById('btn-cancelar-captacao').classList.add('hidden');
+      carregarSemanaAtual('cap');
+    }
+
+    async function removerCaptacao(id) {
+      if(!confirm('Deseja realmente excluir esta captação?')) return;
+      if (_supabase) await _supabase.from('captacoes').delete().eq('id', id);
+      await carregarDadosDoSupabase();
+    }
+
+    function renderTabelaCaptacao() {
+      const tbody = document.getElementById('tabelaCaptacao');
+      if(!tbody) return;
+      tbody.innerHTML = captacoes.map(c => `
+        <tr class="hover:bg-gray-50">
+          <td class="p-2.5 text-gray-700">${c.inicio ? `${formatarDataBR(c.inicio)} -${formatarDataBR(c.fim)}` : 'N/A'}</td>
+          <td class="p-2.5 ${obterCorColaborador(c.captador)}">${c.captador}</td>
+          <td class="p-2.5"><span class="px-2 py-0.5 rounded text-[10px] font-bold ${c.tipo === 'RECEPTIVO' ? 'bg-blue-100 text-blue-700' : 'bg-purple-100 text-purple-700'}">${c.tipo}</span></td>
+          <td class="p-2.5">${c.qtd}</td>
+          <td class="p-2.5">${c.tipo === 'RECEPTIVO' ? `Rescisão: ${c.especifico}` : `Terceiros: ${c.especifico}`}</td>
+          <td class="p-2.5 font-bold text-emerald-600">${c.conversao}</td>
+          <td class="p-2.5 text-right space-x-2">
+            <button type="button" onclick="editarCaptacao(${c.id})" class="text-xs text-blue-600 font-bold hover:underline">Editar</button>
+            <button type="button" onclick="removerCaptacao(${c.id})" class="text-xs text-red-600 hover:underline">Excluir</button>
+          </td>
+        </tr>
+      `).join('');
+    }
+
+    function renderDashboard() {
+      const elInicio = document.getElementById('dash-inicio');
+      const elFim = document.getElementById('dash-fim');
+      if (!elInicio || !elFim) return;
+
+      const dInicio = elInicio.value;
+      const dFim = elFim.value;
+      const elPeriodo = document.getElementById('label-periodo-dash');
+      if(elPeriodo) elPeriodo.innerText = dInicio && dFim ? `${formatarDataBR(dInicio)} - ${formatarDataBR(dFim)}` : 'Tudo';
+
+      const atFiltrados = atendimentos.filter(a => {
+        if (!dInicio || !dFim) return true;
+        return (a.inicio >= dInicio && a.inicio <= dFim) || (a.fim >= dInicio && a.fim <= dFim) || (a.inicio <= dInicio && a.fim >= dFim);
+      });
+
+      const isMesCheio = verificarMesCheio(dInicio, dFim);
+      const fechFiltrados = fechamentos.filter(f => {
+        if (!dInicio || !dFim) return true;
+        if (isMesCheio) return f.mes === dInicio.substring(0, 7);
+        const dtRef = f.assinado || f.data;
+        if (dtRef) return dtRef >= dInicio && dtRef <= dFim;
+        if (f.mes) return f.mes >= dInicio.substring(0, 7) && f.mes <= dFim.substring(0, 7);
+        return true;
+      });
+
+      const capFiltradas = captacoes.filter(c => {
+        if (!dInicio || !dFim) return true;
+        return (c.inicio >= dInicio && c.inicio <= dFim) || (c.fim >= dInicio && c.fim <= dFim) || (c.inicio <= dInicio && c.fim >= dFim);
+      });
+
+      const totVisitasConcluidas = atFiltrados.reduce((acc, a) => acc + (parseInt(a.concluidas) || 0), 0);
+      const fechados = fechFiltrados.filter(f => f.status === 'FECHADO');
+      const valTotalFechado = fechados.reduce((acc, f) => acc + converterParaNumero(f.valor), 0);
+      const totCaptados = capFiltradas.reduce((acc, c) => acc + (parseInt(c.qtd) || 0), 0);
+      const totLaisDashboard = calcularTotalLaisGrupo(atFiltrados);
+
+      document.getElementById('dash-visitas-concluidas').innerText = totVisitasConcluidas;
+      document.getElementById('dash-contratos-fechados').innerText = fechados.length;
+      document.getElementById('dash-valor-fechado').innerText = `R$ ${valTotalFechado.toLocaleString('pt-BR', {minimumFractionDigits: 2, maximumFractionDigits: 2})}`;
+      document.getElementById('dash-captados').innerText = totCaptados;
+
+      const atendentesComercial = colaboradores.filter(c => c.status === 'Ativo' && (c.funcao.toLowerCase().includes('atendimento') || c.funcao.toLowerCase().includes('comercial') || c.funcao.toLowerCase().includes('corretor')));
+      const atendentesUnicos = [];
+      const nomesVistos = new Set();
+      ['Castan', 'Denise', 'Leticia', 'Thayane'].forEach(n => { nomesVistos.add(n); atendentesUnicos.push({ nome: n }); });
+      atendentesComercial.forEach(c => { if (!nomesVistos.has(c.nome)) { nomesVistos.add(c.nome); atendentesUnicos.push(c); } });
+
+      const atValoresLabels = [], atValoresData = [], atMetaPercData = [], barColorsArray = [];
+      const metaGlobalRef = 57000;
+      let sumValorAtendentes = 0;
+
+      atendentesUnicos.forEach(c => {
+        const fechAtendente = fechFiltrados.filter(f => f.status === 'FECHADO' && f.atendente === c.nome);
+        const valFechado = fechAtendente.reduce((acc, f) => acc + converterParaNumero(f.valor), 0);
+        const percDaMeta = parseFloat(((valFechado / metaGlobalRef) * 100).toFixed(1));
+        atValoresLabels.push(c.nome);
+        atValoresData.push(valFechado);
+        atMetaPercData.push(percDaMeta);
+        barColorsArray.push(obterCorHexAtendente(c.nome));
+        sumValorAtendentes += valFechado;
+      });
+
+      atValoresLabels.push('TOTAL');
+      atValoresData.push(sumValorAtendentes);
+      atMetaPercData.push(parseFloat(((sumValorAtendentes / metaGlobalRef) * 100).toFixed(1)));
+      barColorsArray.push('#10b981');
+
+      const chartLabels = [], chartAg = [], chartConc = [], chartCanc = [];
+      let sumAg = 0, sumConc = 0, sumCanc = 0, sumNovos = 0;
+
+      atendentesUnicos.forEach(c => {
+        const cAtend = atFiltrados.filter(a => a.colaborador === c.nome);
+        const ag = cAtend.reduce((acc, a) => acc + a.agendadas, 0);
+        const conc = cAtend.reduce((acc, a) => acc + a.concluidas, 0);
+        const canc = cAtend.reduce((acc, a) => acc + a.canceladas, 0);
+        sumAg += ag; sumConc += conc; sumCanc += canc;
+        chartLabels.push(c.nome); chartAg.push(ag); chartConc.push(conc); chartCanc.push(canc);
+      });
+
+      sumNovos = atFiltrados.reduce((acc, a) => acc + a.novos, 0);
+      chartLabels.push('Total');
+      chartAg.push(sumAg); chartConc.push(sumConc); chartCanc.push(sumCanc);
+
+      if (chartValoresAtendentes) chartValoresAtendentes.destroy();
+      if (chartComboVisitas) chartComboVisitas.destroy();
+      if (chartStatusEsteira) chartStatusEsteira.destroy();
+      if (chartCaptacaoRescisao) chartCaptacaoRescisao.destroy();
+      if (chartNovosVsConcluidas) chartNovosVsConcluidas.destroy();
+      if (chartConcluidasLais) chartConcluidasLais.destroy();
+
+      const elChartVal = document.getElementById('chartValoresAtendentes');
+      if (elChartVal) {
+        chartValoresAtendentes = new Chart(elChartVal.getContext('2d'), {
+          type: 'bar',
+          data: {
+            labels: atValoresLabels,
+            datasets: [
+              { label: 'Valor Fechado (R$)', data: atValoresData, backgroundColor: barColorsArray, borderRadius: 6, maxBarThickness: 38 },
+              { label: '% da Meta', data: atMetaPercData, type: 'line', borderColor: '#f97316', backgroundColor: '#f97316', pointRadius: 4, yAxisID: 'y1', borderWidth: 2 }
+            ]
+          },
+          options: {
+            responsive: true, maintainAspectRatio: false,
+            plugins: { legend: { display: true, position: 'top' } },
+            scales: {
+              y: { beginAtZero: true, grace: '20%' },
+              y1: { beginAtZero: true, max: 115, position: 'right', grid: { drawOnChartArea: false } }
+            }
+          }
+        });
+      }
+
+      const elChartCombo = document.getElementById('chartComboVisitas');
+      if (elChartCombo) {
+        chartComboVisitas = new Chart(elChartCombo.getContext('2d'), {
+          type: 'bar',
+          data: {
+            labels: chartLabels,
+            datasets: [
+              { label: 'Agendadas', data: chartAg, backgroundColor: '#38bdf8' },
+              { label: 'Concluídas', data: chartConc, backgroundColor: '#84cc16' },
+              { label: 'Canceladas', data: chartCanc, backgroundColor: '#ef4444' }
+            ]
+          },
+          options: { responsive: true, maintainAspectRatio: false, scales: { y: { beginAtZero: true } } }
+        });
+      }
+
+      const countChecklist = fechFiltrados.filter(f => f.status === 'PENDENTE').length;
+      const countCaiu = fechFiltrados.filter(f => f.status === 'DESISTENTE').length;
+      const countConcluidos = fechFiltrados.filter(f => f.status === 'FECHADO').length;
+
+      const elChartStatus = document.getElementById('chartStatusEsteira');
+      if (elChartStatus) {
+        chartStatusEsteira = new Chart(elChartStatus.getContext('2d'), {
+          type: 'pie',
+          data: { labels: ['Pendente', 'Caiu', 'Concluídos'], datasets: [{ data: [countChecklist, countCaiu, countConcluidos], backgroundColor: ['#ea580c', '#f97316', '#0284c7'] }] },
+          options: { responsive: true, maintainAspectRatio: false }
+        });
+      }
+
+      const totMauryCap = capFiltradas.filter(c => c.captador.toLowerCase().includes('maury')).reduce((acc, c) => acc + c.qtd, 0);
+      const totRescisao = capFiltradas.filter(c => c.tipo === 'RECEPTIVO').reduce((acc, c) => acc + c.especifico, 0);
+
+      const elChartCap = document.getElementById('chartCaptacaoRescisao');
+      if (elChartCap) {
+        chartCaptacaoRescisao = new Chart(elChartCap.getContext('2d'), {
+          type: 'pie',
+          data: { labels: ['Cap Maury', 'Rescisão'], datasets: [{ data: [totMauryCap, totRescisao], backgroundColor: ['#0f4c81', '#f97316'] }] },
+          options: { responsive: true, maintainAspectRatio: false }
+        });
+      }
+
+      const elChartNovos = document.getElementById('chartNovosVsConcluidas');
+      if (elChartNovos) {
+        chartNovosVsConcluidas = new Chart(elChartNovos.getContext('2d'), {
+          type: 'pie',
+          data: { labels: ['Novos Negócios', 'Concluídas'], datasets: [{ data: [sumNovos, sumConc], backgroundColor: ['#ea580c', '#84cc16'] }] },
+          options: { responsive: true, maintainAspectRatio: false }
+        });
+      }
+
+      const elChartLais = document.getElementById('chartConcluidasLais');
+      if (elChartLais) {
+        chartConcluidasLais = new Chart(elChartLais.getContext('2d'), {
+          type: 'pie',
+          data: { labels: ['Concluídas', 'Lais'], datasets: [{ data: [sumConc, totLaisDashboard], backgroundColor: ['#0284c7', '#a855f7'] }] },
+          options: { responsive: true, maintainAspectRatio: false }
+        });
+      }
+    }
+
+    function renderResumoMes() {
+      const elMesRef = document.getElementById('mes-referencia');
+      if(!elMesRef) return;
+      const mesRef = elMesRef.value;
+      const atMes = atendimentos.filter(a => !mesRef || (a.inicio && a.inicio.startsWith(mesRef)));
+      const fechMes = fechamentos.filter(f => !mesRef || f.mes === mesRef);
+      const capMes = captacoes.filter(c => !mesRef || (c.inicio && c.inicio.startsWith(mesRef)));
+
+      const elAg = document.getElementById('mes-tot-agendadas');
+      const elConc = document.getElementById('mes-tot-concluidas');
+      const elVal = document.getElementById('mes-tot-valor');
+      const elCap = document.getElementById('mes-tot-captados');
+
+      if(elAg) elAg.innerText = atMes.reduce((acc, a) => acc + a.agendadas, 0);
+      if(elConc) elConc.innerText = atMes.reduce((acc, a) => acc + a.concluidas, 0);
+      if(elVal) elVal.innerText = `R$ ${fechMes.filter(f => f.status === 'FECHADO').reduce((acc, f) => acc + converterParaNumero(f.valor), 0).toLocaleString('pt-BR', {minimumFractionDigits: 2, maximumFractionDigits: 2})}`;
+      if(elCap) elCap.innerText = capMes.reduce((acc, c) => acc + c.qtd, 0);
+
+      const atendentesComercial = colaboradores.filter(c => c.status === 'Ativo' && (c.funcao.toLowerCase().includes('atendimento') || c.funcao.toLowerCase().includes('comercial') || c.funcao.toLowerCase().includes('corretor')));
+      let tbodyHTML = '';
+
+      atendentesComercial.forEach(c => {
+        const cAtend = atMes.filter(a => a.colaborador === c.nome);
+        const ag = cAtend.reduce((acc, a) => acc + a.agendadas, 0);
+        const conc = cAtend.reduce((acc, a) => acc + a.concluidas, 0);
+        const canc = cAtend.reduce((acc, a) => acc + a.canceladas, 0);
+        const novos = cAtend.reduce((acc, a) => acc + a.novos, 0);
+        const ativo = cAtend.reduce((acc, a) => acc + a.ativo, 0);
+
+        tbodyHTML += `
+          <tr class="hover:bg-gray-50">
+            <td class="p-2.5 ${obterCorColaborador(c.nome)}">${c.nome}</td>
+            <td class="p-2.5 text-center">${ag}</td>
+            <td class="p-2.5 text-center text-emerald-600 font-bold">${conc}</td>
+            <td class="p-2.5 text-center text-red-600">${canc}</td>
+            <td class="p-2.5 text-center text-blue-600 font-bold">${ag > 0 ? ((conc / ag) * 100).toFixed(1) : 0}%</td>
+            <td class="p-2.5 text-center">${novos}</td>
+            <td class="p-2.5 text-center">${ativo}</td>
+          </tr>
+        `;
+      });
+      const
